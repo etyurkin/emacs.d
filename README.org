@@ -1,0 +1,2 @@
+* Personal Emacs config
+This is a personal Emacs configuration based on [[https://github.com/purcell/emacs.d][a reasonable Emacs config]] by Steve Purcell.
