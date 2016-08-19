@@ -1,0 +1,2 @@
+* Default theme
+This is a default theme based on [[https://github.com/hlissner/emacs-doom-theme][DOOM for Emacs]] theme by Henrik Lissner.
