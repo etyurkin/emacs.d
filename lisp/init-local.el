@@ -124,8 +124,8 @@
   ;; it's not loaded yet, so add our bindings to the load-hook
   (add-hook 'dired-load-hook 'my-dired-init))
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/site-lisp/emacs-doom-theme/")
-(load "~/.emacs.d/site-lisp/emacs-doom-theme/doom.el")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-doom-theme/")
+(load "~/.emacs.d/themes/emacs-doom-theme/doom.el")
 (load-theme 'doom-one t)
 
 ;; transparency settings
