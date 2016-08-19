@@ -1,2 +1,0 @@
-* Emacs doom theme
-Theme based on [[https://github.com/hlissner/emacs-doom-theme][DOOM for Emacs]] by Henrik Lissner..
