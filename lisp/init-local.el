@@ -1,3 +1,8 @@
+;;; init-local --- Summary
+
+;;; Commentary:
+
+;;; Code
 (setq basic-packages '(bind-key diminish use-package))
 
 (dolist (package basic-packages)
@@ -10,6 +15,12 @@
 (use-package toc-org :ensure t)
 (add-hook 'org-mode-hook 'toc-org-enable)
 (setq toc-org-skip-pre-toc-headings t)
+
+;; disable minimize emacs by ctrl-z
+(put 'suspend-frame 'disabled t)
+
+;; turn off the auto-backup feature
+(setq make-backup-files nil)
 
 (defcustom toc-org-skip-pre-toc-headings nil
   "Leave headings out of the TOC that occur before the TOC itself."
@@ -81,6 +92,19 @@
 (add-to-list 'org-emphasis-alist
              '("*" (:foreground "red")))
 
+
+;; Toggle display of entities as UTF-8 characters.
+(setq org-pretty-entities t)
+
+(setq org-todo-keywords
+      '((sequence "TODO" "ACTIVE" "|" "DONE" "DELEGATED")))
+
+;;Calendar settings
+(setq calendar-week-start-day 1)
+
+;; Automatically show diary events
+(run-at-time "11:00am" (* 24 3600) 'diary)
+
 ;; hide formatting markers in org
 (setq org-hide-emphasis-markers t)
 
@@ -89,6 +113,10 @@
 
 ;; white mouse cursor
 (set-mouse-color "white")
+
+(setq save-place-file "~/emacs.d/saveplace") ;; keep my ~/ clean
+(setq-default save-place t)                  ;; activate it for all buffers
+(use-package saveplace :ensure t)            ;; get the package
 
 (setq tab-width 4
       indent-tabs-mode nil)
@@ -108,8 +136,7 @@
 ;; https://www.emacswiki.org/emacs/dired-single.el
 (use-package dired-single :ensure t)
 (defun my-dired-init ()
-  "Bunch of stuff to run for dired, either immediately or when it's
-         loaded."
+  "Bunch of stuff to run for dired, either immediately or when it's loaded."
 
   (define-key dired-mode-map [return] 'dired-single-buffer)
   (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
@@ -188,7 +215,7 @@
 
 ;; use session-save to save the desktop manually
 (defun session-save ()
-  "Save an emacs session."
+  "Save an Emacs session."
   (interactive)
   (if (saved-session)
       (if (y-or-n-p "Overwrite existing desktop? ")
@@ -198,7 +225,7 @@
 
 ;; use session-restore to restore the desktop manually
 (defun session-restore ()
-  "Restore a saved emacs session."
+  "Restore a saved Emacs session."
   (interactive)
   (if (saved-session)
       (desktop-read)
@@ -211,11 +238,12 @@
 
 ;; to use - select xml region, M-x xml-pretty-print-region
 (defun xml-pretty-print-region (begin end)
-  "Pretty format XML markup in region. You need to have nxml-mode
-http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do
-this. The function inserts linebreaks to separate tags that have
-nothing but whitespace between them. It then indents the markup
-by using nxml's indentation rules."
+  "Pretty format XML markup in region from BEGIN to END.
+You need to have 'nxml-mode'
+http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do this.
+The function inserts linebreaks to separate tags that have nothing
+but whitespace between them.
+It then indents the markup by using nxml's indentation rules."
   (interactive "r")
   (save-excursion
     (nxml-mode)
@@ -253,6 +281,7 @@ point reaches the beginning or end of the buffer, stop there."
                 'smarter-move-beginning-of-line)
 
 (defun sudo-edit (&optional arg)
+  "Reopens current buffer or ARG as root."
   (interactive "p")
   (if (or arg (not buffer-file-name))
       (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
@@ -260,7 +289,7 @@ point reaches the beginning or end of the buffer, stop there."
 
 ;; Insert the org entity (if available) when user does C-u SYMBOL; works for C-u *, C-u /, C-u =, etc.
 (defun modi/org-entity-get-name (char)
-  "Return the entity name for CHAR. For example, return \"ast\" for *."
+  "Return the entity name for CHAR.  For example, return \"ast\" for *."
   (let ((ll (append org-entities-user
                     org-entities))
         e name utf8)
@@ -295,41 +324,8 @@ insert the character's `org-entity' name if available."
 
 (advice-add 'org-self-insert-command :around #'modi/org-insert-org-entity-maybe)
 
-;; OSX code
-;; Reset Option key from CMD back to Option
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'super)
-
-(defun osx-lock-screen ()
-  "Starts screensaver on OSX"
-  (interactive)
-  (start-process
-   "screensaver" nil
-   "open" "-a" "/System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"))
-
-(defun osx-say (phrase)
-  (start-process "say" nil "say" phrase))
-
-(defun osx-notify (title message)
-  (start-process "notify" nil
-                 "/usr/bin/osascript" "-e"
-                 (format "display notification \"%s\" with title \"%s\"" message title)))
-
-(use-package osx-lib :ensure t)
-
-(defun ns-raise-emacs ()
-  "Raise Emacs."
-  (osx-lib-run-applescript "tell application \"Emacs\" to activate"))
-
-(defun ns-raise-emacs-with-frame (frame)
-  "Raise Emacs and select the provided frame."
-  (with-selected-frame frame
-    (when (display-graphic-p)
-      (ns-raise-emacs))))
-
-(add-hook 'after-make-frame-functions 'ns-raise-emacs-with-frame)
-
 (defun hash-pass ()
+  "Generate strong password based on parameter and master password."
   (interactive)
   (let ((param (read-string "parameter: "))
         (password (read-passwd "master password: ")))
@@ -339,8 +335,5 @@ insert the character's `org-entity' name if available."
     (kill-new hash)
     (message "Generated hash has been copied to clipboard")))
 
-
-(when (display-graphic-p)
-  (ns-raise-emacs))
-
 (provide 'init-local)
+;;; init-local ends here
