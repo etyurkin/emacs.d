@@ -35,6 +35,18 @@
 (require 'init-exec-path) ;; Set up $PATH
 
 ;;----------------------------------------------------------------------------
+;; Add use-package
+;;----------------------------------------------------------------------------
+(setq basic-packages '(bind-key diminish use-package))
+
+(dolist (package basic-packages)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+(require 'use-package)
+
+
+;;----------------------------------------------------------------------------
 ;; Allow users to provide an optional "init-preload-local.el"
 ;;----------------------------------------------------------------------------
 (require 'init-preload-local nil t)
@@ -160,6 +172,15 @@
             (message "init completed in %.2fms"
                      (sanityinc/time-subtract-millis after-init-time before-init-time))))
 
+;;----------------------------------------------------------------------------
+;; Start screen
+;;----------------------------------------------------------------------------
+(require 'startscreen)
+
+(jethro/insert-startupify-lists)
+(add-hook 'desktop-after-read-hook
+          (lambda ()
+            (switch-to-buffer "*startscreen*")))
 
 (provide 'init)
 

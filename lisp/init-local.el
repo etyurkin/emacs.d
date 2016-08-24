@@ -3,13 +3,6 @@
 ;;; Commentary:
 
 ;;; Code
-(setq basic-packages '(bind-key diminish use-package))
-
-(dolist (package basic-packages)
-  (unless (package-installed-p package)
-    (package-install package)))
-
-(require 'use-package)
 
 ;; org mode toc, see https://github.com/snosov1/toc-org
 (use-package toc-org :ensure t)
@@ -82,6 +75,7 @@
 (use-package swift-mode :ensure t)
 (use-package scala-mode :ensure t)
 (use-package csharp-mode :ensure t)
+(use-package helm :ensure t)
 
 ;; Highlight part of lines exceeding 115 characters length
 (setq-default
@@ -151,14 +145,6 @@
   ;; it's not loaded yet, so add our bindings to the load-hook
   (add-hook 'dired-load-hook 'my-dired-init))
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-doom-theme/")
-(load "~/.emacs.d/themes/emacs-doom-theme/doom.el")
-(load-theme 'doom-one t)
-
-;; transparency settings
-(set-frame-parameter (selected-frame) 'alpha '(90 90))
-(add-to-list 'default-frame-alist '(alpha 90 90))
-
 (defun trim (str)
   "Remove leading and tailing whitespace from STR."
   (replace-regexp-in-string (rx (or (: bos (* (any " \t\n")))
@@ -180,7 +166,9 @@
 (defun proxy-on ()
   "Set proxy."
   (interactive)
-  (let ((proxy-host (read-string "proxy host: " "http://adc-proxy.oracle.com:80")))
+  (let ((proxy-host
+         (read-string "proxy host: "
+                      (if (bound-and-true-p *proxy-host*) *proxy-host* ""))))
     (unless (empty-string-p proxy-host)
       (setq url-proxy-services
             `(("no_proxy" . "^\\(localhost\\|10.*\\)")
@@ -209,6 +197,12 @@
   (run-shell-command "unset HTTP_PROXY")
   (run-shell-command "unset HTTPS_PROXY")
   (message "proxy is off"))
+
+(defun init-ssh-agent ()
+  "Add personal rsa key to ssh agent."
+  (interactive)
+  (run-shell-command "eval \"$(ssh-agent -s)\"")
+  (run-shell-command "ssh-add ~/.ssh/personal_rsa"))
 
 (defun saved-session ()
   (file-exists-p (concat desktop-dirname "/" desktop-base-file-name)))
