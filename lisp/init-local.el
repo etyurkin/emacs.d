@@ -4,6 +4,8 @@
 
 ;;; Code
 
+(use-package hound :ensure t)
+
 ;; org mode toc, see https://github.com/snosov1/toc-org
 (use-package toc-org :ensure t)
 (add-hook 'org-mode-hook 'toc-org-enable)
