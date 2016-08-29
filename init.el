@@ -178,9 +178,9 @@
 (require 'startscreen)
 
 (jethro/insert-startupify-lists)
-(add-hook 'desktop-after-read-hook
-          (lambda ()
-            (switch-to-buffer "*startscreen*")))
+;; (add-hook 'desktop-after-read-hook
+;;           (lambda ()
+;;             (switch-to-buffer "*startscreen*")))
 
 (provide 'init)
 
