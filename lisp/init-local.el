@@ -227,7 +227,8 @@
       (desktop-read)
     (message "No desktop found.")))
 
-(defun clear-buffer ()
+(defun clear-shell ()
+  "Cleans shell buffer."
   (interactive)
   (let ((comint-buffer-maximum-size 0))
     (comint-truncate-buffer)))
