@@ -54,8 +54,7 @@
   (set-background-color "black")
   (set-face-background 'hl-line "black")
   (set-face-background 'mode-line "black")
-  (set-face-background 'mode-line-highlight "black")
-  (set-face-background 'linum "black"))
+  (set-face-background 'mode-line-highlight "black"))
 
 ;; Ensure that themes will be applied even if they have not been customized
 (defun reapply-themes ()
