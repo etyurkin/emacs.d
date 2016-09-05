@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;;; Code
+;;; Code:
 
 (use-package hound :ensure t)
 
@@ -79,36 +79,11 @@
 (use-package csharp-mode :ensure t)
 (use-package helm :ensure t)
 
-;; Highlight part of lines exceeding 115 characters length
-(setq-default
- whitespace-line-column 115
- whitespace-style       '(face lines-tail))
-
-(require 'org)
-(add-to-list 'org-emphasis-alist
-             '("*" (:foreground "red")))
-
-
-;; Toggle display of entities as UTF-8 characters.
-(setq org-pretty-entities t)
-
-(setq org-todo-keywords
-      '((sequence "TODO" "ACTIVE" "|" "DONE" "DELEGATED")))
-
 ;;Calendar settings
 (setq calendar-week-start-day 1)
 
 ;; Automatically show diary events
 (run-at-time "11:00am" (* 24 3600) 'diary)
-
-;; hide formatting markers in org
-(setq org-hide-emphasis-markers t)
-
-;; Highlight current line
-(global-hl-line-mode 1)
-
-;; white mouse cursor
-(set-mouse-color "white")
 
 (setq save-place-file "~/emacs.d/saveplace") ;; keep my ~/ clean
 (setq-default save-place t)                  ;; activate it for all buffers

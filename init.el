@@ -45,6 +45,7 @@
 
 (require 'use-package)
 
+(require 'init-osx)
 
 ;;----------------------------------------------------------------------------
 ;; Allow users to provide an optional "init-preload-local.el"
@@ -63,7 +64,6 @@
 
 (require 'init-frame-hooks)
 (require 'init-xterm)
-(require 'init-osx)
 (require 'init-gui-frames)
 (require 'init-dired)
 (require 'init-isearch)
@@ -113,7 +113,7 @@
 (require 'init-rails)
 (require 'init-sql)
 
-(require 'init-paredit)
+;; (require 'init-paredit)
 (require 'init-lisp)
 (require 'init-slime)
 (unless (version<= emacs-version "24.2")
@@ -135,6 +135,7 @@
 (require-package 'lua-mode)
 (require-package 'htmlize)
 (require-package 'dsvn)
+
 (when *is-a-mac*
   (require-package 'osx-location))
 (require-package 'regex-tool)
@@ -145,7 +146,6 @@
 (require 'server)
 (unless (server-running-p)
   (server-start))
-
 
 ;;----------------------------------------------------------------------------
 ;; Variables configured via the interactive 'customize' interface
