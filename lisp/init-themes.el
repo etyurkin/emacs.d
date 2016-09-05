@@ -25,6 +25,31 @@
 (require 'spaceline-config)
 (spaceline-emacs-theme)
 
+;; Highlight part of lines exceeding 115 characters length
+(setq-default
+ whitespace-line-column 115
+ whitespace-style       '(face lines-tail))
+
+(require 'org)
+(add-to-list 'org-emphasis-alist
+             '("*" (:foreground "red")))
+
+
+;; Toggle display of entities as UTF-8 characters.
+(setq org-pretty-entities t)
+
+(setq org-todo-keywords
+      '((sequence "TODO" "ACTIVE" "|" "DONE" "DELEGATED")))
+
+;; hide formatting markers in org
+(setq org-hide-emphasis-markers t)
+
+;; Highlight current line
+(global-hl-line-mode 1)
+
+;; white mouse cursor
+(set-mouse-color "white")
+
 (when (not (display-graphic-p))
   (set-background-color "black")
   (set-face-background 'hl-line "black")
