@@ -1,3 +1,7 @@
+;;; init-osx -- Adds some useful osx funtions
+;;; Commentary:
+;;; Code:
+
 (when *is-a-mac*
   ;; Reset Option key from CMD back to Option
   ;;(setq mac-command-modifier 'meta)
@@ -46,10 +50,10 @@
       (when (display-graphic-p)
         (ns-raise-emacs))))
 
-  (add-hook 'after-make-frame-functions 'ns-raise-emacs-with-frame)
   (when (display-graphic-p)
-    (ns-raise-emacs))
-  )
+    (add-hook 'after-make-frame-functions 'ns-raise-emacs-with-frame)
+    (ns-raise-emacs)
+    ))
 
 (provide 'init-osx)
 ;;; init-osx.el ends here
