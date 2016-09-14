@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+(use-package suggest :ensure t)
+
 (use-package hound :ensure t)
 
 ;; org mode toc, see https://github.com/snosov1/toc-org
