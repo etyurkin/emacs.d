@@ -5,6 +5,7 @@
 ;;; Code:
 
 (use-package elpa-mirror :ensure t)
+(setq elpamr-default-output-directory "~/.emacs.d/elpa-mirror")
 
 (use-package suggest :ensure t)
 
