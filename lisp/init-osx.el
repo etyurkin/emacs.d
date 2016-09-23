@@ -30,6 +30,7 @@
 
   (defun osx-say (phrase)
     "Speak PHRASE."
+    (interactive "MSay what? ")
     (start-process "say" nil "say" phrase))
 
   (defun osx-notify (title message)
