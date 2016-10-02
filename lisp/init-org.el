@@ -5,6 +5,29 @@
   (maybe-require-package 'grab-mac-link)
   (require-package 'org-mac-iCal))
 
+;; init password manager
+(use-package org-plus-contrib :ensure t)
+
+;; fix for byte-code: Invalid function: org-babel-header-args-safe-fn error:
+;; (byte-recompile-file
+;;  (expand-file-name "ob-R.el"
+;;                    (file-name-directory (locate-library "org")))
+;;  t)
+
+(require 'org-passwords)
+(setq org-passwords-file "~/Dropbox/notes/passwords.org.gpg")
+(eval-after-load "org-passwords"
+  '(progn
+     (define-key org-passwords-mode-map
+       (kbd "C-c C-p u")
+       'org-passwords-copy-username)
+     (define-key org-passwords-mode-map
+       (kbd "C-c C-p p")
+       'org-passwords-copy-password)
+     (define-key org-passwords-mode-map
+       (kbd "C-c C-p o")
+       'org-passwords-open-url)))
+
 (define-key global-map (kbd "C-c l") 'org-store-link)
 (define-key global-map (kbd "C-c a") 'org-agenda)
 
