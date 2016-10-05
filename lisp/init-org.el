@@ -15,7 +15,6 @@
 ;;  t)
 
 (require 'org-passwords)
-(setq org-passwords-file "~/Dropbox/notes/passwords.org.gpg")
 (eval-after-load "org-passwords"
   '(progn
      (define-key org-passwords-mode-map
