@@ -1,5 +1,6 @@
 (when (maybe-require-package 'projectile)
-  (add-hook 'after-init-hook 'projectile-global-mode)
+  ;; projectile-global mode conflicts with tramp, see https://github.com/bbatsov/prelude/issues/594
+  ;; (add-hook 'after-init-hook 'projectile-global-mode)
 
   ;; The following code means you get a menu if you hit "C-c p" and wait
   (after-load 'guide-key

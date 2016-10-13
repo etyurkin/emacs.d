@@ -11,6 +11,16 @@
 
 (use-package hound :ensure t)
 
+(use-package paradox :ensure t)
+
+;; https://github.com/areina/helm-dash
+(use-package helm-dash :ensure t)
+(setq helm-dash-browser-func 'eww)
+
+;; http documentation
+;; provider http-status-code, http-header, http-method, http-relation, media-type
+(use-package know-your-http-well :ensure t)
+
 ;; org mode toc, see https://github.com/snosov1/toc-org
 (use-package toc-org :ensure t)
 (add-hook 'org-mode-hook 'toc-org-enable)
@@ -64,8 +74,20 @@
       (buffer-substring-no-properties
        (point-min) (point-max)))))
 
+;; restclient mode
 (use-package restclient :ensure t)
 (add-to-list 'auto-mode-alist '("\\.rest$" . restclient-mode))
+(setq restclient-inhibit-cookies t)
+
+;; An extension to restclient that provides org-babel support.
+(use-package ob-restclient :ensure t)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((restclient . t)))
+
+;; Company-mode completion back-end for restclient-mode.
+(use-package company-restclient :ensure t)
+(add-to-list 'company-backends 'company-restclient)
 
 (use-package transpose-frame :ensure t)
 
