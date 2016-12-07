@@ -109,6 +109,10 @@
 ;;Calendar settings
 (setq calendar-week-start-day 1)
 
+;; Create empty diary file if not exists
+(when (not (file-exists-p "~/.emacs.d/diary"))
+  (with-temp-buffer (write-file "~/.emacs.d/diary")))
+
 ;; Automatically show diary events
 (run-at-time "11:00am" (* 24 3600) 'diary)
 
