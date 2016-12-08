@@ -379,5 +379,11 @@ typical word processor."
      (sql . nil)
      (sqlite . t))))
 
+;; Display generated inline images
+(after-load 'org
+  (add-hook 'org-babel-after-execute-hook
+            (lambda ()
+              (when org-inline-image-overlays
+                (org-redisplay-inline-images)))))
 
 (provide 'init-org)

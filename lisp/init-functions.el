@@ -144,15 +144,25 @@ point reaches the beginning or end of the buffer, stop there."
       (find-file (concat "/sudo:root@localhost:" (ido-read-file-name "File: ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
+;; hash-pass http://hashapass.com/
+(defvar hash-pass-password-wait-time "30 sec"
+  "The default period to wait before erasing the password from the clipboard.
+Must be compatible with `run-at-time'.")
+
+(defun string->clipboard (string)
+  "Copy STRING to system clipboard."
+  (funcall interprogram-cut-function string))
+
 (defun hash-pass ()
   "Generate strong password based on parameter and master password."
   (interactive)
   (let ((param (read-string "parameter: "))
         (password (read-passwd "master password: ")))
-    (setq hash
-          (shell-command-to-string
-           (format "echo -n %s | openssl dgst -sha1 -binary -hmac %s | openssl enc -base64 | cut -c 1-8" param password)))
-    (kill-new hash)
+    (string->clipboard (trim
+                        (shell-command-to-string
+                         (format "echo -n %s | openssl dgst -sha1 -binary -hmac %s | openssl enc -base64 | cut -c 1-8" param password))))
+    
+    (run-at-time hash-pass-password-wait-time nil (lambda () (string->clipboard "")))
     (message "Generated hash has been copied to clipboard")))
 
 ;; -----------------------------------------------------------------------------------------------------------

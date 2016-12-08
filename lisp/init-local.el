@@ -30,7 +30,13 @@
 (put 'suspend-frame 'disabled t)
 
 ;; turn off the auto-backup feature
-(setq make-backup-files nil)
+(setq
+ backup-by-copying t
+ backup-directory-alist '(("." . "~/.emacs.d/backups"))
+ delete-old-versions t
+ kept-new-versions 16
+ kept-old-versions 2
+ version-control t)
 
 (defcustom toc-org-skip-pre-toc-headings nil
   "Leave headings out of the TOC that occur before the TOC itself."
@@ -88,6 +94,8 @@
 ;; Company-mode completion back-end for restclient-mode.
 (use-package company-restclient :ensure t)
 (add-to-list 'company-backends 'company-restclient)
+
+(use-package httprepl :ensure t)
 
 (use-package transpose-frame :ensure t)
 
