@@ -34,17 +34,6 @@
 ;; Calls (package-initialize)
 (require 'init-elpa)      ;; Machinery for installing required packages
 (require 'init-exec-path) ;; Set up $PATH
-;;----------------------------------------------------------------------------
-;; Add use-package
-;;----------------------------------------------------------------------------
-(setq basic-packages '(bind-key diminish use-package))
-
-(dolist (package basic-packages)
-  (unless (package-installed-p package)
-    (package-install package)))
-
-(require 'use-package)
-
 (require 'init-osx)
 
 ;;----------------------------------------------------------------------------
@@ -58,7 +47,6 @@
 
 (require-package 'wgrep)
 (require-package 'project-local-variables)
-(require-package 'diminish)
 (require-package 'scratch)
 (require-package 'mwe-log-commands)
 

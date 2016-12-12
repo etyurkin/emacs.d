@@ -30,7 +30,31 @@
                                                 "http://melpa.org/packages/"
                                               "https://melpa.org/packages/")))
 
+
+;; Package management
 
+(setq basic-packages '(bind-key diminish))
+(setq packages-refreshed nil)
+
+(dolist (package basic-packages)
+  (unless (package-installed-p package)
+    (unless packages-refreshed
+      (package-refresh-contents)
+      (setq packages-refreshed t))
+
+    (package-install package)))
+
+(require 'diminish)
+(require 'bind-key)
+
+(if (package-installed-p 'quelpa)
+    (quelpa '(quelpa :repo "quelpa/quelpa" :fetcher github))
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
+    (eval-buffer)))
+
+(quelpa '(quelpa-use-package :fetcher github :repo "quelpa/quelpa-use-package"))
+(require 'quelpa-use-package)
 
 ;; If gpg cannot be found, signature checking will fail, so we
 ;; conditionally enable it according to whether gpg is available. We
