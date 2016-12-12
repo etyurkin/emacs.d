@@ -4,6 +4,11 @@
 
 ;;; Code:
 
+(defun insert-divider ()
+  "Insert horizontal line, i.e. FORM FEED (FF)."
+  (interactive)
+  (insert #x0C))
+
 (defun trim (str)
   "Remove leading and tailing whitespace from STR."
   (replace-regexp-in-string (rx (or (: bos (* (any " \t\n")))

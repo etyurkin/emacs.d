@@ -194,10 +194,5 @@ insert the character's `org-entity' name if available."
 
 (advice-add 'org-self-insert-command :around #'modi/org-insert-org-entity-maybe)
 
-(defun insert-divider ()
-  "Insert 80 characters long horizontal line."
-  (interactive)
-  (insert (make-string 80 ?\u2501)))
-
 (provide 'init-local)
 ;;; init-local ends here
