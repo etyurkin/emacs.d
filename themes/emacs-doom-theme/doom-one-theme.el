@@ -90,7 +90,7 @@
      ;; Global
      `(default                ((,c (:background ,bg-d :foreground ,fg))))
      `(fringe                 ((,c (:inherit doom-default))))
-     `(region                 ((,c (:background ,blue-d :bold ,bold))))
+     `(region                 ((,c (:background ,blue-d))))
      `(highlight              ((,c (:background ,blue :foreground ,black))))
      `(hl-line                ((,c (:background ,(if doom-enable-bright-buffers bg current-line)))))
      `(cursor                 ((,c (:background ,white))))

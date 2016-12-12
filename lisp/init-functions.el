@@ -149,9 +149,14 @@ point reaches the beginning or end of the buffer, stop there."
   "The default period to wait before erasing the password from the clipboard.
 Must be compatible with `run-at-time'.")
 
+(defvar hash-pass-system-clipboard-only nil
+  "If T hash-pass will not put generated password to Emacs kill ring.")
+
 (defun string->clipboard (string)
   "Copy STRING to system clipboard."
-  (funcall interprogram-cut-function string))
+  (if hash-pass-system-clipboard-only
+      (funcall interprogram-cut-function string)
+    (kill-new string)))
 
 (defun hash-pass ()
   "Generate strong password based on parameter and master password."

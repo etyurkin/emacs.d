@@ -45,3 +45,6 @@ site-lisp/package/
 /projectile-bookmarks.eld
 /elpa-mirror
 /diary
+/el-get/
+/quelpa/
+/wiki/

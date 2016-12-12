@@ -8,6 +8,16 @@
 ;; init password manager
 (use-package org-plus-contrib :ensure t)
 
+(use-package org-wiki
+  :quelpa (org-wiki
+           :repo "caiorss/org-wiki"
+           :fetcher github)
+  :ensure t)
+
+(setq org-wiki-location (expand-file-name "wiki" user-emacs-directory))
+(unless (file-directory-p org-wiki-location)
+  (make-directory org-wiki-location t))
+
 ;; fix for byte-code: Invalid function: org-babel-header-args-safe-fn error:
 ;; (byte-recompile-file
 ;;  (expand-file-name "ob-R.el"
