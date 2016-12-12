@@ -5,7 +5,7 @@
 ;;; Code:
 
 (use-package elpa-mirror :ensure t)
-(setq elpamr-default-output-directory "~/.emacs.d/elpa-mirror")
+(setq elpamr-default-output-directory (expand-file-name "elpa-mirror" user-emacs-directory))
 
 (use-package suggest :ensure t)
 
@@ -29,10 +29,10 @@
 ;; disable minimize emacs by ctrl-z
 (put 'suspend-frame 'disabled t)
 
-;; turn off the auto-backup feature
+;; init backups
 (setq
  backup-by-copying t
- backup-directory-alist '(("." . "~/.emacs.d/backups"))
+ backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory)))
  delete-old-versions t
  kept-new-versions 16
  kept-old-versions 2
@@ -50,7 +50,7 @@
       (insert content)
       (goto-char (point-min))
       (keep-lines "^\*+[ ]")
-      
+
       ;; don't include the TOC itself
       (goto-char (point-min))
       (re-search-forward toc-org-toc-org-regexp nil t)
@@ -59,24 +59,24 @@
                          (point-min)
                        (point))
                      (progn (forward-line 1) (point)))
-      
+
       ;; strip states
       (goto-char (point-min))
       (while (re-search-forward toc-org-states-regexp nil t)
         (replace-match "" nil nil nil 1))
-      
+
       ;; strip tags
       ;; TODO :export: and :noexport: tags semantic should be probably
       ;; implemented
       (goto-char (point-min))
       (while (re-search-forward toc-org-tags-regexp nil t)
         (replace-match "" nil nil))
-      
+
       ;; flatten links
       (goto-char (point-min))
       (while (re-search-forward toc-org-links-regexp nil t)
         (replace-match "\\2" nil nil))
-      
+
       (buffer-substring-no-properties
        (point-min) (point-max)))))
 
@@ -117,14 +117,10 @@
 ;;Calendar settings
 (setq calendar-week-start-day 1)
 
-;; Create empty diary file if not exists
-(when (not (file-exists-p "~/.emacs.d/diary"))
-  (with-temp-buffer (write-file "~/.emacs.d/diary")))
-
 ;; Automatically show diary events
 (run-at-time "11:00am" (* 24 3600) 'diary)
 
-(setq save-place-file "~/emacs.d/saveplace") ;; keep my ~/ clean
+(setq save-place-file (expand-file-name "saveplace" user-emacs-directory)) ;; keep my ~/ clean
 (setq-default save-place t)                  ;; activate it for all buffers
 (use-package saveplace :ensure t)            ;; get the package
 
@@ -198,6 +194,10 @@ insert the character's `org-entity' name if available."
 
 (advice-add 'org-self-insert-command :around #'modi/org-insert-org-entity-maybe)
 
+(defun insert-divider ()
+  "Insert 80 characters long horizontal line."
+  (interactive)
+  (insert (make-string 80 ?\u2501)))
 
 (provide 'init-local)
 ;;; init-local ends here
