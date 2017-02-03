@@ -25,10 +25,7 @@
 (require 'spaceline-config)
 (spaceline-emacs-theme)
 
-;; Highlight part of lines exceeding 115 characters length
-(setq-default
- whitespace-line-column 115
- whitespace-style       '(face lines-tail))
+(setq-default whitespace-style '(face))
 
 (require 'org)
 (add-to-list 'org-emphasis-alist
