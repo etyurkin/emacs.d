@@ -13,6 +13,12 @@
 
 (use-package paradox :ensure t)
 
+(use-package multi-eshell :ensure t)
+(defalias 'eshell 'multi-eshell)
+
+(use-package multi-term :ensure t)
+(setq multi-term-program "ESHELL")
+
 ;; https://github.com/areina/helm-dash
 (use-package helm-dash :ensure t)
 (setq helm-dash-browser-func 'eww)
@@ -20,11 +26,6 @@
 ;; http documentation
 ;; provider http-status-code, http-header, http-method, http-relation, media-type
 (use-package know-your-http-well :ensure t)
-
-;; org mode toc, see https://github.com/snosov1/toc-org
-(use-package toc-org :ensure t)
-(add-hook 'org-mode-hook 'toc-org-enable)
-(setq toc-org-skip-pre-toc-headings t)
 
 ;; disable minimize emacs by ctrl-z
 (put 'suspend-frame 'disabled t)
@@ -37,6 +38,13 @@
  kept-new-versions 16
  kept-old-versions 2
  version-control t)
+
+;;
+;; org mode toc, see https://github.com/snosov1/toc-org
+;;
+(use-package toc-org :ensure t)
+(add-hook 'org-mode-hook 'toc-org-enable)
+(setq toc-org-skip-pre-toc-headings t)
 
 (defcustom toc-org-skip-pre-toc-headings nil
   "Leave headings out of the TOC that occur before the TOC itself."
@@ -114,8 +122,13 @@
 (use-package csharp-mode :ensure t)
 (use-package helm :ensure t)
 
-;;Calendar settings
+;; Calendar settings
 (setq calendar-week-start-day 1)
+
+;; Show entries for 3 days
+(setq diary-number-of-entries 3)
+
+(setq org-agenda-include-diary t)
 
 ;; Automatically show diary events
 (run-at-time "11:00am" (* 24 3600) 'diary)
