@@ -44,9 +44,6 @@
 ;; Highlight current line
 (global-hl-line-mode 1)
 
-;; white mouse cursor
-(set-mouse-color "white")
-
 (when (not (display-graphic-p))
   (set-background-color "black")
   (set-face-background 'hl-line "black")
@@ -63,6 +60,8 @@
 
 ;;(add-hook 'after-init-hook 'reapply-themes)
 
+;; white mouse cursor
+(set-mouse-color "white")
 
 ;; ;;------------------------------------------------------------------------------
 ;; ;; Toggle between light and dark
