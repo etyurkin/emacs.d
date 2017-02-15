@@ -4,6 +4,11 @@
 
 ;;; Code:
 
+;; fix emacs GPG error: "no usable configuration"
+(require 'epa-file)
+(custom-set-variables '(epg-gpg-program  "/usr/local/bin/gpg"))
+(epa-file-enable)
+
 (use-package elpa-mirror :ensure t)
 (setq elpamr-default-output-directory (expand-file-name "elpa-mirror" user-emacs-directory))
 

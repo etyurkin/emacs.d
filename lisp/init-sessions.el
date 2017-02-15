@@ -4,12 +4,12 @@
 (desktop-save-mode 1)
 
 (defadvice desktop-read (around time-restore activate)
-    (let ((start-time (current-time)))
-      (prog1
-          ad-do-it
-        (message "Desktop restored in %.2fms"
-                 (sanityinc/time-subtract-millis (current-time)
-                                                 start-time)))))
+  (let ((start-time (current-time)))
+    (prog1
+        ad-do-it
+      (message "Desktop restored in %.2fms"
+               (sanityinc/time-subtract-millis (current-time)
+                                               start-time)))))
 
 (defadvice desktop-create-buffer (around time-create activate)
   (let ((start-time (current-time))
@@ -21,6 +21,31 @@
                                                start-time)
                (when filename
 		 (abbreviate-file-name filename))))))
+
+(let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
+  (setq desktop-files-not-to-save
+        (eval
+         `(rx (or (regexp ,default)
+                  (and (or ".plstore"
+                           ".desktop"
+                           ;; Don't save .gpg files. Restoring those files
+                           ;; in emacsclient causes a problem as the
+                           ;; password prompt appears before the frame is
+                           ;; loaded.
+                           ".gpg"
+                           ;; FIXME
+                           ;; If backup files with names like
+                           ;; "file.sv.1.bkp" are saved to the desktop file,
+                           ;; emacsclient crashes at launch Need to debug
+                           ;; why that's the case. But for now, simply not
+                           ;; saving the .bkp files to the desktop file
+                           ;; works -- Fri Jun 19 16:45:50 EDT 2015
+                           ".bkp"
+                           ;; I do not typically plan to re-open the .el.gz
+                           ;; files opened in my previous sessions.
+                           ".el.gz"
+                           "TAGS")
+                       line-end))))))
 
 ;;----------------------------------------------------------------------------
 ;; Restore histories and registers after saving
