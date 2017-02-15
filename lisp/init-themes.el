@@ -31,6 +31,10 @@
 (add-to-list 'org-emphasis-alist
              '("*" (:foreground "red")))
 
+(set-face-background 'org-level-1 nil)
+
+(custom-set-faces
+ '(org-level-1 ((t (:box nil :height 130)))))
 
 ;; Toggle display of entities as UTF-8 characters.
 (setq org-pretty-entities t)
@@ -43,6 +47,7 @@
 
 ;; Highlight current line
 (global-hl-line-mode 1)
+(set-face-background 'hl-line "#333333")
 
 (when (not (display-graphic-p))
   (set-background-color "black")
