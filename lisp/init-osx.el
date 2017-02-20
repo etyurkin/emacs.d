@@ -50,7 +50,7 @@
     (interactive)
     (let ((buf "*osx-updates*"))
       (start-process "osx-updates" buf "softwareupdate" "-l")
-      (start-process "osx-updates" buf "mas" "outdated")
+      (start-process "osx-updates" buf "/usr/local/bin/mas" "outdated")
       (switch-to-buffer-other-window buf)))
 
   (defun osx-update (password)
@@ -58,7 +58,7 @@
     (interactive (list (read-passwd "Sudo password for updates install: ")))
     (let* ((buf "*osx-updates*")
            (sys-proc (start-process "osx-system-updates" buf "sudo" "softwareupdate" "-ia" "--verbose"))
-           (usr-proc (start-process "osx-software-updates" buf "mas" "upgrade")))
+           (usr-proc (start-process "osx-software-updates" buf "/usr/local/bin/mas" "upgrade")))
       (switch-to-buffer-other-window buf)
       (process-send-string sys-proc (concat password "\r"))
       (process-send-eof sys-proc)))
