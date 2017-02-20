@@ -18,6 +18,10 @@
 
 (use-package paradox :ensure t)
 
+;; zygospore lets you revert C-x 1 (delete-other-window) by pressing C-x 1 again
+(use-package zygospore :ensure t)
+(global-set-key (kbd "C-x 1") 'zygospore-toggle-delete-other-windows)
+
 (use-package multi-eshell :ensure t)
 (defalias 'eshell 'multi-eshell)
 
