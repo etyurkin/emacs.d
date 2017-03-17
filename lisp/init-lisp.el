@@ -1,10 +1,9 @@
-(use-package paredit :ensure t)
-(require-package 'elisp-slime-nav)
+(use-package elisp-slime-nav)
 (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
   (add-hook hook 'turn-on-elisp-slime-nav-mode))
 (add-hook 'emacs-lisp-mode-hook (lambda () (setq mode-name "ELisp")))
 
-(require-package 'lively)
+(use-package lively)
 
 (setq-default initial-scratch-message
               (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n"))
@@ -25,7 +24,7 @@
 (after-load 'lisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-x C-e") 'sanityinc/eval-last-sexp-or-region))
 
-(require-package 'ipretty)
+(use-package ipretty)
 (ipretty-mode 1)
 
 
@@ -91,7 +90,8 @@
 ;; ----------------------------------------------------------------------------
 ;; Automatic byte compilation
 ;; ----------------------------------------------------------------------------
-(when (maybe-require-package 'auto-compile)
+(use-package auto-compile
+  :init
   (auto-compile-on-save-mode 1)
   (auto-compile-on-load-mode 1))
 
@@ -104,7 +104,7 @@
 ;; Highlight current sexp
 ;; ----------------------------------------------------------------------------
 
-(require-package 'hl-sexp)
+(use-package hl-sexp)
 
 ;; Prevent flickery behaviour due to hl-sexp-mode unhighlighting before each command
 (after-load 'hl-sexp
@@ -113,7 +113,7 @@
       (remove-hook 'pre-command-hook #'hl-sexp-unhighlight))))
 
 
-(require-package 'immortal-scratch)
+(use-package immortal-scratch)
 (add-hook 'after-init-hook 'immortal-scratch-mode)
 
 
@@ -136,8 +136,8 @@
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes
 ;; ----------------------------------------------------------------------------
-(require-package 'rainbow-delimiters)
-(require-package 'redshank)
+(use-package rainbow-delimiters)
+(use-package redshank)
 (after-load 'redshank
   (diminish 'redshank-mode))
 
@@ -159,7 +159,8 @@
   "Hook run in all Lisp modes.")
 
 
-(when (maybe-require-package 'aggressive-indent)
+(use-package aggressive-indent
+  :init
   (add-to-list 'sanityinc/lispy-modes-hook 'aggressive-indent-mode))
 
 (defun sanityinc/lisp-setup ()
@@ -196,7 +197,7 @@
 (add-to-list 'auto-mode-alist '("\\.emacs-project\\'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
 
-(require-package 'cl-lib-highlight)
+(use-package cl-lib-highlight)
 (after-load 'lisp-mode
   (cl-lib-highlight-initialize))
 
@@ -236,7 +237,7 @@
 
 
 
-(require-package 'macrostep)
+(use-package macrostep)
 
 (after-load 'lisp-mode
   (define-key emacs-lisp-mode-map (kbd "C-c e") 'macrostep-expand))
@@ -260,23 +261,26 @@
 
 (add-hook 'emacs-lisp-mode-hook 'sanityinc/run-theme-mode-hooks-if-theme)
 
-(when (maybe-require-package 'rainbow-mode)
+(use-package rainbow-mode
+  :init
   (add-hook 'sanityinc/theme-mode-hook 'rainbow-mode))
 
-(when (maybe-require-package 'aggressive-indent)
+(use-package aggressive-indent
+  :init
   ;; Can be prohibitively slow with very long forms
   (add-to-list 'sanityinc/theme-mode-hook (lambda () (aggressive-indent-mode -1)) t))
 
 
 
-(when (maybe-require-package 'highlight-quoted)
+(use-package highlight-quoted
+  :init
   (add-hook 'emacs-lisp-mode-hook 'highlight-quoted-mode))
 
 
-(when (maybe-require-package 'flycheck)
-  (require-package 'flycheck-package)
-  (after-load 'flycheck
-    (flycheck-package-setup)))
+(use-package flycheck)
+(use-package flycheck-package)
+(after-load 'flycheck
+  (flycheck-package-setup))
 
 
 
@@ -311,6 +315,6 @@
       (aggressive-indent-indent-defun))))
 
 
-(maybe-require-package 'cask-mode)
+(use-package cask-mode)
 
 (provide 'init-lisp)

@@ -1,32 +1,34 @@
 ;; TODO: link commits from vc-log to magit-show-commit
 ;; TODO: smerge-mode
-(require-package 'gitignore-mode)
-(require-package 'gitconfig-mode)
-(require-package 'git-messenger) ;; Though see also vc-annotate's "n" & "p" bindings
-(maybe-require-package 'git-timemachine)
+(use-package gitignore-mode)
+(use-package gitconfig-mode)
+(use-package git-messenger) ;; Though see also vc-annotate's "n" & "p" bindings
+(use-package git-timemachine)
 
 
-(when (maybe-require-package 'magit)
+(use-package magit
+  :init
   (setq-default
    magit-process-popup-time 10
    magit-diff-refine-hunk t
-   magit-completing-read-function 'magit-ido-completing-read)
+   magit-completing-read-function 'magit-ido-completing-read))
 
-  ;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
-  ;; quickly open magit on any one of your projects.
-  (global-set-key [(meta f12)] 'magit-status)
-  (global-set-key (kbd "C-x g") 'magit-status)
-  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup))
+;; Hint: customize `magit-repo-dirs' so that you can use C-u M-F12 to
+;; quickly open magit on any one of your projects.
+(global-set-key [(meta f12)] 'magit-status)
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 
 (after-load 'magit
   (define-key magit-status-mode-map (kbd "C-M-<up>") 'magit-section-up)
   (add-hook 'magit-popup-mode-hook 'sanityinc/no-trailing-whitespace))
 
-(require-package 'fullframe)
+(use-package fullframe)
 (after-load 'magit
   (fullframe magit-status magit-mode-quit-window))
 
-(when (maybe-require-package 'git-commit)
+(use-package git-commit
+  :init
   (add-hook 'git-commit-mode-hook 'goto-address-mode))
 
 
@@ -74,7 +76,7 @@
     (compile (concat "git svn " command))))
 
 
-(require-package 'git-messenger)
+(use-package git-messenger)
 (global-set-key (kbd "C-x v p") #'git-messenger:popup-message)
 
 

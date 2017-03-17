@@ -1,4 +1,4 @@
-(require-package 'unfill)
+(use-package unfill)
 
 (when (fboundp 'electric-pair-mode)
   (electric-pair-mode))
@@ -26,6 +26,8 @@
  truncate-lines nil
  truncate-partial-width-windows nil)
 
+(setq visible-bell t)
+
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
@@ -33,7 +35,6 @@
 (transient-mark-mode t)
 
 
-
 ;;; Newline behaviour
 
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -45,40 +46,37 @@
 
 (global-set-key (kbd "S-<return>") 'sanityinc/newline-at-end-of-line)
 
-
 
 (when (eval-when-compile (string< "24.3.1" emacs-version))
   ;; https://github.com/purcell/emacs.d/issues/138
   (after-load 'subword
     (diminish 'subword-mode)))
 
-
 
-(when (maybe-require-package 'indent-guide)
-  (add-hook 'prog-mode-hook 'indent-guide-mode)
-  (after-load 'indent-guide
-    (diminish 'indent-guide-mode)))
+;; (when (maybe-require-package 'indent-guide)
+;;   (add-hook 'prog-mode-hook 'indent-guide-mode)
+;;   (after-load 'indent-guide
+;;     (diminish 'indent-guide-mode)))
 
-
 
-(require-package 'nlinum)
+(use-package nlinum)
 
-
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))
 
-
-(require-package 'undo-tree)
+(use-package undo-tree)
 (global-undo-tree-mode)
 (diminish 'undo-tree-mode)
 
-
-(require-package 'highlight-symbol)
+(use-package highlight-symbol)
+
 (dolist (hook '(prog-mode-hook html-mode-hook css-mode-hook))
   (add-hook hook 'highlight-symbol-mode)
   (add-hook hook 'highlight-symbol-nav-mode))
+
 (add-hook 'org-mode-hook 'highlight-symbol-nav-mode)
+
 (after-load 'highlight-symbol
   (diminish 'highlight-symbol-mode)
   (defadvice highlight-symbol-temp-highlight (around sanityinc/maybe-suppress activate)
@@ -94,14 +92,15 @@
 (global-set-key (kbd "M-Z") 'zap-up-to-char)
 
 
-
-(require-package 'browse-kill-ring)
+(use-package browse-kill-ring)
 (setq browse-kill-ring-separator "\f")
 (global-set-key (kbd "M-Y") 'browse-kill-ring)
+
 (after-load 'browse-kill-ring
   (define-key browse-kill-ring-mode-map (kbd "C-g") 'browse-kill-ring-quit)
   (define-key browse-kill-ring-mode-map (kbd "M-n") 'browse-kill-ring-forward)
   (define-key browse-kill-ring-mode-map (kbd "M-p") 'browse-kill-ring-previous))
+
 (after-load 'page-break-lines
   (push 'browse-kill-ring-mode page-break-lines-modes))
 
@@ -121,7 +120,7 @@
 ;;----------------------------------------------------------------------------
 ;; Expand region
 ;;----------------------------------------------------------------------------
-(require-package 'expand-region)
+(use-package expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 
@@ -144,10 +143,10 @@
 (global-set-key (kbd "C-.") 'set-mark-command)
 (global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
-(when (maybe-require-package 'avy)
-  (global-set-key (kbd "C-;") 'avy-goto-word-or-subword-1))
+;; (when (maybe-require-package 'avy)
+;;   (global-set-key (kbd "C-;") 'avy-goto-word-or-subword-1))
 
-(require-package 'multiple-cursors)
+(use-package multiple-cursors)
 ;; multiple-cursors
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -179,7 +178,7 @@
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
-(require-package 'page-break-lines)
+(use-package page-break-lines)
 (global-page-break-lines-mode)
 (diminish 'page-break-lines-mode)
 
@@ -188,7 +187,7 @@
 ;; it will use those keybindings. For this reason, you might prefer to
 ;; use M-S-up and M-S-down, which will work even in lisp modes.
 ;;----------------------------------------------------------------------------
-(require-package 'move-dup)
+(use-package move-dup)
 (global-set-key [M-up] 'md/move-lines-up)
 (global-set-key [M-down] 'md/move-lines-down)
 (global-set-key [M-S-up] 'md/move-lines-up)
@@ -215,7 +214,7 @@
 ;;----------------------------------------------------------------------------
 ;; Cut/copy the current line if no region is active
 ;;----------------------------------------------------------------------------
-(require-package 'whole-line-or-region)
+(use-package whole-line-or-region)
 (whole-line-or-region-mode t)
 (diminish 'whole-line-or-region-mode)
 (make-variable-buffer-local 'whole-line-or-region-mode)
@@ -239,7 +238,6 @@
 (suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
 
 
-
 
 (defun sanityinc/open-line-with-reindent (n)
   "A version of `open-line' which reindents the start and end positions.
@@ -287,13 +285,11 @@ With arg N, insert N newlines."
                    (lambda (s1 s2) (eq (random 2) 0)))))))
 
 
-
 
-(require-package 'highlight-escape-sequences)
+(use-package highlight-escape-sequences)
 (hes-mode)
 
-
-(require-package 'guide-key)
+(use-package guide-key)
 (setq guide-key/guide-key-sequence '("C-x" "C-c" "C-x 4" "C-x 5" "C-c ;" "C-c ; f" "C-c ' f" "C-x n" "C-x C-r" "C-x r" "M-s" "C-h"))
 (add-hook 'after-init-hook
           (lambda ()

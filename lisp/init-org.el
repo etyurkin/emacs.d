@@ -1,18 +1,16 @@
 (when (< emacs-major-version 24)
-  (require-package 'org))
-(require-package 'org-fstree)
-(when *is-a-mac*
-  (maybe-require-package 'grab-mac-link)
-  (require-package 'org-mac-iCal))
-
-;; init password manager
-(use-package org-plus-contrib :ensure t)
+  (use-package org))
+;; (require-package 'org-fstree)
+;; (when *is-a-mac*
+;;   (maybe-require-package 'grab-mac-link)
+;;   (require-package 'org-mac-iCal))
+(use-package org-plus-contrib)
+(use-package org-password-manager)
 
 (use-package org-wiki
   :quelpa (org-wiki
            :repo "caiorss/org-wiki"
-           :fetcher github)
-  :ensure t)
+           :fetcher github))
 
 (setq org-wiki-location (expand-file-name "wiki" user-emacs-directory))
 (unless (file-directory-p org-wiki-location)
@@ -41,6 +39,16 @@
 (define-key global-map (kbd "C-c a") 'org-agenda)
 
 ;; Various preferences
+(setq calendar-week-start-day 1)
+
+;; Show entries for 3 days
+(setq diary-number-of-entries 3)
+
+(setq org-agenda-include-diary t)
+
+;; Automatically show diary events
+(run-at-time "11:00am" (* 24 3600) 'diary)
+
 (setq org-log-done t
       org-completion-use-ido t
       org-edit-timestamp-down-means-later t
@@ -50,36 +58,87 @@
       org-fast-tag-selection-single-key 'expert
       org-html-validation-link nil
       org-export-kill-product-buffer-when-displayed t
-      org-tags-column 80)
+      org-tags-column 80
+      org-use-sub-superscripts '{})
 
 ;; Highlight source code
 (setq org-src-fontify-natively t)
 
+;;
+;; org mode toc, see https://github.com/snosov1/toc-org
+;;
+(use-package toc-org :ensure t)
+
+(add-hook 'org-mode-hook 'toc-org-enable)
+(setq toc-org-skip-pre-toc-headings t)
+
+(defcustom toc-org-skip-pre-toc-headings nil
+  "Leave headings out of the TOC that occur before the TOC itself."
+  :group 'toc-org :type 'boolean)
+
+(defun toc-org-raw-toc ()
+  "Return the \"raw\" table of contents of the current file,  i.e. simply flush everything that's not a heading and strip tags."
+  (let ((content (buffer-substring-no-properties
+                  (point-min) (point-max))))
+    (with-temp-buffer
+      (insert content)
+      (goto-char (point-min))
+      (keep-lines "^\*+[ ]")
+
+      ;; don't include the TOC itself
+      (goto-char (point-min))
+      (re-search-forward toc-org-toc-org-regexp nil t)
+      (beginning-of-line)
+      (delete-region (if toc-org-skip-pre-toc-headings
+                         (point-min)
+                       (point))
+                     (progn (forward-line 1) (point)))
+
+      ;; strip states
+      (goto-char (point-min))
+      (while (re-search-forward toc-org-states-regexp nil t)
+        (replace-match "" nil nil nil 1))
+
+      ;; strip tags
+      ;; TODO :export: and :noexport: tags semantic should be probably
+      ;; implemented
+      (goto-char (point-min))
+      (while (re-search-forward toc-org-tags-regexp nil t)
+        (replace-match "" nil nil))
+
+      ;; flatten links
+      (goto-char (point-min))
+      (while (re-search-forward toc-org-links-regexp nil t)
+        (replace-match "\\2" nil nil))
+
+      (buffer-substring-no-properties
+       (point-min) (point-max)))))
+
 ;; Lots of stuff from http://doc.norang.ca/org-mode.html
 
-(defun sanityinc/grab-ditaa (url jar-name)
-  "Download URL and extract JAR-NAME as `org-ditaa-jar-path'."
-  ;; TODO: handle errors
-  (message "Grabbing " jar-name " for org.")
-  (let ((zip-temp (make-temp-name "emacs-ditaa")))
-    (unwind-protect
-        (progn
-          (when (executable-find "unzip")
-            (url-copy-file url zip-temp)
-            (shell-command (concat "unzip -p " (shell-quote-argument zip-temp)
-                                   " " (shell-quote-argument jar-name) " > "
-                                   (shell-quote-argument org-ditaa-jar-path)))))
-      (when (file-exists-p zip-temp)
-        (delete-file zip-temp)))))
+;; (defun sanityinc/grab-ditaa (url jar-name)
+;;   "Download URL and extract JAR-NAME as `org-ditaa-jar-path'."
+;;   ;; TODO: handle errors
+;;   (message "Grabbing " jar-name " for org.")
+;;   (let ((zip-temp (make-temp-name "emacs-ditaa")))
+;;     (unwind-protect
+;;         (progn
+;;           (when (executable-find "unzip")
+;;             (url-copy-file url zip-temp)
+;;             (shell-command (concat "unzip -p " (shell-quote-argument zip-temp)
+;;                                    " " (shell-quote-argument jar-name) " > "
+;;                                    (shell-quote-argument org-ditaa-jar-path)))))
+;;       (when (file-exists-p zip-temp)
+;;         (delete-file zip-temp)))))
 
-(after-load 'ob-ditaa
-  (unless (and (boundp 'org-ditaa-jar-path)
-               (file-exists-p org-ditaa-jar-path))
-    (let ((jar-name "ditaa0_9.jar")
-          (url "http://jaist.dl.sourceforge.net/project/ditaa/ditaa/0.9/ditaa0_9.zip"))
-      (setq org-ditaa-jar-path (expand-file-name jar-name (file-name-directory user-init-file)))
-      (unless (file-exists-p org-ditaa-jar-path)
-        (sanityinc/grab-ditaa url jar-name)))))
+;; (after-load 'ob-ditaa
+;;   (unless (and (boundp 'org-ditaa-jar-path)
+;;                (file-exists-p org-ditaa-jar-path))
+;;     (let ((jar-name "ditaa0_9.jar")
+;;           (url "http://jaist.dl.sourceforge.net/project/ditaa/ditaa/0.9/ditaa0_9.zip"))
+;;       (setq org-ditaa-jar-path (expand-file-name jar-name (file-name-directory user-init-file)))
+;;       (unless (file-exists-p org-ditaa-jar-path)
+;;         (sanityinc/grab-ditaa url jar-name)))))
 
 
 
@@ -165,13 +224,13 @@ typical word processor."
 ;;; To-do settings
 
 (setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
+      (quote ((sequence "TODO(t)" "ACTIVE(a)" "|" "DONE(d!/!)")
               (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
               (sequence "WAITING(w@/!)" "DELEGATED(e!)" "HOLD(h)" "|" "CANCELLED(c@/!)")))
-      org-todo-repeat-to-state "NEXT")
+      org-todo-repeat-to-state "ACTIVE")
 
 (setq org-todo-keyword-faces
-      (quote (("NEXT" :inherit warning)
+      (quote (("ACTIVE" :inherit warning)
               ("PROJECT" :inherit font-lock-string-face))))
 
 
@@ -184,7 +243,7 @@ typical word processor."
 (let ((active-project-match "-INBOX/PROJECT"))
 
   (setq org-stuck-projects
-        `(,active-project-match ("NEXT")))
+        `(,active-project-match ("ACTIVE")))
 
   (setq org-agenda-compact-blocks t
         org-agenda-sticky t
@@ -211,7 +270,7 @@ typical word processor."
                     (org-agenda-tags-todo-honor-ignore-options t)
                     (org-tags-match-list-sublevels t)
                     (org-agenda-todo-ignore-scheduled 'future)))
-            (tags-todo "-INBOX/NEXT"
+            (tags-todo "-INBOX/ACTIVE"
                        ((org-agenda-overriding-header "Next Actions")
                         (org-agenda-tags-todo-honor-ignore-options t)
                         (org-agenda-todo-ignore-scheduled 'future)
@@ -224,7 +283,7 @@ typical word processor."
                         (org-tags-match-list-sublevels t)
                         (org-agenda-sorting-strategy
                          '(category-keep))))
-            (tags-todo "-INBOX/-NEXT"
+            (tags-todo "-INBOX/-ACTIVE"
                        ((org-agenda-overriding-header "Orphaned Tasks")
                         (org-agenda-tags-todo-honor-ignore-options t)
                         (org-agenda-todo-ignore-scheduled 'future)
@@ -337,10 +396,10 @@ typical word processor."
 
 
 
-(require-package 'org-pomodoro)
-(setq org-pomodoro-keep-killed-pomodoro-time t)
-(after-load 'org-agenda
-  (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))
+;; (require-package 'org-pomodoro)
+;; (setq org-pomodoro-keep-killed-pomodoro-time t)
+;; (after-load 'org-agenda
+;;   (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro))
 
 
 ;; ;; Show iCal calendars in the org agenda
@@ -363,6 +422,42 @@ typical word processor."
 ;;                   (re-search-backward "^[0-9]+:[0-9]+-[0-9]+:[0-9]+ " nil t))
 ;;                 (insert (match-string 0))))))
 
+;; Insert the org entity (if available) when user does C-u SYMBOL; works for C-u *, C-u /, C-u =, etc.
+(defun modi/org-entity-get-name (char)
+  "Return the entity name for CHAR.  For example, return \"ast\" for *."
+  (let ((ll (append org-entities-user
+                    org-entities))
+        e name utf8)
+    (catch 'break
+      (while ll
+        (setq e (pop ll))
+        (when (not (stringp e))
+          (setq utf8 (nth 6 e))
+          (when (string= char utf8)
+            (setq name (car e))
+            (throw 'break name)))))))
+
+(defun modi/org-insert-org-entity-maybe (orig-fun &rest args)
+  "When the universal prefix C-u is used before entering any character,
+insert the character's `org-entity' name if available."
+  (let ((pressed-key (this-command-keys))
+        entity-name)
+    (when (and (listp args) (eq 4 (car args)))
+      (setq entity-name (modi/org-entity-get-name pressed-key))
+      (when entity-name
+        (setq entity-name (concat "\\" entity-name "{}"))
+        (insert entity-name)
+        (message (concat "Inserted `org-entity' "
+                         (propertize entity-name
+                                     'face 'font-lock-function-name-face)
+                         " for the symbol "
+                         (propertize pressed-key
+                                     'face 'font-lock-function-name-face)
+                         "."))))
+    (when (null entity-name)
+      (apply orig-fun args))))
+
+(advice-add 'org-self-insert-command :around #'modi/org-insert-org-entity-maybe)
 
 (after-load 'org
   (define-key org-mode-map (kbd "C-M-<up>") 'org-up-element)
@@ -373,17 +468,17 @@ typical word processor."
 (after-load 'org
   (org-babel-do-load-languages
    'org-babel-load-languages
-   `((ditaa . t)
+   `(;; (ditaa . t)
      (dot . t)
      (emacs-lisp . t)
      (gnuplot . t)
-     (haskell . nil)
+     ;; (haskell . nil)
      (latex . t)
      (ledger . t)
-     (ocaml . nil)
-     (octave . t)
+     ;; (ocaml . nil)
+     ;; (octave . t)
      (python . t)
-     (ruby . t)
+     ;; (ruby . t)
      (screen . nil)
      (,(if (locate-library "ob-sh") 'sh 'shell) . t)
      (sql . nil)

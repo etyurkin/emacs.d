@@ -15,7 +15,7 @@
 ;;
 ;;; Code:
 
-(require 'dash)
+;;(require 'dash)
 
 (defgroup doom nil
   "Options for doom"
@@ -64,12 +64,39 @@ temporary buffers."
   :group 'doom
   :type 'boolean)
 
-
 ;; Color helper functions
 ;; Shamelessly *borrowed* from solarized
 (defun doom-name-to-rgb (color &optional frame)
   (mapcar (lambda (x) (/ x (float (car (color-values "#ffffff")))))
           (color-values color frame)))
+
+(defmacro !cons (car cdr)
+  "Destructive: Set CDR to the cons of CAR and CDR."
+  `(setq ,cdr (cons ,car ,cdr)))
+
+(defmacro !cdr (list)
+  "Destructive: Set LIST to the cdr of LIST."
+  `(setq ,list (cdr ,list)))
+
+(defmacro --zip-with (form list1 list2)
+  "Anaphoric form of `-zip-with'.
+
+The elements in list1 is bound as `it`, the elements in list2 as `other`."
+  (declare (debug (form form form)))
+  (let ((r (make-symbol "result"))
+        (l1 (make-symbol "list1"))
+        (l2 (make-symbol "list2")))
+    `(let ((,r nil)
+           (,l1 ,list1)
+           (,l2 ,list2))
+       (while (and ,l1 ,l2)
+         (let ((it (car ,l1))
+               (other (car ,l2)))
+           (!cons ,form ,r)
+           (!cdr ,l1)
+           (!cdr ,l2)))
+       (nreverse ,r))))
+
 
 (defun doom-blend (color1 color2 alpha)
   (apply (lambda (r g b) (format "#%02x%02x%02x" (* r 255) (* g 255) (* b 255)))

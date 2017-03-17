@@ -1,6 +1,6 @@
 ;; Fill column indicator
 (when (eval-when-compile (> emacs-major-version 23))
-  (require-package 'fill-column-indicator)
+  (use-package fill-column-indicator)
   (defun sanityinc/prog-mode-fci-settings ()
     (turn-on-fci-mode)
     (when show-trailing-whitespace

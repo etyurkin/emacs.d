@@ -3,7 +3,10 @@
 ;;; Code:
 
 (when *is-a-mac*
-  (use-package osx-lib :ensure t)
+  (use-package osx-lib)
+
+  (use-package osx-dictionary :ensure t)
+  (global-set-key (kbd "C-c d") 'osx-dictionary-search-word-at-point)
 
   ;; Reset Option key from CMD back to Option
   ;;(setq mac-command-modifier 'meta)

@@ -6,16 +6,21 @@
 (setq ido-auto-merge-work-directories-length 0)
 (setq ido-use-virtual-buffers t)
 
-(when (maybe-require-package 'ido-ubiquitous)
+(use-package ido-ubiquitous
+  :config
   (ido-ubiquitous-mode t))
+  
 
 ;; Use smex to handle M-x
-(when (maybe-require-package 'smex)
+(use-package smex
+  :init
   ;; Change path for ~/.smex-items
   (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
+  :config
   (global-set-key [remap execute-extended-command] 'smex))
+  
 
-(require-package 'idomenu)
+(use-package idomenu)
 
 ;; Allow the same buffer to be open in different frames
 (setq ido-default-buffer-method 'selected-window)

@@ -1,8 +1,6 @@
-;; (require-package 'color-theme-sanityinc-solarized)
-;; (require-package 'color-theme-sanityinc-tomorrow)
-
-;; ;; If you don't customize it, this is the theme you get.
-;; (setq-default custom-enabled-themes '(sanityinc-solarized-light))
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+(tool-bar-mode -1)
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-doom-theme/")
 (load "~/.emacs.d/themes/emacs-doom-theme/doom.el")
@@ -67,19 +65,5 @@
 
 ;; white mouse cursor
 (set-mouse-color "white")
-
-;; ;;------------------------------------------------------------------------------
-;; ;; Toggle between light and dark
-;; ;;------------------------------------------------------------------------------
-;; (defun light ()
-;;   "Activate a light color theme."
-;;   (interactive)
-;;   (color-theme-sanityinc-solarized-light))
-
-;; (defun dark ()
-;;   "Activate a dark color theme."
-;;   (interactive)
-;;   (color-theme-sanityinc-solarized-dark))
-
 
 (provide 'init-themes)
