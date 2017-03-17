@@ -31,4 +31,4 @@
 (add-to-list 'eshell-visual-commands "docker-compose")
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
-(provide 'init-xterm)
+(provide 'init-term)
