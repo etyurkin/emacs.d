@@ -27,12 +27,14 @@
 ;; Bootstrap config
 ;;----------------------------------------------------------------------------
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 (require 'init-functions)
-(require 'init-compat)
+;;(require 'init-compat)
 (require 'init-utils)
-(require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
-;; Calls (package-initialize)
+;;(require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
+
 (require 'init-elpa)      ;; Machinery for installing required packages
+(require 'init-themes)
 (require 'init-exec-path) ;; Set up $PATH
 (require 'init-osx)
 
@@ -45,16 +47,16 @@
 ;; Load configs for specific features and modes
 ;;----------------------------------------------------------------------------
 
-(require-package 'wgrep)
-(require-package 'project-local-variables)
-(require-package 'scratch)
-(require-package 'mwe-log-commands)
+;;(require-package 'wgrep)
+;;(require-package 'project-local-variables)
+;;(require-package 'scratch)
+;;(require-package 'mwe-log-commands)
 
 (require 'init-frame-hooks)
-(require 'init-xterm)
+(require 'init-term)
 (require 'init-gui-frames)
 (require 'init-dired)
-(require 'init-isearch)
+;;(require 'init-isearch)
 (require 'init-grep)
 (require 'init-uniquify)
 (require 'init-ibuffer)
@@ -67,73 +69,73 @@
 (require 'init-windows)
 (require 'init-sessions)
 (require 'init-fonts)
-(require 'init-mmm)
+;;(require 'init-mmm)
 
 (require 'init-editing-utils)
 (require 'init-whitespace)
 (require 'init-fci)
 
-(require 'init-vc)
-(require 'init-darcs)
+;;(require 'init-vc)
+;;(require 'init-darcs)
 (require 'init-git)
-(require 'init-github)
+;;(require 'init-github)
 
 (require 'init-projectile)
 
-(require 'init-compile)
-(require 'init-crontab)
-(require 'init-textile)
-(require 'init-markdown)
-(require 'init-csv)
-(require 'init-erlang)
-(require 'init-javascript)
-(require 'init-php)
+;;(require 'init-compile)
+;;(require 'init-crontab)
+;;(require 'init-textile)
+;;(require 'init-markdown)
+;;(require 'init-csv)
+;;(require 'init-erlang)
+;;(require 'init-javascript)
+;;(require 'init-php)
 (require 'init-org)
-(require 'init-nxml)
-(require 'init-html)
-(require 'init-css)
-(require 'init-haml)
-(require 'init-python-mode)
-(unless (version<= emacs-version "24.3")
-  (require 'init-haskell))
-(require 'init-elm)
-(require 'init-ruby-mode)
-(require 'init-rails)
-(require 'init-sql)
+;;(require 'init-nxml)
+;;(require 'init-html)
+;;(require 'init-css)
+;;(require 'init-haml)
+;;(require 'init-python-mode)
+;;(unless (version<= emacs-version "24.3")
+;;  (require 'init-haskell))
+;;(require 'init-elm)
+;;(require 'init-ruby-mode)
+;;(require 'init-rails)
+;;(require 'init-sql)
 
-;; (require 'init-paredit)
+(require 'init-paredit)
 (require 'init-lisp)
 (require 'init-slime)
-(unless (version<= emacs-version "24.2")
-  (require 'init-clojure)
-  (require 'init-clojure-cider))
+;;(unless (version<= emacs-version "24.2")
+;;  (require 'init-clojure)
+;;  (require 'init-clojure-cider))
 (require 'init-common-lisp)
 
-(when *spell-check-support-enabled*
-  (require 'init-spelling))
+;;(when *spell-check-support-enabled*
+;;  (require 'init-spelling))
 
-(require 'init-misc)
+;;(require 'init-misc)
 
 (require 'init-dash)
-(require 'init-ledger)
-(require 'init-themes)
+;;(require 'init-ledger)
+
 ;; Extra packages which don't require any configuration
 
-(require-package 'gnuplot)
-(require-package 'lua-mode)
-(require-package 'htmlize)
-(require-package 'dsvn)
+;;(require-package 'gnuplot)
+;;(require-package 'lua-mode)
+;;(require-package 'htmlize)
+;;(require-package 'dsvn)
 
-(when *is-a-mac*
-  (require-package 'osx-location))
-(require-package 'regex-tool)
+;;(when *is-a-mac*
+;;  (require-package 'osx-location))
+;;(require-package 'regex-tool)
 
 ;;----------------------------------------------------------------------------
 ;; Allow access from emacsclient
 ;;----------------------------------------------------------------------------
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+;;(require 'server)
+;;(unless (server-running-p)
+;;  (server-start))
 
 ;;----------------------------------------------------------------------------
 ;; Variables configured via the interactive 'customize' interface
@@ -146,7 +148,7 @@
 ;; Allow users to provide an optional "init-local" containing personal settings
 ;;----------------------------------------------------------------------------
 (when (file-exists-p (expand-file-name "init-local.el" user-emacs-directory))
-  (error "Please move init-local.el to ~/.emacs.d/lisp"))
+ (error "Please move init-local.el to ~/.emacs.d/lisp"))
 (require 'init-local nil t)
 
 
@@ -163,9 +165,9 @@
 ;;----------------------------------------------------------------------------
 ;; Start screen
 ;;----------------------------------------------------------------------------
-(require 'startscreen)
+;;(require 'startscreen)
 
-(jethro/insert-startupify-lists)
+;;(jethro/insert-startupify-lists)
 ;; (add-hook 'desktop-after-read-hook
 ;;           (lambda ()
 ;;             (switch-to-buffer "*startscreen*")))
