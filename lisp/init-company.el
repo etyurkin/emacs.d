@@ -6,22 +6,25 @@
 ;; Stop completion-at-point from popping up completion buffers so eagerly
 (setq completion-cycle-threshold 5)
 
+(use-package company
+  :init
+  (global-company-mode))
 
-(when (maybe-require-package 'company)
-  (add-hook 'after-init-hook 'global-company-mode)
-  (after-load 'company
-    (diminish 'company-mode "CMP")
-    (define-key company-mode-map (kbd "M-/") 'company-complete)
-    (define-key company-active-map (kbd "M-/") 'company-select-next)
-    (setq-default company-backends '((company-capf company-dabbrev-code) company-dabbrev)))
-  (global-set-key (kbd "M-C-/") 'company-complete)
-  (when (maybe-require-package 'company-quickhelp)
-    (add-hook 'after-init-hook 'company-quickhelp-mode))
+(after-load 'company
+  (diminish 'company-mode "CMP")
+  (define-key company-mode-map (kbd "M-/") 'company-complete)
+  (define-key company-active-map (kbd "M-/") 'company-select-next)
+  (setq-default company-backends '((company-capf company-dabbrev-code) company-dabbrev)))
+(global-set-key (kbd "M-C-/") 'company-complete)
 
-  (defun sanityinc/local-push-company-backend (backend)
-    "Add BACKEND to a buffer-local version of `company-backends'."
-    (set (make-local-variable 'company-backends)
-         (append (list backend) company-backends))))
+(use-package company-quickhelp
+  :init
+  (company-quickhelp-mode))
+
+(defun sanityinc/local-push-company-backend (backend)
+  "Add BACKEND to a buffer-local version of `company-backends'."
+  (set (make-local-variable 'company-backends)
+       (append (list backend) company-backends)))
 
 
 ;; Suspend page-break-lines-mode while company menu is active

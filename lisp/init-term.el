@@ -23,8 +23,12 @@
   (when (fboundp 'mwheel-install)
     (mwheel-install)))
 
-
-
 (add-hook 'after-make-console-frame-hooks 'sanityinc/console-frame-setup)
+
+(require 'em-term)
+(add-to-list 'eshell-visual-commands "ssh")
+(add-to-list 'eshell-visual-commands "docker")
+(add-to-list 'eshell-visual-commands "docker-compose")
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 (provide 'init-xterm)
