@@ -20,6 +20,10 @@
 (add-hook 'lisp-mode-hook (lambda ()
                             (setq-local helm-dash-docsets '("Common_Lisp"))))
 
+(helm-dash--use-docset "Emacs_Lisp")
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq-local helm-dash-docsets '("Emacs_Lisp"))))
+
 (provide 'init-dash)
 
 ;;; init-dash.el ends here
