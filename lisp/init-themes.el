@@ -1,27 +1,50 @@
+;;; init-themes --- Summary
+;;; Commentary:
+;;; Code:
+
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
-
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-doom-theme/")
-(load "~/.emacs.d/themes/emacs-doom-theme/doom.el")
-(load-theme 'doom-one t)
-
-;; transparency settings
-(set-frame-parameter (selected-frame) 'alpha '(90 90))
-(add-to-list 'default-frame-alist '(alpha 90 90))
-
-(setq-default custom-enabled-themes '(doom-one))
 
 ;; Display date/time in mode line
 (setq display-time-day-and-date t)
 (setq display-time-string-forms
       '((propertize (format-time-string "%a %b %d, %R" now) 'face 'bold)))
-
 (display-time-mode t)
 
-(use-package spaceline :ensure t)
+(use-package doom-themes)
+(setq doom-one-brighter-comments t)
+(load-theme 'doom-one t)
+
+(use-package spaceline)
 (require 'spaceline-config)
+
+(set-face-attribute 'mode-line nil :foreground "gray" :background nil :box nil)
+(set-face-attribute 'mode-line-inactive nil :foreground "SkyBlue4" :background nil :box nil)
+(set-face-attribute 'powerline-active1 nil :foreground "SkyBlue1" :background "SkyBlue4")
+(set-face-attribute 'powerline-active2 nil :foreground "white" :background nil)
+(set-face-attribute 'powerline-inactive1 nil :foreground "SkyBlue4" :background nil)
+(set-face-attribute 'powerline-inactive2 nil :foreground "SkyBlue4" :background nil)
+(set-face-attribute 'spaceline-highlight-face nil :foreground "SkyBlue1" :background "SkyBlue4")
+(setq powerline-default-separator 'curve)
+
 (spaceline-emacs-theme)
+(spaceline-toggle-minor-modes-off)
+
+;; Cursor color
+(set-cursor-color "#C2C8D3")
+
+;; (set-face-foreground 'vertical-border "SkyBlue4")
+
+;; transparency settings
+(set-frame-parameter (selected-frame) 'alpha '(90 90))
+(add-to-list 'default-frame-alist '(alpha 90 90))
+
+;; Put modeline to the top
+;; (setq-default header-line-format mode-line-format)
+;; (setq-default mode-line-format nil)
+
+;; (setq-default custom-enabled-themes '(doom-one))
 
 (setq-default whitespace-style '(face))
 
@@ -67,3 +90,4 @@
 (set-mouse-color "white")
 
 (provide 'init-themes)
+;;; init-themes.el ends here

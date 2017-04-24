@@ -1,10 +1,10 @@
-(when (< emacs-major-version 24)
-  (use-package org))
+(use-package org
+  :ensure org-plus-contrib)
+
 ;; (require-package 'org-fstree)
 ;; (when *is-a-mac*
 ;;   (maybe-require-package 'grab-mac-link)
 ;;   (require-package 'org-mac-iCal))
-(use-package org-plus-contrib)
 (use-package org-password-manager)
 
 (use-package org-wiki

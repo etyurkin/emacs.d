@@ -1,3 +1,5 @@
+(eval-when-compile (require 'cl))
+
 ;;----------------------------------------------------------------------------
 ;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 ;;----------------------------------------------------------------------------
@@ -16,7 +18,7 @@
 ;; When splitting window, show (other-buffer) in the new window
 ;;----------------------------------------------------------------------------
 (defun split-window-func-with-other-buffer (split-function)
-  (let ((s-f split-function))
+  (lexical-let ((s-f split-function))
     (lambda (&optional arg)
       "Split this window and switch to the new window unless ARG is provided."
       (interactive "P")
@@ -26,8 +28,8 @@
         (unless arg
           (select-window target-window))))))
 
-;;(global-set-key "\C-x2" (split-window-func-with-other-buffer 'split-window-vertically))
-;;(global-set-key "\C-x3" (split-window-func-with-other-buffer 'split-window-horizontally))
+(global-set-key "\C-x2" (split-window-func-with-other-buffer 'split-window-vertically))
+(global-set-key "\C-x3" (split-window-func-with-other-buffer 'split-window-horizontally))
 
 (defun sanityinc/toggle-delete-other-windows ()
   "Delete other windows in frame if any, or restore previous window config."
@@ -37,7 +39,7 @@
       (winner-undo)
     (delete-other-windows)))
 
-(global-set-key "\C-x1" 'sanityinc/toggle-delete-other-windows)
+;; (global-set-key "\C-x1" 'sanityinc/toggle-delete-other-windows)
 
 ;;----------------------------------------------------------------------------
 ;; Rearrange split windows
@@ -91,5 +93,31 @@ Call a second time to restore the original window configuration."
 (unless (memq window-system '(nt w32))
   (windmove-default-keybindings 'control))
 
+
+;; move between windows with the [Cmd+→],[Cmd+←], [Cmd+↓], [Cmd+↑] keys
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings 'super))
+
+
+;; Taken from zygospore, changed window restore behavior.
+(defun kwarks/toggle-delete-other-windows ()
+  "Toggle \\[delete-other-window] command.
+If the current frame has several windows, it will act as `delete-other-windows'.
+If the current frame has one window,
+it will restore the window configuration to prior to full-framing."
+  (interactive)
+  (let ((window-state-register-name "kwarks/last-window-state"))
+    (cond
+     ((equal (selected-window) (next-window))
+      (let ((cb (current-buffer)))
+        (jump-to-register window-state-register-name)
+        (switch-to-buffer cb)))
+     (t
+      (window-configuration-to-register window-state-register-name)
+      (delete-other-windows)))))
+
+(global-set-key (kbd "C-x 1") 'kwarks/toggle-delete-other-windows)
+
 
 (provide 'init-windows)
+;;; init-windows.el ends here

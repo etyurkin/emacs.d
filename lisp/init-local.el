@@ -16,14 +16,25 @@
 
 (use-package hound)
 
+(use-package scratch)
+
 (use-package paradox)
 
-;; zygospore lets you revert C-x 1 (delete-other-window) by pressing C-x 1 again
-(use-package zygospore)
-(global-set-key (kbd "C-x 1") 'zygospore-toggle-delete-other-windows)
+(use-package yaml-mode)
 
 (use-package multi-eshell)
 (defalias 'eshell 'multi-eshell)
+
+;; disable Ctrl-] key (abort-recursive-edit) as it conflicts with telnet in eshell
+(global-set-key (kbd "C-]") nil)
+
+(use-package dumb-jump
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g p" . dumb-jump-back)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'helm))
 
 ;; http documentation
 ;; provider http-status-code, http-header, http-method, http-relation, media-type
@@ -64,6 +75,8 @@
 (use-package pretty-lambdada)
 (pretty-lambda-for-modes)
 
+(global-set-key (kbd "C-x g") 'xref-find-definitions)
+
 ;; Structure and Interpretation of Computer Programs book
 (use-package sicp)
 
@@ -87,15 +100,10 @@
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'org-mode-hook #'whitespace-mode)
 
-;; move between windows with the [Cmd+→],[Cmd+←], [Cmd+↓], [Cmd+↑] keys
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings 'super))
-
 ;; Display function documentation in minibuffer
 (setq help-at-pt-display-when-idle t)
 (setq help-at-pt-timer-delay 0.1)
 (help-at-pt-set-timer)
-
 
 
 (provide 'init-local)
