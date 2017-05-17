@@ -6,6 +6,7 @@
 /custom.el
 *.elc
 .litable-lists.el
+network-security.data
 CVS
 .svn
 *~
@@ -48,3 +49,4 @@ site-lisp/package/
 /el-get/
 /quelpa/
 /wiki
+/config.el
