@@ -2807,7 +2807,12 @@ dynamic evaluation replacement with emacs
   (setq wttrin-default-cities '("Toronto"))
   (setq wttrin-default-accept-language '("Accept-Language" . "en-US"))
   :config
-  (defalias 'weather 'wttrin))
+  (defun weather ()
+    (interactive)
+    ;; use default city, enforce metric units (?u for imperial)
+    (wttrin-query (concat (car wttrin-default-cities) "?m"))
+    (rename-buffer (concat "*Weather - " (car wttrin-default-cities) "*"))
+    (toggle-truncate-lines 1)))
 #+END_SRC
 * Post init
 
