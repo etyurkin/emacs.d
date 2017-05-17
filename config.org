@@ -2811,11 +2811,12 @@ dynamic evaluation replacement with emacs
   (setq wttrin-default-accept-language '("Accept-Language" . "en-US"))
   :config
   (defun weather ()
+    "Show weather with default city and metric units"
     (interactive)
-    ;; use default city, enforce metric units (?u for imperial)
-    (wttrin-query (concat (car wttrin-default-cities) "?m"))
-    (rename-buffer (concat "*Weather - " (car wttrin-default-cities) "*"))
-    (toggle-truncate-lines 1)))
+    (let ((city (car wttrin-default-cities)))
+      (wttrin-query (format "%s?m" city))
+      (rename-buffer (format "*Weather - %s*" city))
+      (toggle-truncate-lines 1))))
 #+END_SRC
 * Post init
 
