@@ -688,6 +688,9 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
   (global-hl-line-mode 1)
   (set-face-background 'hl-line "#333333")
 
+  ;; selection color
+  (set-face-attribute 'region nil :background "#376da4")
+
   ;; enable nlinum line highlighting
   (doom-themes-nlinum-config))
 
