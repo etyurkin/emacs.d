@@ -2805,7 +2805,6 @@ dynamic evaluation replacement with emacs
 ** weather
 #+BEGIN_SRC emacs-lisp
 (use-package wttrin
-  :commands (wttrin)
   :init
   (setq wttrin-default-cities '("Toronto"))
   (setq wttrin-default-accept-language '("Accept-Language" . "en-US"))
@@ -2817,6 +2816,7 @@ dynamic evaluation replacement with emacs
       (wttrin-query (format "%s?m" city))
       (rename-buffer (format "*Weather - %s*" city))
       (toggle-truncate-lines 1))))
+
 #+END_SRC
 * Post init
 
