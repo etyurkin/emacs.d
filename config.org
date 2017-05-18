@@ -2812,11 +2812,13 @@ dynamic evaluation replacement with emacs
   (defun weather ()
     "Show weather with default city and metric units"
     (interactive)
-    (let ((city (car wttrin-default-cities)))
+    (let* ((city (car wttrin-default-cities))
+           (weather-buffer (format "*Weather - %s*" city)))
+      (if (buffer-live-p (get-buffer weather-buffer))
+          (kill-buffer weather-buffer))
       (wttrin-query (format "%s?m" city))
-      (rename-buffer (format "*Weather - %s*" city))
+      (rename-buffer weather-buffer)
       (toggle-truncate-lines 1))))
-
 #+END_SRC
 * Post init
 
