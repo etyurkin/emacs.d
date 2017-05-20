@@ -650,9 +650,11 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
 ;; see https://github.com/milkypostman/powerline/issues/54
 (setq ns-use-srgb-colorspace nil)
 
-(defun apply-theme ()
+(defun apply-custom-theme (&rest args)
   (interactive)
   (require 'spaceline-config)
+
+  (add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
   (remove-hook 'focus-out-hook 'powerline-unset-selected-window)
 
   ;; override modeline theme settings
@@ -700,8 +702,8 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
   (setq doom-one-brighter-comments t)
 
   :init
-  (load-theme 'doom-one t)
-  (apply-theme))
+  (advice-add #'load-theme :after #'apply-custom-theme)
+  (load-theme 'doom-one t))
 #+END_SRC
 
 ** Display date/time in mode line
