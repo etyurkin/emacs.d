@@ -397,8 +397,11 @@ be prompted."
 ** Number to string convertion
 
 Port of common lisp (format nil "~r" 1234) and (format nil "~:r" 1234) functions:
+
+#+BEGIN_EXAMPLE
 (number-to-english-cardinal 1234) ==> "one thousand two hundred thirty-four"
 (number-to-english-ordinal 1234) ==> "one thousand two hundred thirty-fourth"
+#+END_EXAMPLE
 
 see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/src/code/target-format.lisp
 
@@ -540,7 +543,7 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
 In OSX 10.12+ pmset output has changed
 see https://lists.gnu.org/archive/html/bug-gnu-emacs/2016-09/msg00849.html
 
-TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version is 10.12.*
+TODO: check osx version with 'sw_vers -productVersion' and apply fix if version is 10.12.*
 
 #+BEGIN_SRC emacs-lisp
   (after-load 'battery
@@ -658,13 +661,17 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
   (remove-hook 'focus-out-hook 'powerline-unset-selected-window)
 
   ;; override modeline theme settings
-  (set-face-attribute 'mode-line nil :foreground "gray" :background nil :box nil)
-  (set-face-attribute 'mode-line-inactive nil :foreground "SkyBlue4" :background nil :box nil)
-  (set-face-attribute 'powerline-active1 nil :foreground "SkyBlue1" :background "SkyBlue4")
-  (set-face-attribute 'powerline-active2 nil :foreground "white" :background nil)
-  (set-face-attribute 'powerline-inactive1 nil :foreground "SkyBlue4" :background nil)
-  (set-face-attribute 'powerline-inactive2 nil :foreground "SkyBlue4" :background nil)
-  (set-face-attribute 'spaceline-highlight-face nil :foreground "SkyBlue1" :background "SkyBlue4")
+  (custom-set-faces
+   `(region                   ((t (:foreground nil        :background "#376da4")))) ; selection color
+   `(hl-line                  ((t (:foreground nil        :background "#333333"))))
+   `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
+   `(mode-line                ((t (:foreground "gray"     :background nil :box nil))))
+   `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil))))
+   `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
+   `(powerline-active2        ((t (:foreground "white"    :background nil))))
+   `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
+   `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil))))
+   `(spaceline-highlight-face ((t (:foreground "SkyBlue1" :background "SkyBlue4")))))
 
   (setq powerline-default-separator 'curve)
   (spaceline-emacs-theme)
@@ -672,8 +679,8 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
   (spaceline-toggle-hud-off)
 
   ;; override cursor settings
-  (set-cursor-color "#C2C8D3")
-  (set-mouse-color "white")
+  (add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
+  (add-to-list 'default-frame-alist '(mouse-color . "white"))
 
   ;; override some font settings
   (set-face-italic 'font-lock-comment-face t)
@@ -688,10 +695,6 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
 
   ;; highlight current line
   (global-hl-line-mode 1)
-  (set-face-background 'hl-line "#333333")
-
-  ;; selection color
-  (set-face-attribute 'region nil :background "#376da4")
 
   ;; enable nlinum line highlighting
   (doom-themes-nlinum-config))
@@ -752,6 +755,16 @@ TODO: heck osx version with 'sw_vers -productVersion' and apply fix if version i
   (set-face-background 'hl-line "black")
   (set-face-background 'mode-line "black")
   (set-face-background 'mode-line-highlight "black"))
+#+END_SRC
+
+** Page break display
+#+BEGIN_SRC emacs-lisp
+(use-package page-break-lines
+  :init
+  (push 'browse-kill-ring-mode page-break-lines-modes)
+  (push 'special-mode page-break-lines-modes)
+  (global-page-break-lines-mode)
+  (diminish 'page-break-lines-mode))
 #+END_SRC
 
 * Init exec path
@@ -1368,9 +1381,6 @@ This is helpful for writeroom-mode, in particular."
   (define-key browse-kill-ring-mode-map (kbd "M-n") 'browse-kill-ring-forward)
   (define-key browse-kill-ring-mode-map (kbd "M-p") 'browse-kill-ring-previous))
 
-(after-load 'page-break-lines
-  (push 'browse-kill-ring-mode page-break-lines-modes))
-
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -1441,13 +1451,6 @@ This is helpful for writeroom-mode, in particular."
 
 (global-set-key (kbd "C-M-<backspace>") 'kill-back-to-indentation)
 
-
-;;----------------------------------------------------------------------------
-;; Page break lines
-;;----------------------------------------------------------------------------
-(use-package page-break-lines)
-(global-page-break-lines-mode)
-(diminish 'page-break-lines-mode)
 
 ;;----------------------------------------------------------------------------
 ;; Shift lines up and down with M-up and M-down. When paredit is enabled,
@@ -1674,16 +1677,194 @@ With arg N, insert N newlines."
          " Pr"
        (format " Pr[%s]" (projectile-project-name))))))
 #+END_SRC
+* Init calendar
+#+BEGIN_SRC emacs-lisp
+(require 'calendar)
+(require 'holidays)
+
+(setq calendar-mark-holidays-flag t)
+
+;; holiday settings for Toronto
+(setq calendar-latitude [43 39 north])
+(setq calendar-longitude [79 22 west])
+(setq calendar-location-name "Toronto, CA")
+
+(setq calendar-christian-all-holidays-flag nil)
+
+;; remove non-relevant holidays
+(setq holiday-general-holidays nil)
+(setq holiday-hebrew-holidays nil)
+(setq holiday-islamic-holidays nil)
+(setq holiday-oriental-holidays nil)
+(setq holiday-bahai-holidays nil)
+
+(setq holiday-canadian-statutory-holidays
+      '((holiday-fixed 01 01 "New Year's Day")
+        (holiday-easter-etc -2 "Good friday")
+        (holiday-fixed 07 01 "Canada Day")
+        (holiday-float 10 1 2 "Thanksgiving") ; Second monday of october
+        (holiday-fixed 11 11 "Remembrance day")
+        (holiday-fixed 12 25 "Christmas")
+        (holiday-fixed 12 26 "Boxing Day")
+        (holiday-float 05 1 -1 "Victoria day" 24)  ;Monday before May 24
+        (holiday-float 08 1 1 "Civic Public Holiday") ; First monday of August
+        (holiday-float 09 1 1 "Labour day") ; First monday in september
+        ))
+
+(setq holiday-local-holidays
+      '((holiday-fixed 02 14 "Valentine's Day")
+        (holiday-float 02 1 3 "Family day") ;Third monday in february
+        (holiday-fixed 04 01 "April Fools' Day")
+        (holiday-float 5 0 2 "Mother's Day")
+        (holiday-float 6 0 3 "Father's Day")
+        (holiday-fixed 11 11 "Remembrance day")
+        (holiday-advent 0 "Advent")
+        (holiday-easter-etc 0 "Easter Sunday")
+        (holiday-easter-etc 39 "Ascension Day")
+        (holiday-easter-etc 49 "Pentecost (Whitsunday)")
+        (holiday-fixed 10 31 "Halloween")
+        ))
+
+;; The above settings won't be used because calendar-holidays has already been
+;; generated; it has to be re-filled.
+(setq calendar-holidays
+      (append
+       holiday-canadian-statutory-holidays
+       holiday-local-holidays
+       holiday-solar-holidays))
+
+(defun insert-date (&optional days)
+  (interactive "p*")
+  (insert
+   (calendar-date-string
+    (calendar-gregorian-from-absolute
+     (+ (calendar-absolute-from-gregorian (calendar-current-date))
+        days)))))
+#+END_SRC
 * Init org mode
-
-*TODO: clean it up*
-
+** force org-mode upgrade
 #+BEGIN_SRC emacs-lisp
 (use-package org-install
   :quelpa (org-install))
 
 (use-package ox-html
   :quelpa (ox-html))
+#+END_SRC
+
+** basic settings
+#+BEGIN_SRC emacs-lisp
+(define-key global-map (kbd "C-c l") 'org-store-link)
+
+(when (file-exists-p custom-file)
+  (load custom-file))
+
+(unless (file-exists-p diary-file)
+  (write-region "" "" diary-file))
+
+;; Show entries for 3 days
+(setq diary-number-of-entries 3)
+(setq calendar-week-start-day 1)
+
+(setq org-log-done t
+      org-completion-use-ido t
+      org-edit-timestamp-down-means-later t
+      org-archive-mark-done nil
+      org-catch-invisible-edits 'show
+      org-export-coding-system 'utf-8
+      org-fast-tag-selection-single-key 'expert
+      org-html-validation-link nil
+      org-export-kill-product-buffer-when-displayed t
+      org-tags-column 80
+      org-use-sub-superscripts '{})
+
+(setq org-src-fontify-natively t
+      org-src-window-setup 'current-window
+      org-src-strip-leading-and-trailing-blank-lines t
+      org-src-preserve-indentation t
+      org-src-tab-acts-natively t)
+
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "ACTIVE(a)" "|" "DONE(d!/!)")
+              (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
+              (sequence "WAITING(w@/!)" "DELEGATED(e!)" "HOLD(h)" "|" "CANCELLED(c@/!)")))
+      org-todo-repeat-to-state "ACTIVE")
+
+(setq org-todo-keyword-faces
+      (quote (("ACTIVE" :inherit warning)
+              ("PROJECT" :inherit font-lock-string-face))))
+
+(add-hook 'org-agenda-mode-hook 'hl-line-mode)
+
+(after-load 'org
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   `(;; (ditaa . t)
+     (dot . t)
+     (emacs-lisp . t)
+     (gnuplot . t)
+     ;; (haskell . nil)
+     (latex . t)
+     (ledger . t)
+     ;; (ocaml . nil)
+     ;; (octave . t)
+     (python . t)
+     ;; (ruby . t)
+     (screen . nil)
+     (,(if (locate-library "ob-sh") 'sh 'shell) . t)
+     (sql . nil)
+     (sqlite . t))))
+
+;; Display generated inline images
+(after-load 'org
+  (add-hook 'org-babel-after-execute-hook
+            (lambda ()
+              (when org-inline-image-overlays
+                (org-redisplay-inline-images)))))
+#+END_SRC
+
+** org-agenda
+see [https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html]
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-block-separator 8211 ; nicer separators
+      org-agenda-compact-blocks nil
+      org-agenda-include-diary t)
+
+(defun air-org-skip-subtree-if-priority (priority)
+  "Skip an agenda subtree if it has a priority of PRIORITY.
+
+PRIORITY may be one of the characters ?A, ?B, or ?C."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (pri-value (* 1000 (- org-lowest-priority priority)))
+        (pri-current (org-get-priority (thing-at-point 'line t))))
+    (if (= pri-value pri-current)
+        subtree-end
+      nil)))
+
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "")
+          (alltodo ""
+                   ((org-agenda-skip-function
+                     '(or (air-org-skip-subtree-if-priority ?A)
+                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
+
+(defun display-agenda (&optional arg)
+  "Display up-to-date week agenda."
+  (interactive)
+  (org-agenda arg "c")
+  (org-agenda-redo))
+
+(define-key global-map (kbd "C-c a") 'display-agenda)
+;; Automatically show agenda
+(run-at-time "11:00" (* 24 3600) 'display-agenda)
+#+END_SRC
+
+** org-passwords
+#+BEGIN_SRC emacs-lisp
 
 (use-package org-passwords
   :quelpa (org-passwords
@@ -1701,7 +1882,10 @@ With arg N, insert N newlines."
      (define-key org-passwords-mode-map
        (kbd "C-c C-p o")
        'org-passwords-open-url)))
+#+END_SRC
 
+** org-wiki
+#+BEGIN_SRC emacs-lisp
 (use-package org-wiki
   :quelpa (org-wiki
            :repo "caiorss/org-wiki"
@@ -1710,55 +1894,12 @@ With arg N, insert N newlines."
 (setq org-wiki-location (expand-file-name "wiki" user-emacs-directory))
 (unless (file-directory-p org-wiki-location)
   (make-directory org-wiki-location t))
+#+END_SRC
 
-;; fix for byte-code: Invalid function: org-babel-header-args-safe-fn error:
-;; (byte-recompile-file
-;;  (expand-file-name "ob-R.el"
-;;                    (file-name-directory (locate-library "org")))
-;;  t)
+** toc-org
+org mode toc, see [https://github.com/snosov1/toc-org]
 
-
-(define-key global-map (kbd "C-c l") 'org-store-link)
-(define-key global-map (kbd "C-c a") 'org-agenda)
-
-;; Various preferences
-(setq calendar-week-start-day 1)
-
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-(unless (file-exists-p diary-file)
-  (write-region "" "" diary-file))
-
-;; Show entries for 3 days
-(setq diary-number-of-entries 3)
-
-(setq org-agenda-include-diary t)
-
-;; Automatically show diary events
-(run-at-time "11:00am" (* 24 3600) 'diary)
-
-(setq org-log-done t
-      org-completion-use-ido t
-      org-edit-timestamp-down-means-later t
-      org-archive-mark-done nil
-      org-catch-invisible-edits 'show
-      org-export-coding-system 'utf-8
-      org-fast-tag-selection-single-key 'expert
-      org-html-validation-link nil
-      org-export-kill-product-buffer-when-displayed t
-      org-tags-column 80
-      org-use-sub-superscripts '{})
-
-(setq org-src-fontify-natively t
-    org-src-window-setup 'current-window
-    org-src-strip-leading-and-trailing-blank-lines t
-    org-src-preserve-indentation t
-    org-src-tab-acts-natively t)
-
-;;
-;; org mode toc, see https://github.com/snosov1/toc-org
-;;
+#+BEGIN_SRC emacs-lisp
 (use-package toc-org :ensure t)
 
 (add-hook 'org-mode-hook 'toc-org-enable)
@@ -1806,324 +1947,6 @@ With arg N, insert N newlines."
       (buffer-substring-no-properties
        (point-min) (point-max)))))
 
-
-
-(define-minor-mode prose-mode
-  "Set up a buffer for prose editing.
-This enables or modifies a number of settings so that the
-experience of editing prose is a little more like that of a
-typical word processor."
-  nil " Prose" nil
-  (if prose-mode
-      (progn
-        (setq truncate-lines nil)
-        (setq word-wrap t)
-        (setq cursor-type 'bar)
-        (when (eq major-mode 'org)
-          (kill-local-variable 'buffer-face-mode-face))
-        (buffer-face-mode 1)
-        ;;(delete-selection-mode 1)
-        (set (make-local-variable 'blink-cursor-interval) 0.6)
-        (set (make-local-variable 'show-trailing-whitespace) nil)
-        (flyspell-mode 1)
-        (when (fboundp 'visual-line-mode)
-          (visual-line-mode 1)))
-    (kill-local-variable 'truncate-lines)
-    (kill-local-variable 'word-wrap)
-    (kill-local-variable 'cursor-type)
-    (kill-local-variable 'show-trailing-whitespace)
-    (buffer-face-mode -1)
-    ;; (delete-selection-mode -1)
-    (flyspell-mode -1)
-    (when (fboundp 'visual-line-mode)
-      (visual-line-mode -1))))
-
-;;(add-hook 'org-mode-hook 'buffer-face-mode)
-
-
-(setq org-support-shift-select t)
-
-;;; Capturing
-
-(global-set-key (kbd "C-c c") 'org-capture)
-
-(setq org-capture-templates
-      `(("t" "todo" entry (file "")  ; "" => org-default-notes-file
-         "* NEXT %?\n%U\n" :clock-resume t)
-        ("n" "note" entry (file "")
-         "* %? :NOTE:\n%U\n%a\n" :clock-resume t)
-        ))
-
-
-
-;;; Refiling
-
-(setq org-refile-use-cache nil)
-
-; Targets include this file and any file contributing to the agenda - up to 5 levels deep
-(setq org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))
-
-(after-load 'org-agenda
-  (add-to-list 'org-agenda-after-show-hook 'org-show-entry))
-
-;; Exclude DONE state tasks from refile targets
-(defun sanityinc/verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets."
-  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
-(setq org-refile-target-verify-function 'sanityinc/verify-refile-target)
-
-(defun sanityinc/org-refile-anywhere (&optional goto default-buffer rfloc msg)
-  "A version of `org-refile' which suppresses `org-refile-target-verify-function'."
-  (interactive "P")
-  (let ((org-refile-target-verify-function))
-    (org-refile goto default-buffer rfloc msg)))
-
-;; Targets start with the file name - allows creating level 1 tasks
-;;(setq org-refile-use-outline-path (quote file))
-(setq org-refile-use-outline-path t)
-(setq org-outline-path-complete-in-steps nil)
-
-;; Allow refile to create parent tasks with confirmation
-(setq org-refile-allow-creating-parent-nodes 'confirm)
-
-
-;;; To-do settings
-
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "ACTIVE(a)" "|" "DONE(d!/!)")
-              (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
-              (sequence "WAITING(w@/!)" "DELEGATED(e!)" "HOLD(h)" "|" "CANCELLED(c@/!)")))
-      org-todo-repeat-to-state "ACTIVE")
-
-(setq org-todo-keyword-faces
-      (quote (("ACTIVE" :inherit warning)
-              ("PROJECT" :inherit font-lock-string-face))))
-
-
-
-;;; Agenda views
-
-(setq-default org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3))
-
-
-(let ((active-project-match "-INBOX/PROJECT"))
-
-  (setq org-stuck-projects
-        `(,active-project-match ("ACTIVE")))
-
-  (setq org-agenda-compact-blocks t
-        org-agenda-sticky t
-        org-agenda-start-on-weekday nil
-        org-agenda-span 'day
-        org-agenda-include-diary nil
-        org-agenda-sorting-strategy
-        '((agenda habit-down time-up user-defined-up effort-up category-keep)
-          (todo category-up effort-up)
-          (tags category-up effort-up)
-          (search category-up))
-        org-agenda-window-setup 'current-window
-        org-agenda-custom-commands
-        `(("N" "Notes" tags "NOTE"
-           ((org-agenda-overriding-header "Notes")
-            (org-tags-match-list-sublevels t)))
-          ("g" "GTD"
-           ((agenda "" nil)
-            (tags "INBOX"
-                  ((org-agenda-overriding-header "Inbox")
-                   (org-tags-match-list-sublevels nil)))
-            (stuck ""
-                   ((org-agenda-overriding-header "Stuck Projects")
-                    (org-agenda-tags-todo-honor-ignore-options t)
-                    (org-tags-match-list-sublevels t)
-                    (org-agenda-todo-ignore-scheduled 'future)))
-            (tags-todo "-INBOX/ACTIVE"
-                       ((org-agenda-overriding-header "Next Actions")
-                        (org-agenda-tags-todo-honor-ignore-options t)
-                        (org-agenda-todo-ignore-scheduled 'future)
-                        ;; TODO: skip if a parent is WAITING or HOLD
-                        (org-tags-match-list-sublevels t)
-                        (org-agenda-sorting-strategy
-                         '(todo-state-down effort-up category-keep))))
-            (tags-todo ,active-project-match
-                       ((org-agenda-overriding-header "Projects")
-                        (org-tags-match-list-sublevels t)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))
-            (tags-todo "-INBOX/-ACTIVE"
-                       ((org-agenda-overriding-header "Orphaned Tasks")
-                        (org-agenda-tags-todo-honor-ignore-options t)
-                        (org-agenda-todo-ignore-scheduled 'future)
-                        ;; TODO: skip if a parent is a project
-                        (org-agenda-skip-function
-                         '(lambda ()
-                            (or (org-agenda-skip-subtree-if 'todo '("PROJECT" "HOLD" "WAITING" "DELEGATED"))
-                                (org-agenda-skip-subtree-if 'nottododo '("TODO")))))
-                        (org-tags-match-list-sublevels t)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))
-            (tags-todo "/WAITING"
-                       ((org-agenda-overriding-header "Waiting")
-                        (org-agenda-tags-todo-honor-ignore-options t)
-                        (org-agenda-todo-ignore-scheduled 'future)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))
-            (tags-todo "/DELEGATED"
-                       ((org-agenda-overriding-header "Delegated")
-                        (org-agenda-tags-todo-honor-ignore-options t)
-                        (org-agenda-todo-ignore-scheduled 'future)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))
-            (tags-todo "-INBOX/HOLD"
-                       ((org-agenda-overriding-header "On Hold")
-                        ;; TODO: skip if a parent is WAITING or HOLD
-                        (org-tags-match-list-sublevels nil)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))
-            ;; (tags-todo "-NEXT"
-            ;;            ((org-agenda-overriding-header "All other TODOs")
-            ;;             (org-match-list-sublevels t)))
-            )))))
-
-
-(add-hook 'org-agenda-mode-hook 'hl-line-mode)
-
-
-;;; Org clock
-
-;; Save the running clock and all clock history when exiting Emacs, load it on startup
-(after-load 'org
-  (org-clock-persistence-insinuate))
-(setq org-clock-persist t)
-(setq org-clock-in-resume t)
-
-;; Save clock data and notes in the LOGBOOK drawer
-(setq org-clock-into-drawer t)
-;; Save state changes in the LOGBOOK drawer
-(setq org-log-into-drawer t)
-;; Removes clocked tasks with 0:00 duration
-(setq org-clock-out-remove-zero-time-clocks t)
-
-;; Show clock sums as hours and minutes, not "n days" etc.
-(setq org-time-clocksum-format
-      '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
-
-
-
-;;; Show the clocked-in task - if any - in the header line
-(defun sanityinc/show-org-clock-in-header-line ()
-  (setq-default header-line-format '((" " org-mode-line-string " "))))
-
-(defun sanityinc/hide-org-clock-from-header-line ()
-  (setq-default header-line-format nil))
-
-(add-hook 'org-clock-in-hook 'sanityinc/show-org-clock-in-header-line)
-(add-hook 'org-clock-out-hook 'sanityinc/hide-org-clock-from-header-line)
-(add-hook 'org-clock-cancel-hook 'sanityinc/hide-org-clock-from-header-line)
-
-(after-load 'org-clock
-  (define-key org-clock-mode-line-map [header-line mouse-2] 'org-clock-goto)
-  (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
-
-
-
-(when (and *is-a-mac* (file-directory-p "/Applications/org-clock-statusbar.app"))
-  (add-hook 'org-clock-in-hook
-            (lambda () (call-process "/usr/bin/osascript" nil 0 nil "-e"
-                                (concat "tell application \"org-clock-statusbar\" to clock in \"" org-clock-current-task "\""))))
-  (add-hook 'org-clock-out-hook
-            (lambda () (call-process "/usr/bin/osascript" nil 0 nil "-e"
-                                "tell application \"org-clock-statusbar\" to clock out"))))
-
-
-;; Remove empty LOGBOOK drawers on clock out
-(defun sanityinc/remove-empty-drawer-on-clock-out ()
-  (interactive)
-  (save-excursion
-    (beginning-of-line 0)
-    (org-remove-empty-drawer-at "LOGBOOK" (point))))
-
-(after-load 'org-clock
-  (add-hook 'org-clock-out-hook 'sanityinc/remove-empty-drawer-on-clock-out 'append))
-
-
-
-;; TODO: warn about inconsistent items, e.g. TODO inside non-PROJECT
-;; TODO: nested projects!
-
-
-;;; Archiving
-
-(setq org-archive-mark-done nil)
-(setq org-archive-location "%s_archive::* Archive")
-
-;; Insert the org entity (if available) when user does C-u SYMBOL; works for C-u *, C-u /, C-u =, etc.
-(defun modi/org-entity-get-name (char)
-  "Return the entity name for CHAR.  For example, return \"ast\" for *."
-  (let ((ll (append org-entities-user
-                    org-entities))
-        e name utf8)
-    (catch 'break
-      (while ll
-        (setq e (pop ll))
-        (when (not (stringp e))
-          (setq utf8 (nth 6 e))
-          (when (string= char utf8)
-            (setq name (car e))
-            (throw 'break name)))))))
-
-(defun modi/org-insert-org-entity-maybe (orig-fun &rest args)
-  "When the universal prefix C-u is used before entering any character,
-insert the character's `org-entity' name if available."
-  (let ((pressed-key (this-command-keys))
-        entity-name)
-    (when (and (listp args) (eq 4 (car args)))
-      (setq entity-name (modi/org-entity-get-name pressed-key))
-      (when entity-name
-        (setq entity-name (concat "\\" entity-name "{}"))
-        (insert entity-name)
-        (message (concat "Inserted `org-entity' "
-                         (propertize entity-name
-                                     'face 'font-lock-function-name-face)
-                         " for the symbol "
-                         (propertize pressed-key
-                                     'face 'font-lock-function-name-face)
-                         "."))))
-    (when (null entity-name)
-      (apply orig-fun args))))
-
-(advice-add 'org-self-insert-command :around #'modi/org-insert-org-entity-maybe)
-
-(after-load 'org
-  (define-key org-mode-map (kbd "C-M-<up>") 'org-up-element)
-  (when *is-a-mac*
-    (define-key org-mode-map (kbd "M-h") nil)
-    (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link)))
-
-(after-load 'org
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   `(;; (ditaa . t)
-     (dot . t)
-     (emacs-lisp . t)
-     (gnuplot . t)
-     ;; (haskell . nil)
-     (latex . t)
-     (ledger . t)
-     ;; (ocaml . nil)
-     ;; (octave . t)
-     (python . t)
-     ;; (ruby . t)
-     (screen . nil)
-     (,(if (locate-library "ob-sh") 'sh 'shell) . t)
-     (sql . nil)
-     (sqlite . t))))
-
-;; Display generated inline images
-(after-load 'org
-  (add-hook 'org-babel-after-execute-hook
-            (lambda ()
-              (when org-inline-image-overlays
-                (org-redisplay-inline-images)))))
 #+END_SRC
 
 * Init paredit
@@ -2786,6 +2609,10 @@ dynamic evaluation replacement with emacs
 
 #+BEGIN_SRC emacs-lisp
 (use-package helm)
+(use-package helm-flycheck)
+(use-package helm-flyspell
+  :config
+  (define-key flycheck-mode-map (kbd "C-M-i") 'helm-flycheck))
 #+END_SRC
 
 ** saveplace
