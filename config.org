@@ -641,7 +641,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 ** Turn off menu, toolbar and scrollbars
 
 #+BEGIN_SRC emacs-lisp
-;;(menu-bar-mode -1)
+(unless *is-a-mac*
+  (menu-bar-mode -1))
 (toggle-scroll-bar -1)
 (tool-bar-mode -1)
 #+END_SRC
@@ -739,9 +740,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 
 ;; Toggle display of entities as UTF-8 characters.
 (setq org-pretty-entities t)
-
-(setq org-todo-keywords
-      '((sequence "TODO" "ACTIVE" "|" "DONE" "DELEGATED")))
 
 ;; hide formatting markers in org
 (setq org-hide-emphasis-markers t)
@@ -1900,7 +1898,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 org mode toc, see [https://github.com/snosov1/toc-org]
 
 #+BEGIN_SRC emacs-lisp
-(use-package toc-org :ensure t)
+(use-package toc-org)
 
 (add-hook 'org-mode-hook 'toc-org-enable)
 (setq toc-org-skip-pre-toc-headings t)
