@@ -663,9 +663,10 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 
   ;; override modeline theme settings
   (custom-set-faces
-   `(region                   ((t (:foreground nil        :background "#376da4")))) ; selection color
-   `(hl-line                  ((t (:foreground nil        :background "#333333"))))
+   `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
+   `(hl-line                  ((t (:foreground nil        :background "#3B4252"))))
    `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
+   `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
    `(mode-line                ((t (:foreground "gray"     :background nil :box nil))))
    `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil))))
    `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
@@ -1331,14 +1332,7 @@ This is helpful for writeroom-mode, in particular."
     (diminish 'subword-mode)))
 
 
-;; (when (maybe-require-package 'indent-guide)
-;;   (add-hook 'prog-mode-hook 'indent-guide-mode)
-;;   (after-load 'indent-guide
-;;     (diminish 'indent-guide-mode)))
-
-
 (use-package nlinum)
-
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))
@@ -2014,7 +2008,7 @@ org mode toc, see [https://github.com/snosov1/toc-org]
 (use-package lively)
 
 (setq-default initial-scratch-message
-              (concat ";; Happy hacking, " user-login-name " - Emacs ♥ you!\n\n"))
+              (concat ";; Happy hacking, " user-full-name " - Emacs ♥ you!\n\n"))
 
 
 
@@ -2601,6 +2595,19 @@ dynamic evaluation replacement with emacs
 
 #+BEGIN_SRC emacs-lisp
 (use-package csharp-mode)
+#+END_SRC
+
+** indent-guide
+
+#+BEGIN_SRC emacs-lisp
+(use-package indent-guide
+  :config
+  (setq indent-guide-char "┊")
+  (setq indent-guide-delay 0.1)
+  :init
+  (diminish 'indent-guide-mode))
+
+(add-hook 'prog-mode-hook 'indent-guide-mode)
 #+END_SRC
 
 ** helm
