@@ -674,8 +674,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 ;; don't highlight long lines
 (setq-default whitespace-style '(face))
 
-;; highlight current line
-(global-hl-line-mode 1)
+
+
 
 (custom-set-faces
  `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
@@ -695,6 +695,22 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
   (setq doom-one-brighter-comments t)
   (doom-themes-nlinum-config)
   (load-theme 'doom-one t))
+#+END_SRC
+
+** Highlight current line
+
+Ignore line wrappings and highlight entire line for org headers
+
+#+BEGIN_SRC emacs-lisp
+(defun visual-line-range ()
+  (save-excursion
+    (cons
+     (progn (vertical-motion 0) (point))
+     (progn (vertical-motion 1) (point)))))
+
+(setq hl-line-range-function 'visual-line-range)
+
+(global-hl-line-mode 1)
 #+END_SRC
 
 ** Display date/time in mode line
@@ -725,7 +741,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (set-face-italic 'org-block-end-line t)
 
 (custom-set-faces
- '(org-level-1 ((t (:box nil :height 130)))))
+ '(org-level-1 ((t (:box nil :height 130))))
+ '(org-ellipsis ((t (:background nil)))))
 
 ;; Toggle display of entities as UTF-8 characters.
 (setq org-pretty-entities t)
