@@ -674,9 +674,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 ;; don't highlight long lines
 (setq-default whitespace-style '(face))
 
-
-
-
 (custom-set-faces
  `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
  `(hl-line                  ((t (:foreground nil        :background "#3B4252"))))
