@@ -654,60 +654,46 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 ;; see https://github.com/milkypostman/powerline/issues/54
 (setq ns-use-srgb-colorspace nil)
 
-(defun apply-custom-theme (&rest args)
-  (interactive)
-  (require 'spaceline-config)
+;; override cursor settings
+(add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
+(add-to-list 'default-frame-alist '(mouse-color . "white"))
 
-  (add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
-  (remove-hook 'focus-out-hook 'powerline-unset-selected-window)
+(require 'spaceline-config)
 
-  ;; override modeline theme settings
-  (custom-set-faces
-   `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
-   `(hl-line                  ((t (:foreground nil        :background "#3B4252"))))
-   `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
-   `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
-   `(mode-line                ((t (:foreground "gray"     :background nil :box nil))))
-   `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil))))
-   `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
-   `(powerline-active2        ((t (:foreground "white"    :background nil))))
-   `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
-   `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil))))
-   `(spaceline-highlight-face ((t (:foreground "SkyBlue1" :background "SkyBlue4")))))
+(add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
+(remove-hook 'focus-out-hook 'powerline-unset-selected-window)
 
-  (setq powerline-default-separator 'curve)
-  (spaceline-emacs-theme)
-  (spaceline-toggle-minor-modes-off)
-  (spaceline-toggle-hud-off)
+(setq powerline-default-separator 'curve)
+(spaceline-emacs-theme)
+(spaceline-toggle-minor-modes-off)
+(spaceline-toggle-hud-off)
 
-  ;; override cursor settings
-  (add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
-  (add-to-list 'default-frame-alist '(mouse-color . "white"))
+;; override some font settings
+(set-face-italic 'font-lock-comment-face t)
 
-  ;; override some font settings
-  (set-face-italic 'font-lock-comment-face t)
-  (set-face-italic 'org-block-begin-line t)
-  (set-face-italic 'org-block-end-line t)
+;; don't highlight long lines
+(setq-default whitespace-style '(face))
 
-  ;; override org mode styles
-  (setq org-ellipsis "…")
+;; highlight current line
+(global-hl-line-mode 1)
 
-  ;; don't highlight long lines
-  (setq-default whitespace-style '(face))
-
-  ;; highlight current line
-  (global-hl-line-mode 1)
-
-  ;; enable nlinum line highlighting
-  (doom-themes-nlinum-config))
+(custom-set-faces
+ `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
+ `(hl-line                  ((t (:foreground nil        :background "#3B4252"))))
+ `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
+ `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
+ `(mode-line                ((t (:foreground "gray"     :background nil :box nil))))
+ `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil))))
+ `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
+ `(powerline-active2        ((t (:foreground "white"    :background nil))))
+ `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
+ `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil)))))
 
 (use-package doom-themes
   :ensure spaceline
-  :config
-  (setq doom-one-brighter-comments t)
-
   :init
-  (advice-add #'load-theme :after #'apply-custom-theme)
+  (setq doom-one-brighter-comments t)
+  (doom-themes-nlinum-config)
   (load-theme 'doom-one t))
 #+END_SRC
 
@@ -735,6 +721,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
              '("*" (:foreground "red")))
 
 (set-face-background 'org-level-1 nil)
+(set-face-italic 'org-block-begin-line t)
+(set-face-italic 'org-block-end-line t)
 
 (custom-set-faces
  '(org-level-1 ((t (:box nil :height 130)))))
@@ -744,6 +732,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 
 ;; hide formatting markers in org
 (setq org-hide-emphasis-markers t)
+
+(setq org-ellipsis "…")
 #+END_SRC
 
 ** Terminal colors
