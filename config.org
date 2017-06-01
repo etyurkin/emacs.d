@@ -676,11 +676,12 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 
 (custom-set-faces
  `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
- `(hl-line                  ((t (:foreground nil        :background "#2B2F37"))))
+ `(hl-line                  ((t (:foreground nil        :background "#30363F"))))
  `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
  `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
- `(mode-line                ((t (:foreground "gray"     :background nil :box nil))))
- `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil))))
+ `(vertical-border          ((t (:foreground "#30363F" :background nil))))
+ `(mode-line                ((t (:foreground "gray"     :background nil :box nil :overline "#30363F"))))
+ `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil :overline "#30363F"))))
  `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
  `(powerline-active2        ((t (:foreground "white"    :background nil))))
  `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
