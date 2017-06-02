@@ -700,6 +700,21 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 
 #+END_SRC
 
+** Visual bell
+Flash modeline for visual bell
+
+#+BEGIN_SRC emacs-lisp
+(setq visible-bell nil
+      ring-bell-function
+      (lambda ()
+        (let ((fg (face-foreground 'mode-line))
+              (bg (face-background 'mode-line)))
+          (set-face-background 'mode-line "#30363F")
+          (set-face-foreground 'mode-line "#30363F")
+          (run-with-idle-timer 0.1 nil `(lambda ()
+                                          (set-face-background 'mode-line ,bg)
+                                          (set-face-foreground 'mode-line ,fg))))))
+#+END_SRC
 ** Highlight current line
 
 Ignore line wrappings and highlight entire line for org headers
@@ -2375,7 +2390,37 @@ org mode toc, see [https://github.com/snosov1/toc-org]
 
   (add-hook 'slime-repl-mode-hook 'sanityinc/slime-repl-setup))
 #+END_SRC
-* Init common lisp
+* Init dash
+
+Support for the http://kapeli.com/dash documentation browser
+see https://github.com/areina/helm-dash
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm-dash)
+
+(setq helm-dash-browser-func 'eww)
+(global-set-key (kbd "C-c h") 'helm-dash-at-point)
+
+(setq helm-dash-docsets-path (expand-file-name ".docsets" user-emacs-directory))
+(unless (file-exists-p helm-dash-docsets-path)
+  (make-directory helm-dash-docsets-path))
+
+(defun helm-dash--use-docset (docset)
+  "Install DOCSET if it's not installed yet."
+  (unless (member docset (helm-dash-installed-docsets))
+    (helm-dash-install-docset docset)))
+
+(helm-dash--use-docset "Common Lisp")
+(add-hook 'lisp-mode-hook (lambda ()
+                            (setq-local helm-dash-docsets '("Common Lisp"))))
+
+(helm-dash--use-docset "Emacs Lisp")
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq-local helm-dash-docsets '("Emacs Lisp"))))
+#+END_SRC
+* Init programming
+** Lisp
+*** Common Lisp
 
 #+BEGIN_SRC emacs-lisp
 (add-auto-mode 'lisp-mode "\\.cl\\'")
@@ -2424,36 +2469,116 @@ org mode toc, see [https://github.com/snosov1/toc-org]
 
 (define-key lisp-mode-map (kbd "C-c l") 'lispdoc)
 #+END_SRC
-* Init dash
 
-Support for the http://kapeli.com/dash documentation browser
-see https://github.com/areina/helm-dash
+*** Litable
+
+dynamic evaluation replacement with emacs
+#+BEGIN_SRC emacs-lisp
+(use-package litable)
+#+END_SRC
+
+*** Display Elisp function documentation in minibuffer
 
 #+BEGIN_SRC emacs-lisp
-(use-package helm-dash)
-
-(setq helm-dash-browser-func 'eww)
-(global-set-key (kbd "C-c h") 'helm-dash-at-point)
-
-(setq helm-dash-docsets-path (expand-file-name ".docsets" user-emacs-directory))
-(unless (file-exists-p helm-dash-docsets-path)
-  (make-directory helm-dash-docsets-path))
-
-(defun helm-dash--use-docset (docset)
-  "Install DOCSET if it's not installed yet."
-  (unless (member docset (helm-dash-installed-docsets))
-    (helm-dash-install-docset docset)))
-
-(helm-dash--use-docset "Common Lisp")
-(add-hook 'lisp-mode-hook (lambda ()
-                            (setq-local helm-dash-docsets '("Common Lisp"))))
-
-(helm-dash--use-docset "Emacs Lisp")
-(add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq-local helm-dash-docsets '("Emacs Lisp"))))
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
 #+END_SRC
-* Init misc
 
+*** Go to definition
+#+BEGIN_SRC emacs-lisp
+(use-package dumb-jump
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g p" . dumb-jump-back)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'helm))
+#+END_SRC
+*** pretty-lambdada
+
+display “lаmbdа” as “λ”
+#+BEGIN_SRC emacs-lisp
+(use-package pretty-lambdada)
+(pretty-lambda-for-modes)
+#+END_SRC
+
+*** Structure and Interpretation of Computer Programs book
+
+#+BEGIN_SRC emacs-lisp
+(use-package sicp)
+#+END_SRC
+
+*** Suggest
+Discovering elisp functions based on examples, see http://www.wilfred.me.uk/blog/2016/07/30/example-driven-development/
+
+#+BEGIN_SRC emacs-lisp
+(use-package suggest)
+#+END_SRC
+
+** Swift
+
+#+BEGIN_SRC emacs-lisp
+(use-package swift-mode)
+#+END_SRC
+
+** Scala
+
+#+BEGIN_SRC emacs-lisp
+(use-package scala-mode)
+#+END_SRC
+
+** C#
+
+#+BEGIN_SRC emacs-lisp
+(use-package csharp-mode)
+#+END_SRC
+
+** Yaml
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode)
+#+END_SRC
+** Http
+*** Http protocol documentation
+
+provides http-status-code, http-header, http-method, http-relation, media-type
+
+#+BEGIN_SRC emacs-lisp
+(use-package know-your-http-well)
+#+END_SRC
+
+*** Rest Client
+
+#+BEGIN_SRC emacs-lisp
+(use-package restclient)
+(add-to-list 'auto-mode-alist '("\\.rest$" . restclient-mode))
+(setq restclient-inhibit-cookies t)
+
+;; An extension to restclient that provides org-babel support.
+(use-package ob-restclient)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((restclient . t)))
+
+;; Company-mode completion back-end for restclient-mode.
+(use-package company-restclient)
+(add-to-list 'company-backends 'company-restclient)
+#+END_SRC
+
+*** Http Repl
+
+#+BEGIN_SRC emacs-lisp
+(use-package httprepl)
+#+END_SRC
+
+** Hound
+Lightning fast code searching made easy, see https://github.com/etsy/hound
+
+#+BEGIN_SRC emacs-lisp
+(use-package hound)
+#+END_SRC
+
+* Init misc
 ** fix emacs GPG error: "no usable configuration"
 #+BEGIN_SRC emacs-lisp
 (require 'epa-file)
@@ -2485,16 +2610,6 @@ see https://github.com/areina/helm-dash
 (add-hook 'after-init-hook #'fancy-battery-mode)
 #+END_SRC
 
-** suggest
-#+BEGIN_SRC emacs-lisp
-(use-package suggest)
-#+END_SRC
-
-** hound
-#+BEGIN_SRC emacs-lisp
-(use-package hound)
-#+END_SRC
-
 ** scratch
 #+BEGIN_SRC emacs-lisp
 (use-package scratch)
@@ -2503,11 +2618,6 @@ see https://github.com/areina/helm-dash
 ** paradox
 #+BEGIN_SRC emacs-lisp
 (use-package paradox)
-#+END_SRC
-
-** yaml-mode
-#+BEGIN_SRC emacs-lisp
-(use-package yaml-mode)
 #+END_SRC
 
 ** multi-eshell
@@ -2523,99 +2633,16 @@ Still need to check if it works...
 (global-set-key (kbd "C-]") nil)
 #+END_SRC
 
-** dumb-jump
-#+BEGIN_SRC emacs-lisp
-(use-package dumb-jump
-  :bind (("M-g o" . dumb-jump-go-other-window)
-         ("M-g j" . dumb-jump-go)
-         ("M-g p" . dumb-jump-back)
-         ("M-g x" . dumb-jump-go-prefer-external)
-         ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config (setq dumb-jump-selector 'helm))
-#+END_SRC
-
-** know-your-http-well
-
-http documentation
-provides http-status-code, http-header, http-method, http-relation, media-type
-
-#+BEGIN_SRC emacs-lisp
-(use-package know-your-http-well)
-#+END_SRC
-
 ** disable minimize emacs by ctrl-z
 
 #+BEGIN_SRC emacs-lisp
 (put 'suspend-frame 'disabled t)
 #+END_SRC
 
-** restclient
-
-#+BEGIN_SRC emacs-lisp
-(use-package restclient)
-(add-to-list 'auto-mode-alist '("\\.rest$" . restclient-mode))
-(setq restclient-inhibit-cookies t)
-
-;; An extension to restclient that provides org-babel support.
-(use-package ob-restclient)
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((restclient . t)))
-
-;; Company-mode completion back-end for restclient-mode.
-(use-package company-restclient)
-(add-to-list 'company-backends 'company-restclient)
-#+END_SRC
-
-** httprepl
-
-#+BEGIN_SRC emacs-lisp
-(use-package httprepl)
-#+END_SRC
-
 ** transpose-frame
 
 #+BEGIN_SRC emacs-lisp
 (use-package transpose-frame)
-#+END_SRC
-
-** pretty-lambdada
-
-display “lаmbdа” as “λ”
-#+BEGIN_SRC emacs-lisp
-(use-package pretty-lambdada)
-(pretty-lambda-for-modes)
-#+END_SRC
-
-** Structure and Interpretation of Computer Programs book
-
-#+BEGIN_SRC emacs-lisp
-(use-package sicp)
-#+END_SRC
-
-** litable
-
-dynamic evaluation replacement with emacs
-#+BEGIN_SRC emacs-lisp
-(use-package litable)
-#+END_SRC
-
-** swift-mode
-
-#+BEGIN_SRC emacs-lisp
-(use-package swift-mode)
-#+END_SRC
-
-** scala-mode
-
-#+BEGIN_SRC emacs-lisp
-(use-package scala-mode)
-#+END_SRC
-
-** c#-mode
-
-#+BEGIN_SRC emacs-lisp
-(use-package csharp-mode)
 #+END_SRC
 
 ** indent-guide
@@ -2649,14 +2676,6 @@ dynamic evaluation replacement with emacs
 (use-package saveplace)            ;; get the package
 #+END_SRC
 
-** Display function documentation in minibuffer
-
-#+BEGIN_SRC emacs-lisp
-(setq help-at-pt-display-when-idle t)
-(setq help-at-pt-timer-delay 0.1)
-(help-at-pt-set-timer)
-#+END_SRC
-
 ** weather
 #+BEGIN_SRC emacs-lisp
 (use-package wttrin
@@ -2675,6 +2694,7 @@ dynamic evaluation replacement with emacs
       (rename-buffer weather-buffer)
       (toggle-truncate-lines 1))))
 #+END_SRC
+
 * Post init
 
 ** Start server
