@@ -637,7 +637,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 #+END_SRC
 
 * Init theme
-
 ** Turn off menu, toolbar and scrollbars
 
 #+BEGIN_SRC emacs-lisp
@@ -658,6 +657,9 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
 (add-to-list 'default-frame-alist '(mouse-color . "white"))
 
+;; Show fringe on the right side only
+(fringe-mode '(0 . nil))
+
 ;; override some font settings
 (set-face-italic 'font-lock-comment-face t)
 
@@ -669,7 +671,7 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
  `(hl-line                  ((t (:foreground nil        :background "#30363F"))))
  `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
  `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
- `(vertical-border          ((t (:foreground "#30363F" :background nil))))
+ `(vertical-border          ((t (:foreground "#30363F"  :background nil))))
  `(mode-line                ((t (:foreground "gray"     :background nil :box nil :overline "#30363F"))))
  `(mode-line-inactive       ((t (:foreground "SkyBlue4" :background nil :box nil :overline "#30363F"))))
  `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
@@ -1338,9 +1340,6 @@ This is helpful for writeroom-mode, in particular."
   ;; https://github.com/purcell/emacs.d/issues/138
   (after-load 'subword
     (diminish 'subword-mode)))
-
-
-(use-package nlinum)
 
 (when (fboundp 'global-prettify-symbols-mode)
   (global-prettify-symbols-mode))
@@ -2445,13 +2444,13 @@ see https://github.com/areina/helm-dash
   (unless (member docset (helm-dash-installed-docsets))
     (helm-dash-install-docset docset)))
 
-(helm-dash--use-docset "Common_Lisp")
+(helm-dash--use-docset "Common Lisp")
 (add-hook 'lisp-mode-hook (lambda ()
-                            (setq-local helm-dash-docsets '("Common_Lisp"))))
+                            (setq-local helm-dash-docsets '("Common Lisp"))))
 
-(helm-dash--use-docset "Emacs_Lisp")
+(helm-dash--use-docset "Emacs Lisp")
 (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq-local helm-dash-docsets '("Emacs_Lisp"))))
+                                  (setq-local helm-dash-docsets '("Emacs Lisp"))))
 #+END_SRC
 * Init misc
 
@@ -2468,6 +2467,16 @@ see https://github.com/areina/helm-dash
 (setq elpamr-default-output-directory (expand-file-name "elpa-mirror" user-emacs-directory))
 #+END_SRC
 
+** Show line numbers in the margin
+#+BEGIN_SRC emacs-lisp
+(use-package hlinum
+  :init (hlinum-activate))
+
+(use-package nlinum)
+
+(setq linum-format " %d ")
+(setq nlinum-format linum-format)
+#+END_SRC
 ** fancy-battery
 
 #+BEGIN_SRC emacs-lisp
