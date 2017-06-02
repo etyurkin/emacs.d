@@ -658,16 +658,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
 (add-to-list 'default-frame-alist '(mouse-color . "white"))
 
-(require 'spaceline-config)
-
-(add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
-(remove-hook 'focus-out-hook 'powerline-unset-selected-window)
-
-(setq powerline-default-separator 'curve)
-(spaceline-emacs-theme)
-(spaceline-toggle-minor-modes-off)
-(spaceline-toggle-hud-off)
-
 ;; override some font settings
 (set-face-italic 'font-lock-comment-face t)
 
@@ -688,11 +678,24 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
  `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil)))))
 
 (use-package doom-themes
-  :ensure spaceline
   :init
   (setq doom-one-brighter-comments t)
   (doom-themes-nlinum-config)
   (load-theme 'doom-one t))
+
+(add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
+
+(use-package spaceline
+  :init
+  (require 'spaceline-config)
+  (setq powerline-default-separator 'curve)
+  (spaceline-emacs-theme)
+  (spaceline-toggle-minor-modes-off)
+  (spaceline-toggle-hud-off)
+  (spaceline-compile))
+
+(remove-hook 'focus-out-hook 'powerline-unset-selected-window)
+
 #+END_SRC
 
 ** Highlight current line
@@ -2432,6 +2435,10 @@ see https://github.com/areina/helm-dash
 
 (setq helm-dash-browser-func 'eww)
 (global-set-key (kbd "C-c h") 'helm-dash-at-point)
+
+(setq helm-dash-docsets-path (expand-file-name ".docsets" user-emacs-directory))
+(unless (file-exists-p helm-dash-docsets-path)
+  (make-directory helm-dash-docsets-path))
 
 (defun helm-dash--use-docset (docset)
   "Install DOCSET if it's not installed yet."
