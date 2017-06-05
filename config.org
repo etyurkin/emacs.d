@@ -654,21 +654,20 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (setq ns-use-srgb-colorspace nil)
 
 ;; override cursor settings
-(add-to-list 'default-frame-alist '(cursor-color . "#C2C8D3"))
 (add-to-list 'default-frame-alist '(mouse-color . "white"))
 
 ;; Show fringe on the right side only
 (fringe-mode '(0 . nil))
 
-;; override some font settings
-(set-face-italic 'font-lock-comment-face t)
-
 ;; don't highlight long lines
 (setq-default whitespace-style '(face))
 
 (custom-set-faces
+ '(default                  ((t (:background "#21242b"))))
  `(region                   ((t (:foreground nil        :background "#434C5E")))) ; selection color
  `(hl-line                  ((t (:foreground nil        :background "#30363F"))))
+ `(cursor                   ((t (:foreground nil        :background "white"))))
+ '(font-lock-comment-face   ((t (:slant italic))))
  `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
  `(fringe                   ((t (:foreground "SkyBlue4" :background nil))))
  `(vertical-border          ((t (:foreground "#30363F"  :background nil))))
@@ -754,13 +753,12 @@ Ignore line wrappings and highlight entire line for org headers
 (add-to-list 'org-emphasis-alist
              '("*" (:foreground "red")))
 
-(set-face-background 'org-level-1 nil)
-(set-face-italic 'org-block-begin-line t)
-(set-face-italic 'org-block-end-line t)
-
 (custom-set-faces
- '(org-level-1 ((t (:box nil :height 130))))
- '(org-ellipsis ((t (:background nil)))))
+ `(org-level-1          ((t (:box nil :height 130 :background ,(face-attribute 'default :background)))))
+ `(org-block            ((t (:background ,(face-attribute 'default :background)))))
+ `(org-block-begin-line ((t (:background ,(face-attribute 'default :background) :slant italic))))
+ `(org-block-end-line   ((t (:background ,(face-attribute 'default :background) :slant italic))))
+ '(org-ellipsis         ((t (:background nil)))))
 
 ;; Toggle display of entities as UTF-8 characters.
 (setq org-pretty-entities t)
