@@ -758,7 +758,9 @@ Ignore line wrappings and highlight entire line for org headers
  `(org-block            ((t (:background ,(face-attribute 'default :background)))))
  `(org-block-begin-line ((t (:background ,(face-attribute 'default :background) :slant italic))))
  `(org-block-end-line   ((t (:background ,(face-attribute 'default :background) :slant italic))))
- '(org-ellipsis         ((t (:background nil)))))
+ '(org-ellipsis         ((t (:background nil :strike-through nil))))
+ '(org-done             ((t (:strike-through t))))
+ '(org-headline-done    ((t (:strike-through t)))))
 
 ;; Toggle display of entities as UTF-8 characters.
 (setq org-pretty-entities t)
