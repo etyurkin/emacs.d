@@ -49,5 +49,6 @@ site-lisp/package/
 /el-get/
 /quelpa/
 /wiki
+/org-todo
 /config.el
 /.docsets
