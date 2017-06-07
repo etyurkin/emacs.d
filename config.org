@@ -684,8 +684,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
   (doom-themes-nlinum-config)
   (load-theme 'doom-one t))
 
-(add-hook 'minibuffer-setup-hook #'doom-brighten-minibuffer)
-
 (use-package spaceline
   :init
   (require 'spaceline-config)
@@ -1845,6 +1843,39 @@ see [https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.ht
       org-agenda-compact-blocks nil
       org-agenda-include-diary t)
 
+(setq org-todo-dir (expand-file-name "org-todo" user-emacs-directory))
+(unless (file-directory-p org-todo-dir)
+  (make-directory org-todo-dir t))
+
+(setq org-agenda-files (file-expand-wildcards (concat org-todo-dir "/*.org")))
+
+(setq org-tag-alist '(("PROJECT" . ?p)))
+
+(defun air--org-swap-tags (tags)
+  "Replace any tags on the current headline with TAGS.
+
+The assumption is that TAGS will be a string conforming to Org Mode's
+tag format specifications, or nil to remove all tags."
+  (let ((old-tags (org-get-tags-string))
+        (tags (if tags
+                  (concat " " tags)
+                "")))
+    (save-excursion
+      (beginning-of-line)
+      (re-search-forward
+       (concat "[ \t]*" (regexp-quote old-tags) "[ \t]*$")
+       (line-end-position) t)
+      (replace-match tags)
+      (org-set-tags t))))
+
+(defun kwarks/append-project-tag ()
+  "Add :PROJECT: tag to a PROJECT todo entry."
+  (if (string= (org-get-todo-state) "PROJECT")
+      (air--org-swap-tags ":PROJECT:")
+    (air--org-swap-tags nil)))
+
+(add-hook 'org-after-todo-state-change-hook 'kwarks/append-project-tag)
+
 (defun air-org-skip-subtree-if-priority (priority)
   "Skip an agenda subtree if it has a priority of PRIORITY.
 
@@ -1856,15 +1887,35 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
         subtree-end
       nil)))
 
+(defun zin/org-agenda-skip-tag (tag &optional others)
+  "Skip all entries that correspond to TAG.
+
+If OTHERS is true, skip all entries that do not correspond to TAG."
+  (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+        (current-headline (or (and (org-at-heading-p)
+                                   (point))
+                              (save-excursion (org-back-to-heading)))))
+    (if others
+        (if (not (member tag (org-get-tags-at current-headline)))
+            next-headline
+          nil)
+      (if (member tag (org-get-tags-at current-headline))
+          next-headline
+        nil))))
+
 (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
-         ((tags "PRIORITY=\"A\""
+         ((tags "PROJECT"
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "Projects:")))
+          (tags "PRIORITY=\"A\""
                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                  (org-agenda-overriding-header "High-priority unfinished tasks:")))
           (agenda "")
           (alltodo ""
                    ((org-agenda-skip-function
                      '(or (air-org-skip-subtree-if-priority ?A)
+                          (zin/org-agenda-skip-tag "PROJECT")
                           (org-agenda-skip-if nil '(scheduled deadline))))))))))
 
 (defun display-agenda (&optional arg)
@@ -2618,7 +2669,9 @@ Lightning fast code searching made easy, see https://github.com/etsy/hound
 
 ** paradox
 #+BEGIN_SRC emacs-lisp
-(use-package paradox)
+(use-package paradox
+  :config
+  (setq paradox-github-token t))
 #+END_SRC
 
 ** multi-eshell
