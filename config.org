@@ -2631,6 +2631,17 @@ Lightning fast code searching made easy, see https://github.com/etsy/hound
 #+END_SRC
 
 * Init misc
+** Reverse mapping for keyboard layouts other than english
+
+Creates translation mappings for input-methods other than default english one, so all keybindings 
+are usable while non-default system layout is active.
+
+#+BEGIN_SRC emacs-lisp
+(use-package reverse-im
+  :config
+  (add-to-list 'reverse-im-modifiers 'super)
+  (reverse-im-activate "russian-computer"))
+#+END_SRC
 ** fix emacs GPG error: "no usable configuration"
 #+BEGIN_SRC emacs-lisp
 (require 'epa-file)
