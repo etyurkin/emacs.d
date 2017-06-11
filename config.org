@@ -681,7 +681,6 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (use-package doom-themes
   :init
   (setq doom-one-brighter-comments t)
-  (doom-themes-nlinum-config)
   (load-theme 'doom-one t))
 
 (use-package spaceline
@@ -2658,12 +2657,15 @@ are usable while non-default system layout is active.
 ** Show line numbers in the margin
 #+BEGIN_SRC emacs-lisp
 (use-package hlinum
-  :init (hlinum-activate))
+  :init 
+  (hlinum-activate))
 
-(use-package nlinum)
+(use-package nlinum
+  :config
+  (setq nlinum-highlight-current-line t)
+  (setq linum-format " %d ")
+  (setq nlinum-format linum-format))
 
-(setq linum-format " %d ")
-(setq nlinum-format linum-format)
 #+END_SRC
 ** fancy-battery
 
