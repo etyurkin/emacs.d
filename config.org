@@ -676,7 +676,8 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
  `(powerline-active1        ((t (:foreground "SkyBlue1" :background "SkyBlue4"))))
  `(powerline-active2        ((t (:foreground "white"    :background nil))))
  `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
- `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil)))))
+ `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil))))
+ `(eshell-prompt            ((t (:foreground "SkyBlue1")))))
 
 (use-package doom-themes
   :init
@@ -760,13 +761,11 @@ Ignore line wrappings and highlight entire line for org headers
  '(org-headline-done    ((t (:strike-through t))))
  '(org-agenda-done      ((t (:strike-through t)))))
 
-;; Toggle display of entities as UTF-8 characters.
-(setq org-pretty-entities t)
+(custom-set-variables
+ '(org-ellipsis "…")
+ '(org-pretty-entities t)
+ '(org-hide-emphasis-markers t))
 
-;; hide formatting markers in org
-(setq org-hide-emphasis-markers t)
-
-(setq org-ellipsis "…")
 #+END_SRC
 
 ** Terminal colors
@@ -2469,6 +2468,45 @@ see https://github.com/areina/helm-dash
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (setq-local helm-dash-docsets '("Emacs Lisp"))))
 #+END_SRC
+* Init eshell
+** Use the up and down keys for moving the cursor around in the eshell buffer.
+
+#+BEGIN_SRC emacs-lisp
+(require 'eshell)
+
+(defun kwarks/eshell-hook ()
+  (define-key eshell-mode-map [up] 'previous-line)
+  (define-key eshell-mode-map [down] 'next-line))
+ 
+(add-hook 'eshell-mode-hook 'kwarks/eshell-hook)
+#+END_SRC
+
+** Use helm for autocomplete
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (eshell-cmpl-initialize)
+            (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)))
+#+END_SRC
+
+** Eshell completion extensions
+
+#+BEGIN_SRC emacs-lisp
+(use-package pcomplete-extension
+  :quelpa (pcomplete-extension
+           :repo "thierryvolpiatto/pcomplete-extension"
+           :fetcher github))
+
+#+END_SRC
+
+** multi-eshell
+#+BEGIN_SRC emacs-lisp
+(use-package multi-eshell
+  :config
+  (setq multi-eshell-shell-function '(eshell)))
+#+END_SRC
+
 * Init programming
 ** Lisp
 *** Common Lisp
@@ -2685,12 +2723,6 @@ are usable while non-default system layout is active.
 (use-package paradox
   :config
   (setq paradox-github-token t))
-#+END_SRC
-
-** multi-eshell
-#+BEGIN_SRC emacs-lisp
-(use-package multi-eshell)
-(defalias 'eshell 'multi-eshell)
 #+END_SRC
 
 ** disable Ctrl-] key (abort-recursive-edit) as it conflicts with telnet in eshell
