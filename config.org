@@ -752,15 +752,19 @@ Ignore line wrappings and highlight entire line for org headers
              '("*" (:foreground "red")))
 
 (custom-set-faces
- `(org-level-1          ((t (:box nil :height 130 :background ,(face-attribute 'default :background)))))
- `(org-block            ((t (:background ,(face-attribute 'default :background)))))
- `(org-block-begin-line ((t (:background ,(face-attribute 'default :background) :slant italic))))
- `(org-block-end-line   ((t (:background ,(face-attribute 'default :background) :slant italic))))
- '(org-ellipsis         ((t (:background nil :strike-through nil))))
- '(org-done             ((t (:strike-through t))))
- '(org-headline-done    ((t (:strike-through t))))
- '(org-agenda-done      ((t (:strike-through t)))))
+ `(org-level-1           ((t (:box nil :height 130 :background ,(face-attribute 'default :background)))))
+ `(org-block             ((t (:background ,(face-attribute 'default :background)))))
+ `(org-block-begin-line  ((t (:background ,(face-attribute 'default :background) :slant italic))))
+ `(org-block-end-line    ((t (:background ,(face-attribute 'default :background) :slant italic))))
+ '(org-ellipsis          ((t (:background nil :strike-through nil))))
+ '(org-done              ((t (:strike-through t))))
+ '(org-headline-done     ((t (:strike-through t))))
+ '(org-agenda-done       ((t (:strike-through t))))
+ '(org-agenda-date       ((t (:foreground "gray"))))
+ '(org-agenda-date-today ((t (:foreground "#a9a1e1" :weight bold :slant italic)))))
 
+;;org-agenda-date-today
+;;  `(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
 (custom-set-variables
  '(org-ellipsis "…")
  '(org-pretty-entities t)
@@ -2468,7 +2472,7 @@ see https://github.com/areina/helm-dash
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (setq-local helm-dash-docsets '("Emacs Lisp"))))
 #+END_SRC
-* Init eshell
+* Init shell
 ** Use the up and down keys for moving the cursor around in the eshell buffer.
 
 #+BEGIN_SRC emacs-lisp
@@ -2504,7 +2508,8 @@ see https://github.com/areina/helm-dash
 #+BEGIN_SRC emacs-lisp
 (use-package multi-eshell
   :config
-  (setq multi-eshell-shell-function '(eshell)))
+  (setq multi-eshell-name "*shell*")
+  (setq multi-eshell-shell-function '(shell)))
 #+END_SRC
 
 * Init programming
