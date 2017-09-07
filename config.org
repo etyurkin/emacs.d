@@ -756,6 +756,7 @@ Ignore line wrappings and highlight entire line for org headers
  `(org-block             ((t (:background ,(face-attribute 'default :background)))))
  `(org-block-begin-line  ((t (:background ,(face-attribute 'default :background) :slant italic))))
  `(org-block-end-line    ((t (:background ,(face-attribute 'default :background) :slant italic))))
+ `(font-lock-comment-face ((t (:background ,(face-attribute 'default :background)))))
  '(org-ellipsis          ((t (:background nil :strike-through nil))))
  '(org-done              ((t (:strike-through t))))
  '(org-headline-done     ((t (:strike-through t))))
@@ -1837,6 +1838,21 @@ With arg N, insert N newlines."
                 (org-redisplay-inline-images)))))
 #+END_SRC
 
+** org-crypt
+#+BEGIN_SRC emacs-lisp
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+
+;; org entries with :crypt: tag will be encrypted automatically
+;; use C-c C-c to add tag
+;; use M-x org-decrypt-entry to decrypt
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+
+;; GPG key to use for encryption
+;; Either the Key ID or set to nil to use symmetric encryption.
+;; use gpg --list-keys to find key id
+(setq org-crypt-key "0645F0FB333B0EAA60279838995D889E67758C18")
+#+END_SRC
 ** org-agenda
 see [https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html]
 
