@@ -2815,6 +2815,12 @@ Still need to check if it works...
       (toggle-truncate-lines 1))))
 #+END_SRC
 
+** nov.el - ePub reader
+#+BEGIN_SRC emacs-lisp
+(use-package nov
+  :config
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+#+END_SRC
 * Post init
 
 ** Start server
