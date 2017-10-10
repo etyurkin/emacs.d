@@ -1781,6 +1781,9 @@ With arg N, insert N newlines."
 (setq diary-number-of-entries 3)
 (setq calendar-week-start-day 1)
 
+;; Highlight diary entries in calendar
+(setq calendar-mark-diary-entries-flag t)
+
 (setq org-log-done t
       org-completion-use-ido t
       org-edit-timestamp-down-means-later t
@@ -1838,6 +1841,14 @@ With arg N, insert N newlines."
                 (org-redisplay-inline-images)))))
 #+END_SRC
 
+** copy org link
+#+BEGIN_SRC emacs-lisp
+(defun org-copy-link ()
+  "Extract the link location at point and put it on the killring."
+  (interactive)
+  (when (org-in-regexp org-bracket-link-regexp 1)
+    (kill-new (org-link-unescape (org-match-string-no-properties 1)))))
+#+END_SRC
 ** org-crypt
 #+BEGIN_SRC emacs-lisp
 (require 'org-crypt)
@@ -2820,6 +2831,11 @@ Still need to check if it works...
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+#+END_SRC
+** midnight mode
+#+BEGIN_SRC emacs-lisp
+(require 'midnight)
+(clean-buffer-list)
 #+END_SRC
 * Post init
 
