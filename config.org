@@ -2044,6 +2044,17 @@ org mode toc, see [https://github.com/snosov1/toc-org]
 
 #+END_SRC
 
+** org-alert
+Provides notifications for scheduled or deadlined agenda entries.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-alert)
+
+(when *is-a-mac*
+  (setq alert-default-style 'osx-notifier))
+
+(org-alert-enable)
+#+END_SRC
 * Init paredit
 
 #+BEGIN_SRC emacs-lisp
