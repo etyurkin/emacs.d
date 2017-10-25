@@ -646,6 +646,14 @@ TODO: check osx version with 'sw_vers -productVersion' and apply fix if version 
 (tool-bar-mode -1)
 #+END_SRC
 
+** Set window margin
+#+BEGIN_SRC emacs-lisp
+(setq-default left-margin-width 1 right-margin-width 1)
+
+(add-hook 'window-configuration-change-hook
+          (lambda ()
+            (set-window-buffer nil (current-buffer))))
+#+END_SRC
 ** Init main theme
 
 #+BEGIN_SRC emacs-lisp
@@ -1036,6 +1044,14 @@ These functions use /mas/, install with /brew install mas/
   (global-set-key (kbd "M-?") 'ag-project))
 #+END_SRC
 
+* Init alert
+#+BEGIN_SRC emacs-lisp
+(use-package alert
+  :commands (alert)
+  :init
+  (when *is-a-mac*
+    (setq alert-default-style 'osx-notifier)))
+#+END_SRC
 * Init uniquify
 
 Nicer naming of buffers for files with identical names
@@ -2048,12 +2064,9 @@ org mode toc, see [https://github.com/snosov1/toc-org]
 Provides notifications for scheduled or deadlined agenda entries.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-alert)
-
-(when *is-a-mac*
-  (setq alert-default-style 'osx-notifier))
-
-(org-alert-enable)
+(use-package org-alert
+  :init
+  (org-alert-enable))
 #+END_SRC
 * Init paredit
 
@@ -2847,6 +2860,18 @@ Still need to check if it works...
 #+BEGIN_SRC emacs-lisp
 (require 'midnight)
 (clean-buffer-list)
+#+END_SRC
+** zoom
+This minor mode takes care of managing the window sizes by enforcing a fixed and automatic balanced layout where the currently selected window is resized according to zoom-size which can be an absolute value in lines/columns, a ratio between the selected window and frame size or even a custom callback.
+
+#+BEGIN_SRC emacs-lisp
+(use-package zoom
+  :init
+  ;; Resize the selected window using the golden ratio
+  (custom-set-variables
+   '(zoom-size '(0.618 . 0.618))) 
+  :config
+  (zoom-mode t))
 #+END_SRC
 * Post init
 
