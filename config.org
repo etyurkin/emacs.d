@@ -2065,7 +2065,7 @@ Provides notifications for scheduled or deadlined agenda entries.
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-alert
-  :init
+  :config
   (org-alert-enable))
 #+END_SRC
 * Init paredit
