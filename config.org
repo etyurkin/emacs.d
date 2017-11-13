@@ -748,7 +748,7 @@ Ignore line wrappings and highlight entire line for org headers
 ** Transparency settings
 
 #+BEGIN_SRC emacs-lisp
-(set-frame-parameter (selected-frame) 'alpha '(90 90))
+(set-frame-parameter (selected-frame) 'alpha '(100 100))
 (add-to-list 'default-frame-alist '(alpha 90 90))
 #+END_SRC
 
@@ -801,6 +801,16 @@ Ignore line wrappings and highlight entire line for org headers
   (diminish 'page-break-lines-mode))
 #+END_SRC
 
+* Init auto-dim-other-buffers
+The auto-dim-other-buffers-mode is a global minor mode which makes non-current buffer less prominent making it more apparent which window has a focus.
+
+#+BEGIN_SRC emacs-lisp
+(use-package auto-dim-other-buffers
+  :config
+  (custom-set-faces '(auto-dim-other-buffers-face ((t (:background "#1d2025")))))
+  :init
+  (auto-dim-other-buffers-mode t))
+#+END_SRC
 * Init exec path
 
 #+BEGIN_SRC emacs-lisp
@@ -1029,6 +1039,11 @@ These functions use /mas/, install with /brew install mas/
             (lambda () (guide-key/add-local-guide-key-sequence "%"))))
 #+END_SRC
 
+* Init visual-line
+#+BEGIN_SRC emacs-lisp
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+(global-visual-line-mode 1)
+#+END_SRC
 * Init grep
 #+BEGIN_SRC emacs-lisp
 (setq-default grep-highlight-matches t
@@ -2679,6 +2694,10 @@ Discovering elisp functions based on examples, see http://www.wilfred.me.uk/blog
 (use-package csharp-mode)
 #+END_SRC
 
+** Json
+#+BEGIN_SRC emacs-lisp
+(use-package json-mode)
+#+END_SRC
 ** Yaml
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
@@ -2869,9 +2888,8 @@ This minor mode takes care of managing the window sizes by enforcing a fixed and
   :init
   ;; Resize the selected window using the golden ratio
   (custom-set-variables
-   '(zoom-size '(0.618 . 0.618))) 
-  :config
-  (zoom-mode t))
+   '(zoom-size '(0.618 . 0.618))))
+
 #+END_SRC
 * Post init
 
