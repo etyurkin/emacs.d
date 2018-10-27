@@ -1,8 +1,18 @@
+;;; Package --- Summary
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
+;;; Commentary:
+;; Emacs init file responsible for either loading a pre-compiled configuration file
+;; or tangling and loading a literate org configuration file.
 
-(org-babel-load-file (concat user-emacs-directory "config.org"))
+;;; Code:
+
+;; Don't attempt to find/apply special file handlers to files loaded during startup.
+(let ((file-name-handler-alist nil))
+  ;; If config is pre-compiled, then load that
+  (if (file-exists-p (expand-file-name "config.elc" user-emacs-directory))
+      (load-file (expand-file-name "config.elc" user-emacs-directory))
+    ;; Otherwise use org-babel to tangle and load the configuration
+    (require 'org)
+    (org-babel-load-file (expand-file-name "config.org" user-emacs-directory))))
+
+;;; init.el ends here

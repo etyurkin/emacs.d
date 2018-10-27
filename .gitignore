@@ -3,6 +3,7 @@
 /auto-save-list
 /.session
 /session.*
+/.cache
 /custom.el
 *.elc
 .litable-lists.el
@@ -17,6 +18,7 @@ CVS
 /anything-c-adaptive-history
 /.org-id-locations
 cookies
+places
 /newsticker
 /ac-comphist.dat
 \#*
@@ -29,10 +31,12 @@ site-lisp/package/
 /frame-restore-parameters
 /.achievements
 /.bookmarks.el
+/bookmarks
 /history
 /helm-adaptive-history
 /thumbs/
 /emms/
+/javacomp
 /.smex-items
 /image-dired/
 /eshell
