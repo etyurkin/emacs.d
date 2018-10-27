@@ -1014,6 +1014,9 @@ Ignore line wrappings and highlight entire line for org headers
 (defun kwarks/set-hl-line-color ()
   (set-face-background 'hl-line (kwarks/color-from-theme 6 7)))
 
+(defun kwarks/set-linum-color ()
+  (set-face-foreground 'linum (kwarks/color-from-theme 20 20)))
+
 (defun kwarks/set-region-color ()
   (set-face-background 'region (kwarks/color-from-theme 15 15)))
 
@@ -1038,6 +1041,7 @@ Ignore line wrappings and highlight entire line for org headers
 (defun kwarks/set-theme-colors (&rest args)
   (kwarks/set-cursor-color)
   (kwarks/set-hl-line-color)
+  (kwarks/set-linum-color)
   (kwarks/set-region-color)
   (kwarks/set-border-color)
   (kwarks/set-titlebar-style)
