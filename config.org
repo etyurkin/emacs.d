@@ -316,6 +316,12 @@ Shell initialization for Windows
      (init-bash "bash"))))
 #+END_SRC
 
+** Cookies
+Disable http cookies
+
+#+BEGIN_SRC emacs-lisp
+(setq url-cookie-untrusted-urls '(".*"))
+#+END_SRC
 * ELisp Extensions
 ** Copy Org link
 #+BEGIN_SRC emacs-lisp
@@ -1015,6 +1021,7 @@ Ignore line wrappings and highlight entire line for org headers
   (set-face-background 'hl-line (kwarks/color-from-theme 6 7)))
 
 (defun kwarks/set-linum-color ()
+  (require 'linum)
   (set-face-foreground 'linum (kwarks/color-from-theme 20 20)))
 
 (defun kwarks/set-region-color ()
@@ -1174,14 +1181,18 @@ This package implements hiding or abbreviation of the mode line displays (lighte
 Use "C-/" or "C-z" for undo, and "C-?" or "C-Z" for redo, "C-x u" to display a tree view of undo history.
 
 #+BEGIN_SRC emacs-lisp
-(use-package undo-tree
-  :config  
+(defun kwarks/init-persistent-undo ()
   (let ((undo-dir (expand-file-name "undo" user-emacs-directory)))
     (unless (file-directory-p undo-dir)
       (make-directory undo-dir))
     (setq undo-tree-history-directory-alist `(("." . ,undo-dir)))
-    (setq undo-tree-auto-save-history t))
+    (setq undo-tree-auto-save-history t)))
 
+(use-package undo-tree
+  :config
+  ;; Persistent redo is causing overflow over time
+  ;; Disabled for now, test later
+  ;; (kwarks/init-persistent-undo)
   (defalias 'redo 'undo-tree-redo)
   (global-set-key (kbd "C-z") 'undo)
   (global-set-key (kbd "C-S-z") 'redo)
