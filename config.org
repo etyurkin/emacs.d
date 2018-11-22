@@ -1320,7 +1320,7 @@ Also check https://gist.github.com/izahn/00b7b930db646e15bae3d3741f603af5
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c f") 'helm-recentf)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+; (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
 (global-set-key (kbd "C-h r") 'helm-info-emacs)
 (global-set-key (kbd "C-h i") 'helm-info-at-point)
