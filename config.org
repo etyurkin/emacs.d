@@ -99,7 +99,6 @@ This is helpful for writeroom-mode, in particular."
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
 
 ;; Open buffers in the current window
 ;; (default is to switch to a window which has it open)
