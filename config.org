@@ -849,6 +849,7 @@ buffer."
   (save-some-buffers)
   (kill-emacs))
 #+end_src
+
 * Package Management
 Initialize use-package. 
 
@@ -1594,6 +1595,45 @@ With recent helm version there is a problem for file navigation, when helm-fuzzi
   (helm-ido-like-fix-fuzzy-files))
 
 (helm-ido-like)
+#+END_SRC
+*** Helm Virtual Box Control
+#+BEGIN_SRC emacs-lisp
+(defun helm--virtualbox-vms ()
+  (mapcar (lambda (str) (string-trim (car (split-string str " ")) "\"" "\""))
+          (split-string (trim (shell-command-to-string "VBoxManage list vms")) "\n")))
+
+(defun helm--virtualbox-sources ()
+  `((name . "Virtual Box")
+    (candidates . ,(helm--virtualbox-vms))
+    (action . (("Status" . (lambda (candidate)
+                             (let ((vm-info (shell-command-to-string (format "VBoxManage showvminfo \"%s\"" candidate))))
+                               (save-match-data
+                                 (and (string-match "^State:\\s-*\\(.*\\)$" vm-info)
+                                      (message (format "%s: %s" candidate (match-string 1 vm-info))))))))
+               ("Start" . (lambda (candidate)
+                            (message "start %s" candidate)
+                            (shell-command (format "VBoxManage startvm \"%s\"" candidate))))
+               ("Pause" . (lambda (candidate)
+                            (message "pause %s" candidate)
+                            (shell-command (format "VBoxManage controlvm \"%s\" pause" candidate))))
+               ("Resume" . (lambda (candidate)
+                             (message "resume %s" candidate)
+                             (shell-command (format "VBoxManage controlvm \"%s\" resume" candidate))))
+               ("Reset" . (lambda (candidate)
+                            (message "reset %s" candidate)
+                            (shell-command (format "VBoxManage controlvm \"%s\" reset" candidate))))
+               ("Power off" . (lambda (candidate)
+                                (message "power off %s" candidate)
+                                (shell-command (format "VBoxManage controlvm \"%s\" poweroff" candidate))))
+               ("Save state" . (lambda (candidate)
+                                 (message "save state %s" candidate)
+                                 (shell-command (format "VBoxManage controlvm \"%s\" savestate" candidate))))))))
+
+(defun helm-virtualbox ()
+  "Control Virtual Box VMs"
+  (interactive)
+  (helm :sources (helm--virtualbox-sources)
+        :buffer "*helm-virtualbox*"))
 #+END_SRC
 ** company
 Company stands for “complete anything” and is a modular in-buffer completion mechanism.
