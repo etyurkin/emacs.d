@@ -141,7 +141,7 @@ This is helpful for writeroom-mode, in particular."
 #+BEGIN_SRC emacs-lisp :tangle yes
 (unless-windows
  (require 'epa-file)
- (custom-set-variables `(epg-gpg-program  ,(if (osx-p) "/usr/local/bin/gpg" "gpg"))
+ (custom-set-variables `(epg-gpg-program  ,(if (osx-p) "/usr/local/bin/gpg" "gpg")))
  (epa-file-enable))
 #+END_SRC
 
