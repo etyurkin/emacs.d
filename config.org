@@ -5,23 +5,32 @@
 Macros for platform-specific code
 
 #+BEGIN_SRC emacs-lisp
-(defmacro ms-windows-p ()
-  (eq system-type 'windows-nt))
-
-(defmacro cygwin-p ()
-  (eq system-type 'cygwin))
+(defmacro linux-p ()
+  (eq system-type 'gnu/linux))
 
 (defmacro osx-p ()
   (eq system-type 'darwin))
 
-(defmacro when-windows (&rest body)
-  `(if (ms-windows-p) (progn ,@body)))
+(defmacro cygwin-p ()
+  (eq system-type 'cygwin))
+
+(defmacro ms-windows-p ()
+  (eq system-type 'windows-nt))
+
+(defmacro when-linux (&rest body)
+  `(if (linux-p) (progn ,@body)))
+
+(defmacro when-osx (&rest body)
+  `(if (osx-p) (progn ,@body)))
 
 (defmacro when-cygwin (&rest body)
   `(if (cygwin-p) (progn ,@body)))
 
-(defmacro when-osx (&rest body)
-  `(if (osx-p) (progn ,@body)))
+(defmacro when-windows (&rest body)
+  `(if (ms-windows-p) (progn ,@body)))
+
+(defmacro unless-linux (&rest body)
+  `(if (linux-p) nil ,@body))
 
 (defmacro unless-osx (&rest body)
   `(if (osx-p) nil ,@body))
@@ -132,7 +141,7 @@ This is helpful for writeroom-mode, in particular."
 #+BEGIN_SRC emacs-lisp :tangle yes
 (unless-windows
  (require 'epa-file)
- (custom-set-variables '(epg-gpg-program  "/usr/local/bin/gpg"))
+ (custom-set-variables `(epg-gpg-program  ,(if (osx-p) "/usr/local/bin/gpg" "gpg"))
  (epa-file-enable))
 #+END_SRC
 
@@ -498,6 +507,24 @@ It then indents the markup by using nxml's indentation rules."
   (aset buffer-display-table ?\^M []))
 #+END_SRC
 
+** hex/unhex region
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/region-apply (start end func)
+  "apply a function to the region between START and END in current buffer."
+  (save-excursion
+    (let ((text (delete-and-extract-region start end)))
+      (insert (funcall func text)))))
+
+(defun hex-region (start end)
+  "urlencode the region between START and END in current buffer."
+  (interactive "r")
+  (kwarks/region-apply start end #'url-hexify-string))
+
+(defun unhex-region (start end)
+  "de-urlencode the region between START and END in current buffer."
+  (interactive "r")
+  (kwarks/region-apply start end #'url-unhex-string))
+#+END_SRC
 ** Edit current file as root
 
 #+BEGIN_SRC emacs-lisp
