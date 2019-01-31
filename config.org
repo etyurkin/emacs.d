@@ -972,9 +972,12 @@ previously compiled manually then all of the package initialization will still t
      ,else-action))
 
 (defun kwarks/color-from-theme (lighter-percentage darker-percentage)
-  (kwarks/if-dark-theme
-   (color-lighten-name (face-background 'default) lighter-percentage)
-   (color-darken-name (face-background 'default) darker-percentage)))
+  (let* ((bg (face-background 'default))
+         (bg-color (if (string= bg "unspecified-bg") "#000000" bg)))
+
+    (kwarks/if-dark-theme
+     (color-lighten-name bg-color lighter-percentage)
+     (color-darken-name bg-color darker-percentage))))
 #+END_SRC
 
 ** Suppress GUI features
@@ -1100,7 +1103,7 @@ Ignore line wrappings and highlight entire line for org headers
   (kwarks/set-titlebar-style)
   (kwarks/set-theme-colors)
   (kwarks/set-theme-faces)
-  (set-frame-position nil 350 100)
+  ;;(set-frame-position nil 350 100)
   (set-frame-size nil 110 40)
   (set-frame-parameter nil 'fullscreen nil))
 
@@ -1741,39 +1744,12 @@ This Emacs library provides a global mode which displays ugly form feed characte
 Include a newer version of org-mode than the one that is built in. 
 
 #+BEGIN_SRC emacs-lisp
-;;
 (use-package org
   :ensure org-plus-contrib
   :pin org
   :defer t)
-;; Ensure ELPA org is prioritized above built-in org.
-(require 'cl)
-(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 
 (use-package ox-gfm)
-
-;; (use-package org
-;;   :quelpa (org
-;; 	       :url "https://code.orgmode.org/bzg/org-mode.git"
-;; 	       :fetcher git
-;; 	       :files ("lisp/*.el" "contrib/lisp/*.el" "doc/dir" "doc/*.texi")
-;; 	       :upgrade nil)
-;;   :config
-;;   (require 'ox)
-;;   (require 'ox-md)
-;;   (require 'ox-html)
-;;   (require 'ox-gfm)
-;; ;;  (require 'org-tempo)
-;;   :init
-;;   (setq org-export-with-toc nil))
-;;  :init (require 'org-tempo))
-
-;; Display time grid for today
-;; (setq org-agenda-time-grid
-;;       (quote
-;;        ((daily today remove-match)
-;; 	(900 1000 1100 1200 1300 1400 1500 1600)
-;;         "......" "----------------")))
 #+END_SRC
 
 *** basic settings
