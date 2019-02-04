@@ -607,24 +607,24 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
   (let ((result "")
         (hundreds (truncate n 100))
         (rem (% n 100)))
-    (when (plusp hundreds)
+    (when (cl-plusp hundreds)
       (setq result (concat result
                            (elt *cardinal-ones* hundreds)
                            " hundred"))
-      (when (plusp rem)
+      (when (cl-plusp rem)
         (setq result (concat result " "))))
-    (when (plusp rem)
+    (when (cl-plusp rem)
       (let ((tens (truncate rem 10))
             (ones (% rem 10)))
         (cond ((< 1 tens)
                (setq result (concat result (elt *cardinal-tens* tens)))
-               (when (plusp ones)
+               (when (cl-plusp ones)
                  (setq result (concat result
                                       "-"
                                       (elt *cardinal-ones* ones)))))
               ((= tens 1)
                (setq result (concat result (elt *cardinal-teens* ones))))
-              ((plusp ones)
+              ((cl-plusp ones)
                (setq result (concat result (elt *cardinal-ones* ones)))))))
     result))
 
@@ -653,7 +653,7 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
   "Return number N as a human readable english cardinal number."
   (interactive "nNumber? ")
   (let ((result ""))
-    (cond ((minusp n)
+    (cond ((cl-minusp n)
            (setq result (concat result
                                 "negative "
                                 (number-to-english-cardinal-aux (- n) 0 n))))
@@ -671,14 +671,14 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
   "Return number N as a human readable english ordinal number."
   (interactive "nNumber? ")
   (let ((result ""))
-    (when (minusp n)
+    (when (cl-minusp n)
       (setq result "negative "))
     (let ((number (abs n)))
       (let ((top (truncate number 100))
             (bot (% number 100)))
         (unless (zerop top)
           (setq result (concat result (number-to-english-cardinal (- number bot)))))
-        (when (and (plusp top) (plusp bot))
+        (when (and (cl-plusp top) (cl-plusp bot))
           (setq result (concat result " ")))
         (let ((tens (truncate bot 10))
               (ones (% bot 10)))
@@ -688,16 +688,16 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
                  (setq result (concat result
                                       (elt *cardinal-teens* ones)
                                       "th")))
-                ((and (zerop tens) (plusp ones))
+                ((and (zerop tens) (cl-plusp ones))
                  (setq result (concat result (elt *ordinal-ones* ones))))
-                ((and (zerop ones)(plusp tens))
+                ((and (zerop ones)(cl-plusp tens))
                  (setq result (concat result (elt *ordinal-tens* tens))))
-                ((plusp bot)
+                ((cl-plusp bot)
                  (setq result (concat result
                                       (elt *cardinal-tens* tens)
                                       "-"
                                       (elt *ordinal-ones* ones))))
-                ((plusp number)
+                ((cl-plusp number)
                  (setq result (concat result "th")))
                 (t
                  (setq result (concat result "zeroth")))))))
@@ -1104,8 +1104,9 @@ Ignore line wrappings and highlight entire line for org headers
   (kwarks/set-theme-colors)
   (kwarks/set-theme-faces)
   ;;(set-frame-position nil 350 100)
-  (set-frame-size nil 110 40)
-  (set-frame-parameter nil 'fullscreen nil))
+  ;;(set-frame-size nil 110 40)
+  ;;(set-frame-parameter nil 'fullscreen nil))
+)
 
 (kwarks/with-make-frame (kwarks/setup-frame))
 ;;(add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
@@ -2387,6 +2388,13 @@ Structure and Interpretation of Computer Programs ebook
 ** yaml
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode)
+#+END_SRC
+
+** cypher
+Cypher is a declarative graph query language that allows for expressive and efficient querying and updating of the graph. 
+
+#+BEGIN_SRC emacs-lisp
+(use-package cypher-mode)
 #+END_SRC
 
 ** http
