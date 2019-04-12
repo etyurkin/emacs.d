@@ -1165,7 +1165,6 @@ Ignore line wrappings and highlight entire line for org headers
 (use-package doom-modeline
   :hook (after-init . init-doom-modeline))
 #+END_SRC
-** 
 ** crux
 Set C-a to move to the first non-whitespace character on a line, and then to toggle between that and the beginning of the line.
 
