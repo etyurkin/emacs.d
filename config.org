@@ -1117,34 +1117,6 @@ Ignore line wrappings and highlight entire line for org headers
 
 #+END_SRC
 
-** Spaceline
-#+BEGIN_SRC emacs-lisp
-(setq ns-use-srgb-colorspace nil) ; without it spaceline looks ugly...
-
-(kwarks/with-make-frame
- (custom-set-faces
-  `(powerline-active1        ((t (:foreground "SkyBlue1" :background nil))))
-  `(powerline-active2        ((t (:foreground "white"    :background nil))))
-  `(powerline-inactive1      ((t (:foreground "SkyBlue4" :background nil))))
-  `(powerline-inactive2      ((t (:foreground "SkyBlue4" :background nil))))))
-
-(use-package spaceline
-  :init
-  (require 'spaceline-config)
-  (setq powerline-default-separator 'alternate)
-  (setq spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-emacs-theme)
-  (spaceline-toggle-minor-modes-off)
-  (spaceline-toggle-hud-off)
-  (remove-hook 'focus-out-hook 'powerline-unset-selected-window))
-
-(setq display-time-day-and-date t)
-(setq display-time-string-forms
-      '((propertize (format-time-string "%a %b %d, %R" now) 'weight 'normal)))
-(display-time-mode t)
-
-
-#+END_SRC
 ** org-mode visuals
 #+BEGIN_SRC emacs-lisp
 (require 'org)
@@ -1177,6 +1149,23 @@ Ignore line wrappings and highlight entire line for org headers
 
 #+END_SRC
 * Packages
+** doom-modeline
+#+BEGIN_SRC emacs-lisp
+(defun init-doom-modeline ()
+  (require 'doom-modeline)
+
+  (setq doom-modeline-icon nil)
+  (doom-modeline-mode)
+  
+  (doom-modeline-def-modeline 'my-simple-line
+    '(bar matches buffer-info remote-host parrot)
+    '(buffer-position selection-info misc-info minor-modes process vcs checker input-method fancy-battery buffer-encoding major-mode))
+  (doom-modeline-set-modeline 'my-simple-line 'default))
+
+(use-package doom-modeline
+  :hook (after-init . init-doom-modeline))
+#+END_SRC
+** 
 ** crux
 Set C-a to move to the first non-whitespace character on a line, and then to toggle between that and the beginning of the line.
 
@@ -1304,7 +1293,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
   (smex-initialize))
 #+END_SRC
-** COMMENT helm
+** helm
 #+BEGIN_SRC emacs-lisp
 (defun kwarks/helm-top-sh (orig-fn &rest args)
   "Run kill shell command with signal SIG on PIDS for `helm-top'."
