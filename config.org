@@ -1158,7 +1158,7 @@ Ignore line wrappings and highlight entire line for org headers
   (doom-modeline-mode)
   
   (doom-modeline-def-modeline 'my-simple-line
-    '(bar matches buffer-info remote-host parrot)
+    '(matches buffer-info remote-host parrot)
     '(buffer-position selection-info misc-info minor-modes process vcs checker input-method fancy-battery buffer-encoding major-mode))
   (doom-modeline-set-modeline 'my-simple-line 'default))
 
@@ -1320,7 +1320,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 
 ** ivy
 #+BEGIN_SRC emacs-lisp
-(use-package ivy :ensure t
+(use-package ivy
   :diminish (ivy-mode . "")
   :bind (("C-c C-r" . ivy-resume)
          ("C-x k" . ivy-kill-buffer)
@@ -1363,6 +1363,14 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
          ("<f2> i" . counsel-info-lookup-symbol)
          :map minibuffer-local-map
          ("C-r" . counsel-minibuffer-history)))
+
+(use-package ivy-rich
+  :after ivy
+  :demand t
+  :init
+  (setq ivy-format-function #'ivy-format-function-line)
+  :config
+  (ivy-rich-mode 1))
 #+END_SRC
 ** company
 Company stands for “complete anything” and is a modular in-buffer completion mechanism.
