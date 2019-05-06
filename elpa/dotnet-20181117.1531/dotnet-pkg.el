@@ -1,2 +1,0 @@
-;;; -*- no-byte-compile: t -*-
-(define-package "dotnet" "20181117.1531" "Interact with dotnet CLI tool" 'nil :stars '(#("6" 0 1 (font-lock-face paradox-star-face))) :commit "70ed170caeeecba5fddbd82b0d6aec967b6c6ee4" :keywords '(".net" "tools") :authors '(("Julien BLANCHARD" . "julien@sideburns.eu")) :maintainer '("Julien BLANCHARD" . "julien@sideburns.eu") :url "https://github.com/julienXX/dotnet.el")
