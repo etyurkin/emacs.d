@@ -876,6 +876,84 @@ buffer."
   (kill-emacs))
 #+end_src
 
+** SQLi configuration
+These functions are using connection info from /secrets.el.gpg/
+See https://truongtx.me/2014/08/23/setup-emacs-as-an-sql-database-client
+
+| Key binding | What it does                                                      |
+|-------------+-------------------------------------------------------------------|
+| C-c C-b     | sql-send-buffer                                                   |
+| C-c C-c     | sql-send-paragraph                                                |
+| C-c C-r     | sql-send-region                                                   |
+| C-c C-s     | sql-send-string                                                   |
+| C-M-q       | prog-indent-sexp                                                  |
+| C-c C-l a   | sql-list-all - lists all of the objects in the USER_OBJECTS view. |
+| C-c C-l t   | sql-list-table - lists only the tables owned by the current user  |
+| C-c TAB     | sql-product-interactive                                           |
+
+Connection settings should be in defined in /sql-connection-alist/ and passwords should be stored in /secrets-file/, e.g. /secrets.el.gpg/
+Here both connection info and password are stored in /secrets.el.gpg/ file:
+#+BEGIN_SRC emacs-lisp :tangle no
+(setq sql-connection-alist
+      '((mydatabase (sql-product 'oracle)
+                 (sql-port 1522)
+                 (sql-server "localhost")
+                 (sql-user "admin")
+                 (sql-database "mydatabase"))))
+
+(setq sql-passwords
+      '((mydatabase "Passw0rd")))
+
+(provide 'secrets)
+#+END_SRC
+
+For Oracle sqlplus edit instantclient_18_1/glogin.sql or $ORACLE_HOME/sqlplus/admin/glogin.sql
+#+BEGIN_SRC sql :tangle no
+SET WRAP OFF;
+SET TRIMSPOOL ON;
+SET TRIMOUT ON;
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; oracle database connection setup
+(when-osx
+ (setq sql-oracle-program "/opt/oracle/instantclient_18_1/sqlplus"))
+
+(defun kwarks/sql-conect (product database-name)
+  (if (bound-and-true-p secrets-file)
+      (require 'secrets (expand-file-name secrets-file)))
+
+  ;; update the password to the sql-connection-alist
+  (let ((connection-info (assoc database-name sql-connection-alist))
+        (sql-password (car (last (assoc database-name sql-passwords)))))
+    (delete sql-password connection-info)
+    (nconc connection-info `((sql-password ,sql-password)))
+    (setq sql-connection-alist (assq-delete-all database-name sql-connection-alist))
+    (add-to-list 'sql-connection-alist connection-info))
+
+  ;; connect to database
+  (setq sql-product product)
+  (sql-connect database-name))
+
+(defun oracle-connect (database-name)
+  (interactive "MDatabase: ")
+
+  ;; fix sql prompt
+  (setq comint-prompt-regexp "^SQL> ")
+
+  (custom-set-variables
+   '(comint-prompt-read-only t)
+   '(comint-use-prompt-regexp t))
+  (custom-set-faces)
+  
+  (kwarks/sql-conect 'oracle (intern database-name)))
+
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (setq tab-width 8)
+            (toggle-truncate-lines t)))
+
+#+END_SRC
 * Package Management
 Initialize use-package. 
 
