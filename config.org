@@ -1709,6 +1709,13 @@ toc-org helps to have an up-to-date table of contents in org files.
   :init (add-hook 'org-mode-hook #'toc-org-enable))
 #+END_SRC
 
+** emacs-htmlize
+Convert buffer text and decorations to HTML
+
+#+BEGIN_SRC emacs-lisp
+(use-package htmlize)
+#+END_SRC
+
 ** alert
 #+BEGIN_SRC emacs-lisp
 (use-package alert
