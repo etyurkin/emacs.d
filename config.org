@@ -1723,6 +1723,13 @@ h (export to HTML file)
 (use-package htmlize)
 #+END_SRC
 
+** copy-as-format
+Emacs function to copy buffer locations as GitHub/Slack/JIRA/HipChat/... formatted code
+e.g. copy-as-format-slack, copy-as-format-github
+
+#+BEGIN_SRC emacs-lisp
+(use-package copy-as-format)
+#+END_SRC
 ** alert
 #+BEGIN_SRC emacs-lisp
 (use-package alert
