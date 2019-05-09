@@ -1712,6 +1712,13 @@ toc-org helps to have an up-to-date table of contents in org files.
 ** emacs-htmlize
 Convert buffer text and decorations to HTML
 
+To convert org subtree:
+
+M-x org-export-dispatch
+C-s (change the export scope to subtree)
+h (HTML menu)
+h (export to HTML file)
+
 #+BEGIN_SRC emacs-lisp
 (use-package htmlize)
 #+END_SRC
