@@ -219,7 +219,7 @@ Blink the mode-line red briefly. Set `ring-bell-function' to this to use it.
 
 (when (and (boundp 'custom-theme-load-path) load-file-name) (let* ((base (file-name-directory load-file-name)) (dir (expand-file-name "themes/" base))) (add-to-list 'custom-theme-load-path (or (and (file-directory-p dir) dir) base))))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "doom-themes" '("doom-themes-" "def-doom-theme")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "doom-themes" '("def-doom-theme" "doom-themes-")))
 
 ;;;***
 

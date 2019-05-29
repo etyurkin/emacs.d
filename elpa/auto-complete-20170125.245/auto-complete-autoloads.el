@@ -17,6 +17,11 @@ Start auto-completion at current point.
 (autoload 'auto-complete-mode "auto-complete" "\
 AutoComplete mode
 
+If called interactively, enable Auto-Complete mode if ARG is positive, and
+disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it
+if ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (defvar global-auto-complete-mode nil "\
@@ -41,7 +46,7 @@ See `auto-complete-mode' for more information on Auto-Complete mode.
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "auto-complete" '("auto-complete-mode" "ac-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "auto-complete" '("ac-" "auto-complete-mode")))
 
 ;;;***
 

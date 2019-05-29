@@ -64,6 +64,11 @@ for a description of this minor mode.")
 (autoload 'dumb-jump-mode "dumb-jump" "\
 Minor mode for jumping to variable and function definitions
 
+If called interactively, enable Dumb-Jump mode if ARG is positive, and
+disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it
+if ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dumb-jump" '("dumb-jump-")))

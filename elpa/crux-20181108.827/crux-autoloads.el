@@ -175,6 +175,11 @@ or call the function `crux-reopen-as-root-mode'.")
 Automatically reopen files as root if we can't write to them
 as the current user.
 
+If called interactively, enable Crux-Reopen-As-Root mode if ARG is positive, and
+disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it
+if ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (autoload 'crux-insert-date "crux" "\
