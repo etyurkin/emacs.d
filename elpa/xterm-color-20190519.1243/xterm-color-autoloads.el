@@ -67,7 +67,7 @@ xterm-color.el with other functionally similar libraries.
 
 \(fn)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "xterm-color" '("xterm-color-" "+xterm-color--table-256+")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "xterm-color" '("+xterm-color--table-256+" "xterm-color-")))
 
 ;;;***
 
