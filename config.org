@@ -1186,7 +1186,7 @@ Ignore line wrappings and highlight entire line for org headers
 )
 
 (kwarks/with-make-frame (kwarks/setup-frame))
-;;(add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
+(add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
 
 (use-package doom-themes
   :init
