@@ -53,6 +53,7 @@ site-lisp/package/
 /quelpa/
 /wiki
 /org-todo
+/org-brain
 /config.el
 /.docsets
 /nov-places
