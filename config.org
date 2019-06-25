@@ -1766,6 +1766,27 @@ Org-wiki is a org-mode extension that provides tools to manage and build persona
            :fetcher github))
 #+END_SRC
 
+** org-brain
+[[https://github.com/Kungsgeten/org-brain][org-brain]] implements a variant of [[https://en.wikipedia.org/wiki/Concept_map][concept mapping]] in Emacs, using org-mode. 
+It is heavily inspired by a piece of software called [[http://thebrain.com/][The Brain]].
+
+#+begin_src emacs-lisp
+(use-package org-brain
+  :init
+  (setq org-brain-path (expand-file-name "org-brain" user-emacs-directory))
+  (unless (file-directory-p org-brain-path)
+    (make-directory org-brain-path t))
+
+  :config
+  (require 'org-capture)
+  (setq org-id-track-globally t)
+  (setq org-id-locations-file (expand-file-name ".org-id-locations" user-emacs-directory))
+  (push '("b" "Brain" plain (function org-brain-goto-end)
+          "* %i%?" :empty-lines 1)
+        org-capture-templates)
+  (setq org-brain-visualize-default-choices 'all)
+  (setq org-brain-title-max-length 12))
+#+end_src
 ** org-pretty-table
 #+BEGIN_SRC emacs-lisp :tangle no
 This package makes org tables use unicode symbols for drawing.
