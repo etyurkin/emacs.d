@@ -2032,6 +2032,7 @@ Don't forget to setenv TERM xterm-256color
 
 (defun init-eshell-mode ()
   (require 'eshell)
+  (require 'esh-mode)
 
   (add-hook 'eshell-before-prompt-hook
             (lambda ()
