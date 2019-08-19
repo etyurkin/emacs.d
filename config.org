@@ -867,6 +867,19 @@ buffer."
           (add-text-properties left pos (list from nil to prop) object))))))
 #+END_SRC
 
+** Copy buffer file name to clipboard
+#+begin_src emacs-lisp
+(defun kwarks/buffer-file-name-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message filename))))
+#+end_src
+
 ** Server shutdown
 #+begin_src emacs-lisp
 (defun server-shutdown ()
