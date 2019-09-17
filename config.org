@@ -42,6 +42,7 @@ Macros for platform-specific code
 ** Enable lexical binding
 #+BEGIN_SRC emacs-lisp
 ;; -*- lexical-binding: t -*-
+(setq lexical-binding t)
 #+END_SRC
 ** Garbage collection
 We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
@@ -1401,8 +1402,12 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
     (message "kill -s %s %s exited with status %s"
              sig (mapconcat 'identity pids " ")
              (apply (lambda (pid)
-                      (shell-command (format "kill -s %s %s" sig pid)))
-                    pids))))
+                      (shell-command-to-string (format "kill -s %s %s" sig pid)))
+                    pids))
+    (dolist (buffer (buffer-list))
+      (when (or (string-match "^*helm top*" (buffer-name buffer))
+                (string-match "^*tramp/sudo" (buffer-name buffer)))
+        (kill-buffer buffer)))))
 
 (use-package helm
   :config
@@ -2077,6 +2082,7 @@ Don't forget to setenv TERM xterm-256color
   (init-eshell-mode)
   (init-compilation-shell-minor-mode))
 #+end_src
+
 * Programming
 ** magit
 The magical git client. Let's load magit only when one of the several entry pont
