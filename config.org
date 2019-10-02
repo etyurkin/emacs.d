@@ -1762,7 +1762,7 @@ e.g. copy-as-format-slack, copy-as-format-github
 (use-package org-passwords
   :bind (:map org-passwords-mode-map
               ("C-c C-p u" . org-passwords-copy-username)
-              ("C-c C-p p" . org-passwords-copy=password)
+              ("C-c C-p p" . org-passwords-copy-password)
               ("C-c C-p o" . org-passwords-open-url))
   :quelpa (org-passwords
            :url "https://bitbucket.org/alfaromurillo/org-passwords.el.git"
