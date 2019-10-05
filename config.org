@@ -1,6 +1,11 @@
 #+PROPERTY: header-args :tangle yes
 
 * Init
+** Enable lexical binding
+#+BEGIN_SRC emacs-lisp
+;;;  -*- lexical-binding: t; -*-
+#+END_SRC
+
 ** OS helper macros
 Macros for platform-specific code
 
@@ -39,11 +44,6 @@ Macros for platform-specific code
   `(if (ms-windows-p) nil ,@body))
 #+END_SRC
 
-** Enable lexical binding
-#+BEGIN_SRC emacs-lisp
-;; -*- lexical-binding: t -*-
-(setq lexical-binding t)
-#+END_SRC
 ** Garbage collection
 We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
 We'll lower this value significantly after initialization has completed. We don't want to keep this value
