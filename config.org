@@ -1029,9 +1029,6 @@ Since the code is automatically compiled during runtime, if the configuration ha
 previously compiled manually then all of the package initialization will still take place at startup.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(if (bound-and-true-p *proxy-host*)
-    (kwarks/set-proxy *proxy-host*))
-
 (eval-when-compile
   (require 'package)
 
@@ -1399,14 +1396,11 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   (let ((default-directory "/sudo::")
         (sig (car args))
         (pids (cadr args)))
-    (message "kill -s %s %s exited with status %s"
-             sig (mapconcat 'identity pids " ")
-             (apply (lambda (pid)
-                      (shell-command-to-string (format "kill -s %s %s" sig pid)))
-                    pids))
+    (apply (lambda (pid)
+             (shell-command (format "kill -s %s %s" sig pid)))
+           pids)
     (dolist (buffer (buffer-list))
-      (when (or (string-match "^*helm top*" (buffer-name buffer))
-                (string-match "^*tramp/sudo" (buffer-name buffer)))
+      (when (string-match "^*helm top*" (buffer-name buffer))
         (kill-buffer buffer)))))
 
 (use-package helm
