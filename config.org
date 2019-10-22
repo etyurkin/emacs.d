@@ -1518,6 +1518,10 @@ Company stands for “complete anything” and is a modular in-buffer completion
          ("M-/" . company-complete)
          :map company-active-map
          ("M-/" . company-select-next))
+  :config
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-ignore-case t)
+  
   :init
   (global-company-mode)
   (diminish 'company-mode "CMP"))
