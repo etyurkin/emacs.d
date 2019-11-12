@@ -1248,7 +1248,7 @@ Ignore line wrappings and highlight entire line for org headers
 
   (setq display-time-day-and-date t)
   (setq display-time-string-forms
-        '((propertize (format-time-string "%a %b %d, %R" now) 'weight 'normal)))
+        '((propertize (format-time-string " %a %b %d, %R" now) 'weight 'normal)))
   (display-time-mode t)
 
   (doom-modeline-def-modeline 'my-simple-line
