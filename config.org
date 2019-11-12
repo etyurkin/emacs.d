@@ -1618,6 +1618,10 @@ Include a newer version of org-mode than the one that is built in.
 ;; Disable sub-superscripts
 (setq org-use-sub-superscripts '{})
 
+;; inline images
+(setq org-startup-with-inline-images t)
+(setq org-image-actual-width nil)
+
 (setq org-src-fontify-natively t
       org-src-window-setup 'current-window
       org-src-strip-leading-and-trailing-blank-lines t
