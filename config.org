@@ -1253,7 +1253,7 @@ Ignore line wrappings and highlight entire line for org headers
 
   (doom-modeline-def-modeline 'my-simple-line
     '(matches buffer-info remote-host parrot)
-    '(buffer-position selection-info minor-modes process vcs checker input-method buffer-encoding fancy-battery misc-info major-mode))
+    '(buffer-position selection-info minor-modes process vcs checker input-method buffer-encoding battery misc-info major-mode))
 
   (doom-modeline-set-modeline 'my-simple-line 'default)
   (remove-hook 'focus-in-hook #'doom-modeline-set-selected-window)
