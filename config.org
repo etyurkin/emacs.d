@@ -2252,6 +2252,11 @@ curl http://3e8.org/pub/chicken-doc/chicken-doc-repo.tgz | sudo tar zx
   (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode))
 
 #+END_SRC
+** racket
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode)
+#+END_SRC
+
 ** java
 To make javacomp work with sbt projects use /retrieveManaged := true/ option.
 This will copy all managed dependencies to <build-root>/lib_managed/ and make it available for javacomp.
