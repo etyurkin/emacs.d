@@ -2227,6 +2227,13 @@ curl http://3e8.org/pub/chicken-doc/chicken-doc-repo.tgz | sudo tar zx
 (if (file-exists-p "/usr/local/lib/chicken")
     (kwarks/init-scheme))
 #+END_SRC
+*** geiser
+Geiser is a collection of Emacs major and minor modes that conspire with one or more Scheme interpreters to keep the Lisp Machine Spirit alive. It draws inspiration (and a bit more) from environments such as Common Lisp’s Slime, Factor’s FUEL, Squeak or Emacs itself, and does its best to make Scheme hacking inside Emacs (even more) fun.
+
+#+BEGIN_SRC emacs-lisp
+(use-package geiser)
+#+END_SRC
+
 *** rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
