@@ -74,12 +74,14 @@ if you would like to see any and all byte compiler warnings.
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq create-lockfiles nil)
 #+END_SRC
+
 ** Disable custom settings
 Don't add customised settings to init.el
 
 #+BEGIN_SRC emacs-lisp
 (setq custom-file (make-temp-file "emacs-custom"))
 #+END_SRC
+
 ** Fill column
 #+BEGIN_SRC emacs-lisp :tangle yes
 (defun sanityinc/maybe-adjust-visual-fill-column ()
@@ -93,8 +95,8 @@ This is helpful for writeroom-mode, in particular."
 (add-hook 'visual-fill-column-mode-hook
           'sanityinc/maybe-adjust-visual-fill-column)
 #+END_SRC
-** Keep history for recently accessed files
 
+** Keep history for recently accessed files
 #+BEGIN_SRC emacs-lisp :tangle yes
 (recentf-mode 1)
 (setq-default
@@ -104,40 +106,17 @@ This is helpful for writeroom-mode, in particular."
 (add-to-list 'recentf-exclude (format "%s/.*" (expand-file-name "elpa" user-emacs-directory)))
 #+END_SRC
 
-** Ido
-"Interactively DO things"
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(setq ido-enable-flex-matching t)
-
-;; Open buffers in the current window
-;; (default is to switch to a window which has it open)
-(setq ido-default-buffer-method 'selected-window)
-(setq ido-default-file-method 'selected-window)
-
-;; Use recentf and ido together
-;; http://www.reddit.com/r/emacs/comments/21a4p9/use_recentf_and_ido_together/cgbprem
-(setq ido-use-virtual-buffers t)
-
-(defun kwarks/ido-jump-home ()
-  (interactive)
-  (ido-set-current-directory "~/")
-  (setq ido-exit 'refresh)
-  (exit-minibuffer))
-
-(defun kwarks/ido-setup-hook ()
-  (define-key ido-file-dir-completion-map "~" 'kwarks/ido-jump-home)
-  (define-key ido-completion-map [up] 'previous-history-element)
-  (define-key ido-completion-map [down] 'next-history-element))
-
-(add-hook 'ido-setup-hook 'kwarks/ido-setup-hook)
-(ido-mode 1)
+** Enable double-buffering
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 #+END_SRC
+
 ** Midnight mode
 #+BEGIN_SRC emacs-lisp :tangle yes
 (require 'midnight)
 (midnight-mode)
 #+END_SRC
+
 ** Encryption
 #+BEGIN_SRC emacs-lisp :tangle yes
 (unless-windows
@@ -147,7 +126,6 @@ This is helpful for writeroom-mode, in particular."
 #+END_SRC
 
 ** Backups
-
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq
  backup-by-copying t
@@ -221,8 +199,8 @@ This is helpful for writeroom-mode, in particular."
 
 (setq-default history-length 1000)
 (savehist-mode t)
-
 #+END_SRC
+
 ** Calendar
 #+BEGIN_SRC emacs-lisp :tangle yes
 (require 'calendar)
@@ -291,6 +269,7 @@ This is helpful for writeroom-mode, in particular."
 #+BEGIN_SRC emacs-lisp :tangle yes
 (show-paren-mode 1)
 #+END_SRC
+
 ** Use xwidget webkit if possible
 #+BEGIN_SRC emacs-lisp :tangle yes
 (if (featurep 'xwidget-internal)
@@ -330,6 +309,7 @@ Disable http cookies
 #+BEGIN_SRC emacs-lisp
 (setq url-cookie-untrusted-urls '(".*"))
 #+END_SRC
+
 * ELisp Extensions
 ** Copy Org link
 #+BEGIN_SRC emacs-lisp
