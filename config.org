@@ -1152,6 +1152,12 @@ Ignore line wrappings and highlight entire line for org headers
   (kwarks/set-titlebar-style)
   (set-frame-parameter nil 'alpha '(90 . 90)))
 
+(defun kwarks/set-theme-font ()
+  "Use JetBrains Mono font when available. The font should be installed from .emacs.d/fonts folder"
+  (let ((theme-font "JetBrains Mono"))
+    (when (member theme-font (font-family-list))
+      (set-default-font theme-font))))
+
 (defadvice load-theme (before theme-dont-propagate activate)
   (mapc #'disable-theme custom-enabled-themes))
 
@@ -1168,13 +1174,14 @@ Ignore line wrappings and highlight entire line for org headers
 
 (defun kwarks/setup-frame (&rest args)
   "Apply titlebar theme for new frames"
+  (kwarks/set-theme-font)
   (kwarks/set-titlebar-style)
   (kwarks/set-theme-colors)
   (kwarks/set-theme-faces)
   ;;(set-frame-position nil 350 100)
   ;;(set-frame-size nil 110 40)
   ;;(set-frame-parameter nil 'fullscreen nil))
-)
+  )
 
 (kwarks/with-make-frame (kwarks/setup-frame))
 (add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
