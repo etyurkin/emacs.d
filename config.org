@@ -294,7 +294,7 @@ Shell initialization for Windows
      (init-bash git-bash))))
 
 (when-cygwin
- (let ((cygwin-bin "c:/opt/cygwin64/bin"))
+ (let ((cygwin-bin "/c/opt/cygwin64/bin"))
    (when (file-readable-p cygwin-bin)
      (message "Setting up cygwin")
      
