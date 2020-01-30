@@ -1569,9 +1569,10 @@ This Emacs library provides a global mode which displays ugly form feed characte
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package page-break-lines
-  :init
+  :config
   (push 'browse-kill-ring-mode page-break-lines-modes)
   (push 'special-mode page-break-lines-modes)
+  :init
   (global-page-break-lines-mode)
   :diminish page-break-lines-mode)
 #+END_SRC
