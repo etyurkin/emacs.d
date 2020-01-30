@@ -1626,6 +1626,11 @@ Include a newer version of org-mode than the one that is built in.
 (setq org-todo-keyword-faces
       (quote (("ACTIVE" :inherit warning)
               ("PROJECT" :inherit font-lock-string-face))))
+
+;; fix org-eldoc-get-mode-local-documentation-function
+(require 'org-src)
+(defun org-src-get-lang-mode (lang)
+  (org-src--get-lang-mode lang))
 #+END_SRC
 
 *** org-crypt
