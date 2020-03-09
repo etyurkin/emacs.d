@@ -1405,14 +1405,14 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 (defun ivy--make-process-list (str collection predicate)
   (mapcar (lambda (ps)
             (let ((ps-info (split-string (string-trim ps))))
-              (format "%-6s %-20s %s" (first ps-info) (second ps-info) (third ps-info))))
+              (format "%-6s %-20s %s" (car ps-info) (cadr ps-info) (caddr ps-info))))
           (cdr (split-string (shell-command-to-string "ps -eo pid,user,command") "\n+"))))
 
 (defun ivy--kill-process (process)
   (let ((default-directory "/sudo::")
         (pid (car (split-string (string-trim process) "\s+"))))
     (print (format "killing %s" pid))
-    (shell-command (format "kill %s %s" -9 pid))))
+    (shell-command (format "kill -9 %s" pid))))
 
 (defun ivy-kill-process ()
   (interactive)
@@ -1420,7 +1420,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
             :action #'ivy--kill-process))
 
 (defun ivy-kill-buffer ()
-  "Switch to another buffer."
+  "kill buffer."
   (interactive)
   (setq this-command #'ivy-kill-buffer)
   (ivy-read "Kill buffer: " #'internal-complete-buffer
