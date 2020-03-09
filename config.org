@@ -1378,33 +1378,6 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
   (smex-initialize))
 #+END_SRC
-** helm
-#+BEGIN_SRC emacs-lisp
-(defun kwarks/helm-top-sh (orig-fn &rest args)
-  "Run kill shell command with signal SIG on PIDS for `helm-top'."
-  (let ((default-directory "/sudo::")
-        (sig (car args))
-        (pids (cadr args)))
-    (apply (lambda (pid)
-             (shell-command (format "kill -s %s %s" sig pid)))
-           pids)
-    (dolist (buffer (buffer-list))
-      (when (string-match "^*helm top*" (buffer-name buffer))
-        (kill-buffer buffer)))))
-
-(use-package helm
-  :config
-  (set-face-attribute 'helm-candidate-number nil 
-                      :foreground "#51afef"
-                      :background nil)
-  (helm-mode nil)
-
-  ;; override helm-top behaviour to use sudo for killing processes
-  (advice-add 'helm-top-sh :around #'kwarks/helm-top-sh))
-
-(require 'helm)
-#+END_SRC
-
 ** ivy
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
@@ -1428,6 +1401,23 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
         '((t   . ivy--regex-ignore-order)))
   :config
   (ivy-mode 1))
+
+(defun ivy--make-process-list (str collection predicate)
+  (mapcar (lambda (ps)
+            (let ((ps-info (split-string (string-trim ps))))
+              (format "%-6s %-20s %s" (first ps-info) (second ps-info) (third ps-info))))
+          (cdr (split-string (shell-command-to-string "ps -eo pid,user,command") "\n+"))))
+
+(defun ivy--kill-process (process)
+  (let ((default-directory "/sudo::")
+        (pid (car (split-string (string-trim process) "\s+"))))
+    (print (format "killing %s" pid))
+    (shell-command (format "kill %s %s" -9 pid))))
+
+(defun ivy-kill-process ()
+  (interactive)
+  (ivy-read "Kill process: " #'ivy--make-process-list
+            :action #'ivy--kill-process))
 
 (defun ivy-kill-buffer ()
   "Switch to another buffer."
@@ -1497,6 +1487,64 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   
   (ivy-rich-mode 1))
 #+END_SRC
+** fzf
+An Emacs front-end for fzf - a command-line fuzzy finder
+Not sure yet if I need it
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(fzf/with-command "ps -eo pid,user,command" 'print)
+(fzf/with-entries (list "a" "b" "c") 'print)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package fzf)
+
+(require 'fzf)
+
+(defun fzf/after-term-handle-exit-with-action (action)
+  (lambda (process-name msg)
+    (if (string-match-p "finished" msg)
+        (let* ((text (buffer-substring-no-properties (point-min) (point-max)))
+               (lines (split-string text "\n" t "\s*>\s+"))
+               (target (car (last (butlast lines 1)))))
+          (read-only-mode -1)
+                                        ; fill output with dummy value to make original function happy
+          (erase-buffer)
+          (insert (format "%s\n%s" process-name msg))
+          (fzf/after-term-handle-exit process-name msg)
+
+          (message (format "target %s" target))
+          (funcall action target))
+      (fzf/after-term-handle-exit process-name msg))
+    (advice-remove 'term-handle-exit (fzf/after-term-handle-exit-with-action action))))
+
+(defun fzf/start-with-action (directory command action)
+  (advice-add 'term-handle-exit
+              :after (fzf/after-term-handle-exit-with-action action))
+  (fzf/start (if directory directory default-directory) command)
+  (advice-remove 'term-handle-exit #'fzf/after-term-handle-exit))
+
+(defun fzf/with-command (command action &optional directory)
+  (interactive)
+  (fzf/start-with-action directory command action))
+
+(defun fzf/with-entries (entries action &optional directory)
+  "`entries' is a list of strings that is piped into `fzf' as a source."
+
+  (interactive)
+  (fzf/with-command (concat "echo \"" (mapconcat (lambda (x) x) entries "\n") "\"") action directory))
+
+(defun fzf/kill-process ()
+  (interactive)
+  (let ((fzf/args (concat fzf/args " -e --tac")))
+    (fzf/with-command "ps -eo pid,user,command"
+                      (lambda (choice)
+                        (let ((default-directory "/sudo::")
+                              (pid (car (split-string (string-trim choice) "\s+"))))
+                          (print (format "killing process with pid %s" pid))
+                          (shell-command (format "kill %s %s" -9 pid)))))))
+#+END_SRC
+
 ** company
 Company stands for “complete anything” and is a modular in-buffer completion mechanism.
 
@@ -1769,6 +1817,7 @@ e.g. copy-as-format-slack, copy-as-format-github
 Org-wiki is a org-mode extension that provides tools to manage and build personal wiki or desktop wiki where each wiki page is a org-mode file.
 
 #+BEGIN_SRC emacs-lisp
+(use-package helm-core)
 (use-package org-wiki
   :demand t
   :init
@@ -1814,35 +1863,37 @@ Currently it is very inefficient...
 	   :files ("*.el")
 	   :upgrade nil))
 #+END_SRC
-** helm-dash
-Support for the http://kapeli.com/dash documentation browser. See https://github.com/areina/helm-dash
+** counsel-dash
+Support for the http://kapeli.com/dash documentation browser. See https://github.com/dash-docs-el/counsel-dash
 
 #+BEGIN_SRC emacs-lisp
-(setq helm-dash-docsets-path (expand-file-name ".docsets" user-emacs-directory))
+(defalias 'counsel-dash-installed-docsets 'dash-docs-installed-docsets)
 
-(unless (file-exists-p helm-dash-docsets-path)
-  (make-directory helm-dash-docsets-path))
-
-(defun helm-dash--use-docset (name docset)
+(defun counsel-dash--use-docset (name docset)
   "Install DOCSET if it's not installed yet."
-  (unless (member name (helm-dash-installed-docsets))
-    (helm-dash-install-docset docset)))
+  (unless (member name (counsel-dash-installed-docsets))
+    (counsel-dash-install-docset docset)))
 
-(use-package helm-dash
-  :bind (("C-c h" . helm-dash-at-point))
-  :init
-  (if (featurep 'xwidget-internal)
-      (setq helm-dash-browser-func 'xwidget-webkit-browse-url)
-    (setq helm-dash-browser-func 'eww))
-  
+(use-package counsel-dash
+  :bind (("C-c h" . counsel-dash-at-point))  
   :config
-  (helm-dash--use-docset "Common Lisp" "Common_Lisp")
-  (add-hook 'lisp-mode-hook (lambda ()
-                              (setq-local helm-dash-docsets '("Common Lisp"))))
+  (if (featurep 'xwidget-internal)
+      (setq counsel-dash-browser-func 'xwidget-webkit-browse-url)
+    (setq counsel-dash-browser-func 'eww))
+  
+  (setq counsel-dash-docsets-path (expand-file-name ".docsets" user-emacs-directory))
+  (unless (file-exists-p counsel-dash-docsets-path)
+    (make-directory counsel-dash-docsets-path))
 
-  (helm-dash--use-docset "Emacs Lisp" "Emacs_Lisp")
+  (setq counsel-dash-common-docsets '("Common Lisp"))
+
+  (counsel-dash--use-docset "Common Lisp" "Common_Lisp")
+  (add-hook 'lisp-mode-hook (lambda ()
+                              (setq-local counsel-dash-docsets '("Common Lisp"))))
+
+  (counsel-dash--use-docset "Emacs Lisp" "Emacs_Lisp")
   (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                    (setq-local helm-dash-docsets '("Emacs Lisp")))))
+                                    (setq-local counsel-dash-docsets '("Emacs Lisp")))))
 #+END_SRC
 ** transpose-frame
 Transpose windows arrangement in a frame.
@@ -2402,7 +2453,7 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
 
 #+BEGIN_SRC emacs-lisp
 (use-package know-your-http-well
-  :after (helm)
+  :after (ivy)
   :init
   (require 'http-status-codes)
   (require 'http-headers)
@@ -2410,47 +2461,42 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
   (require 'media-types)
   (require 'http-relations)
 
-  (defmacro helm-know-your-http-well (source selector-fn)
-    `(helm :sources (helm-build-sync-source "helm-know-your-http-well"
-		              :candidates ,source
-		              :action (lambda (candidate)
-				                (message "%s: %s" (caar candidate) (funcall ,selector-fn candidate))))
-	       :buffer "*helm-know-your-http-well*"))
+  (defmacro ivy--know-your-http-well (title source)
+    `(ivy-read (format "%s: ^" ,title) (mapcar (lambda (arg)
+                                                 (format "%s - %s" (car arg) (caadr arg)))
+                                               ,source)))
 
   (defun kwarks/every-other (lst)
     "Return odd elements of the lst"
     (if (null lst) '()
       (cons (car lst) (kwarks/every-other (cddr lst)))))
 
-  (defun helm-http-status-code ()
-    "Look up the meaning of HTTP status codes"
+  (defun ivy-http-status-code ()
     (interactive)
-    (helm-know-your-http-well
-     (mapcar (lambda (arg) ; combine http status with description
-               (let ((title (concat (car arg) " - " (caadr arg))))
-                 (list title (cons title (cdadr arg)))))
-	         (kwarks/every-other http-status))     
-     'cadar))
+    (ivy--know-your-http-well "HTTP status"
+                              (mapcar (lambda (arg)
+                                        (list (car arg)
+                                              (list (format "%s, %s" (caadr arg) (cadadr arg)))))
+                                      (kwarks/every-other http-status))))
 
-  (defun helm-http-header ()
-    "Look up the meaning of HTTP headers"
+  (defun ivy-http-header ()
     (interactive)
-    (helm-know-your-http-well http-headers 'caar))
-  
-  (defun helm-http-method ()
+    (ivy--know-your-http-well "HTTP header" http-headers))
+
+  (defun ivy-http-method ()
     "Look up the meaning of HTTP methods"
     (interactive)
-    (helm-know-your-http-well http-methods 'caar))
-  
-  (defun helm-media-type ()
+    (ivy--know-your-http-well "HTTP method" http-methods))
+
+  (defun ivy-media-type ()
     "Look up the template of a media-type"
     (interactive)
-    (helm-know-your-http-well media-types 'caar))
+    (ivy--know-your-http-well "Media-type" media-types))
 
-  (defun helm-http-relation ()
+  (defun ivy-http-relation ()
     "Look up the meaning of HTTP relations"
     (interactive)
-    (helm-know-your-http-well http-relations 'caar)))
+    (ivy--know-your-http-well "HTTP relation" http-relations)))
 #+END_SRC
 
 *** Rest Client
