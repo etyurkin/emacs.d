@@ -1402,24 +1402,35 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   :config
   (ivy-mode 1))
 
+(defmacro kwarks--with-sudo (&rest body)
+  "Run '(shell-command) with root privileges"
+  `(let ((default-directory "/sudo::"))
+     ,@body))
+
 (defun ivy--make-process-list (str collection predicate)
   (mapcar (lambda (ps)
             (let ((ps-info (split-string (string-trim ps))))
               (format "%-6s %-20s %s" (car ps-info) (cadr ps-info) (caddr ps-info))))
           (cdr (split-string (shell-command-to-string "ps -eo pid,user,command") "\n+"))))
 
-(defun ivy--kill-process (process)
-  (let ((default-directory "/sudo::")
-        (pid (car (split-string (string-trim process) "\s+"))))
-    (print (format "killing %s" pid))
-    (shell-command (format "kill -9 %s" pid))))
+(defun ivy--kill-process (ps)
+  (let* ((me (string-trim (shell-command-to-string "whoami")))
+         (ps-info (split-string (string-trim ps)))
+         (pid (car ps-info))
+         (pid-user (cadr ps-info))
+         (cmd (format "kill -9 %s" pid)))
+    (print (format "killing %s, me: %s, pid-user: %s" pid me pid-user))
+    (if (string= me pid-user)
+        (shell-command-to-string cmd)
+      (kwarks--with-sudo (shell-command cmd)))))
 
-(defun ivy-kill-process ()
+(defun kwarks/kill-process ()
+  "Kill OS process"
   (interactive)
   (ivy-read "Kill process: " #'ivy--make-process-list
             :action #'ivy--kill-process))
 
-(defun ivy-kill-buffer ()
+(defun kwarks/kill-buffer ()
   "kill buffer."
   (interactive)
   (setq this-command #'ivy-kill-buffer)
