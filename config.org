@@ -1383,7 +1383,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 (use-package ivy
   :diminish (ivy-mode . "")
   :bind (("C-c C-r" . ivy-resume)
-         ("C-x k" . ivy-kill-buffer)
+         ("C-x k" . kwarks/kill-buffer)
          :map ivy-mode-map
          ("C-'" . ivy-avy))
   :init
@@ -1433,7 +1433,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 (defun kwarks/kill-buffer ()
   "kill buffer."
   (interactive)
-  (setq this-command #'ivy-kill-buffer)
+  (setq this-command #'kwarks/kill-buffer)
   (ivy-read "Kill buffer: " #'internal-complete-buffer
             :preselect (buffer-name (current-buffer))
             :action #'kill-buffer))
@@ -1469,7 +1469,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
             (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
            :predicate
            (lambda (cand) (get-buffer cand)))
-          ivy-kill-buffer
+          kwarks/kill-buffer
           (:columns
            ((ivy-rich-candidate (:width 30))  ; return the candidate itself
             (ivy-rich-switch-buffer-size (:width 7))  ; return the buffer size
