@@ -1419,7 +1419,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
          (pid (car ps-info))
          (pid-user (cadr ps-info))
          (cmd (format "kill -9 %s" pid)))
-    (print (format "killing %s, me: %s, pid-user: %s" pid me pid-user))
+    (message (format "killing %s, me: %s, pid-user: %s" pid me pid-user))
     (if (string= me pid-user)
         (shell-command-to-string cmd)
       (kwarks--with-sudo (shell-command cmd)))))
