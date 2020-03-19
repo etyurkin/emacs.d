@@ -1410,7 +1410,7 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 (defun ivy--make-process-list (str collection predicate)
   (mapcar (lambda (ps)
             (let ((ps-info (split-string (string-trim ps))))
-              (format "%-6s %-20s %s" (car ps-info) (cadr ps-info) (caddr ps-info))))
+              (format "%-6s %-20s %s" (car ps-info) (cadr ps-info) (string-join (cddr ps-info) " "))))
           (cdr (split-string (shell-command-to-string "ps -eo pid,user,command") "\n+"))))
 
 (defun ivy--kill-process (ps)
