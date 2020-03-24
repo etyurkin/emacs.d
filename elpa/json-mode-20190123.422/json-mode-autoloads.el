@@ -16,7 +16,7 @@ List of JSON file extensions.")
 Update the `json-mode' entry of `auto-mode-alist'.
 
 FILENAMES should be a list of file as string.
-Return the new `auto-mode-alist' entry" (let* ((new-regexp (rx-to-string `(seq (eval (cons 'or (append json-mode-standard-file-ext ',filenames))) eot))) (new-entry (cons new-regexp 'json-mode)) (old-entry (when (boundp 'json-mode--auto-mode-entry) json-mode--auto-mode-entry))) (setq auto-mode-alist (delete old-entry auto-mode-alist)) (add-to-list 'auto-mode-alist new-entry) new-entry))
+Return the new `auto-mode-alist' entry" (let* ((new-regexp (rx-to-string (\` (seq (eval (cons (quote or) (append json-mode-standard-file-ext (quote (\, filenames))))) eot)))) (new-entry (cons new-regexp (quote json-mode))) (old-entry (when (boundp (quote json-mode--auto-mode-entry)) json-mode--auto-mode-entry))) (setq auto-mode-alist (delete old-entry auto-mode-alist)) (add-to-list (quote auto-mode-alist) new-entry) new-entry))
 
 (defvar json-mode-auto-mode-list '(".babelrc" ".bowerrc" "composer.lock") "\
 List of filename as string to pass for the JSON entry of

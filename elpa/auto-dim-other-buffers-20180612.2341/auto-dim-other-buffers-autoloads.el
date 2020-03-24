@@ -23,14 +23,9 @@ or call the function `auto-dim-other-buffers-mode'.")
 (autoload 'auto-dim-other-buffers-mode "auto-dim-other-buffers" "\
 Visually makes non-current buffers less prominent
 
-If called interactively, enable Auto-Dim-Other-Buffers mode if ARG is positive, and
-disable it if ARG is zero or negative.  If called from Lisp,
-also enable the mode if ARG is omitted or nil, and toggle it
-if ARG is `toggle'; disable the mode otherwise.
-
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "auto-dim-other-buffers" '("adob--" "auto-dim-other-buffers-dim-on-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "auto-dim-other-buffers" '("auto-dim-other-buffers-dim-on-" "adob--")))
 
 ;;;***
 

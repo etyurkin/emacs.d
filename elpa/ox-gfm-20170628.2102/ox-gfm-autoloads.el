@@ -74,7 +74,7 @@ Return output file name.
 
 \(fn PLIST FILENAME PUB-DIR)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ox-gfm" '("gfm-table-" "org-gfm-" "width-cookies")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ox-gfm" '("org-gfm-" "gfm-table-" "width-cookies")))
 
 ;;;***
 
