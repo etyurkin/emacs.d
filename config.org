@@ -1382,10 +1382,19 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 #+BEGIN_SRC emacs-lisp
 (use-package ivy
   :diminish (ivy-mode . "")
-  :bind (("C-c C-r" . ivy-resume)
+  :bind (("M-x" . counsel-M-x)
+         ("\C-s" . swiper)
+         ("C-x C-f" . counsel-find-file)
+         ("C-c C-r" . ivy-resume)
          ("C-x k" . kwarks/kill-buffer)
+         ("<f1> f" . counsel-describe-function)
+         ("<f1> v" . counsel-describe-variable)
+         ("<f1> l" . counsel-find-library)
+         ("<f2> i" . counsel-info-lookup-symbol)
          :map ivy-mode-map
-         ("C-'" . ivy-avy))
+         ("C-'" . ivy-avy)
+         :map minibuffer-local-map
+         ("C-r" . counsel-minibuffer-history))
   :init
   ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
   (setq ivy-use-virtual-buffers t)
@@ -1439,18 +1448,6 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
             :action #'kill-buffer))
 
 (use-package avy)
-(use-package swiper
-  :bind (("C-s" . swiper)))
-
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-         ("<f1> f" . counsel-describe-function)
-         ("<f1> v" . counsel-describe-variable)
-         ("<f1> l" . counsel-find-library)
-         ("<f2> i" . counsel-info-lookup-symbol)
-         :map minibuffer-local-map
-         ("C-r" . counsel-minibuffer-history)))
 
 (use-package ivy-rich
   :after ivy
