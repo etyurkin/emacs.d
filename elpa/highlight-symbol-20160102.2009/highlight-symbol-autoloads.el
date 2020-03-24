@@ -14,11 +14,6 @@
 Minor mode that highlights the symbol under point throughout the buffer.
 Highlighting takes place after `highlight-symbol-idle-delay'.
 
-If called interactively, enable Highlight-Symbol mode if ARG is positive, and
-disable it if ARG is zero or negative.  If called from Lisp,
-also enable the mode if ARG is omitted or nil, and toggle it
-if ARG is `toggle'; disable the mode otherwise.
-
 \(fn &optional ARG)" t nil)
 
 (defalias 'highlight-symbol-at-point 'highlight-symbol)
