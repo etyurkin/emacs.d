@@ -1300,6 +1300,8 @@ Use "C-/" or "C-z" for undo, and "C-?" or "C-Z" for redo, "C-x u" to display a t
   ;; Disabled for now, test later
   ;; (kwarks/init-persistent-undo)
   (defalias 'redo 'undo-tree-redo)
+
+  :init
   (global-undo-tree-mode 1))
 #+END_SRC
 ** session
@@ -2082,7 +2084,7 @@ Features:
 
 Don't forget to setenv TERM xterm-256color
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun init-shell-mode ()
   (let ((buffer (generate-new-buffer "*xterm-color-test*")))
     (with-current-buffer buffer
