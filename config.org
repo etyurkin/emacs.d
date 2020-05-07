@@ -1444,10 +1444,10 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
 (defun kwarks/kill-buffer ()
   "kill buffer."
   (interactive)
-  (setq this-command #'kwarks/kill-buffer)
   (ivy-read "Kill buffer: " #'internal-complete-buffer
             :preselect (buffer-name (current-buffer))
-            :action #'kill-buffer))
+            :action #'kill-buffer
+            :caller 'kwarks/kill-buffer))
 
 (use-package avy)
 
@@ -1455,45 +1455,55 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   :after ivy
   :demand t
   :init
-  (setq ivy-format-function #'ivy-format-function-line)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
   :config
-  (setq ivy-rich--display-transformers-list
+  (setq ivy-rich-display-transformers-list
         '(ivy-switch-buffer
           (:columns
-           ((ivy-rich-candidate (:width 30))  ; return the candidate itself
-            (ivy-rich-switch-buffer-size (:width 7))  ; return the buffer size
-            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
-            (ivy-rich-switch-buffer-major-mode (:width 20 :face warning))          ; return the major mode info
-            (ivy-rich-switch-buffer-project (:width 20 :face success))             ; return project name using `projectile'
-            (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
+           ((ivy-switch-buffer-transformer (:width 40))
+            (ivy-rich-switch-buffer-size (:width 7))
+            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
+            (ivy-rich-switch-buffer-major-mode (:width 20 :face warning))
+            (ivy-rich-switch-buffer-project (:width 25 :face success))
+            (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))
            :predicate
            (lambda (cand) (get-buffer cand)))
           kwarks/kill-buffer
           (:columns
-           ((ivy-rich-candidate (:width 30))  ; return the candidate itself
-            (ivy-rich-switch-buffer-size (:width 7))  ; return the buffer size
-            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
-            (ivy-rich-switch-buffer-major-mode (:width 20 :face warning))          ; return the major mode info
-            (ivy-rich-switch-buffer-project (:width 20 :face success))             ; return project name using `projectile'
-            (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
+           ((ivy-switch-buffer-transformer (:width 40))
+            (ivy-rich-switch-buffer-size (:width 7))
+            (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
+            (ivy-rich-switch-buffer-major-mode (:width 20 :face warning))
+            (ivy-rich-switch-buffer-project (:width 25 :face success))
+            (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))
            :predicate
            (lambda (cand) (get-buffer cand)))        
+          counsel-find-file
+          (:columns
+           ((ivy-read-file-transformer)
+            (ivy-rich-counsel-find-file-truename (:face font-lock-doc-face))))
           counsel-M-x
           (:columns
-           ((counsel-M-x-transformer (:width 40))  ; thr original transfomer
-            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the command
+           ((counsel-M-x-transformer (:width 40))
+            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))
           counsel-describe-function
           (:columns
-           ((counsel-describe-function-transformer (:width 40))  ; the original transformer
-            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the function
+           ((counsel-describe-function-transformer (:width 40))
+            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))
           counsel-describe-variable
           (:columns
-           ((counsel-describe-variable-transformer (:width 40))  ; the original transformer
-            (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face))))  ; return the docstring of the variable
+           ((counsel-describe-variable-transformer (:width 40))
+            (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face))))
           counsel-recentf
           (:columns
-           ((ivy-rich-candidate (:width 0.8)) ; return the candidate itself
-            (ivy-rich-file-last-modified-time (:face font-lock-comment-face)))))) ; return the last modified time of the file
+           ((ivy-rich-candidate (:width 0.8))
+            (ivy-rich-file-last-modified-time (:face font-lock-comment-face))))
+          package-install
+          (:columns
+           ((ivy-rich-candidate (:width 30))
+            (ivy-rich-package-version (:width 16 :face font-lock-comment-face))
+            (ivy-rich-package-archive-summary (:width 7 :face font-lock-builtin-face))
+            (ivy-rich-package-install-summary (:face font-lock-doc-face))))))
   
   (ivy-rich-mode 1))
 #+END_SRC
@@ -1720,7 +1730,15 @@ see https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.htm
 (unless (file-directory-p org-todo-dir)
   (make-directory org-todo-dir t))
 
-(setq org-agenda-files (file-expand-wildcards (concat org-todo-dir "/*.org")))
+(setq org-agenda-exclude-list '("inbox.org"))
+(setq org-agenda-files
+      (seq-filter (lambda (file)
+                    (let ((regex
+                           (mapconcat (lambda (x)
+                                        (concat x "$")) org-agenda-exclude-list  "\\|")))
+                      (not (s-matches? regex file))))
+                  (file-expand-wildcards (concat org-todo-dir "/*.org"))))
+
 (setq org-tag-alist '(("PROJECT" . ?p)))
 
 (defun air-org-skip-subtree-if-priority (priority)
