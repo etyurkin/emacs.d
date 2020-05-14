@@ -1542,7 +1542,7 @@ Emacs frontend for unix "tree" command
         (json-key-type 'symbol))
     (json-read-from-string (shell-command-to-string cmd))))
 
-(defun kwarks--print-tree-node (node is-directory is-link)
+(defun kwarks--tree-node-set-face (node is-directory is-link)
   (cond (is-directory (propertize node 'font-lock-face 'org-level-1))
         (is-link (propertize node 'font-lock-face '(org-level-3 italic)))
         (t (propertize node 'font-lock-face 'org-level-3))))
@@ -1576,13 +1576,12 @@ Emacs frontend for unix "tree" command
       (if is-root
           (insert name)
         (insert
-         (format "%s%s %s" spacing prefix
-                 (kwarks--print-tree-node
-                  (propertize name
-                              'path full-name
-                              'help-echo full-name
-                              'keymap kwarks--tree-view-keymap)
-                  is-directory is-link))))
+         (propertize (format "%s%s %s" spacing prefix
+                             (kwarks--tree-node-set-face (propertize name 'help-echo full-name)
+                                                         is-directory is-link))
+                     'path full-name
+                     'keymap kwarks--tree-view-keymap)))
+      
       (newline)
       (kwarks--print-tree children full-name child-spacing)
       (setq tree (cdr tree)))))
@@ -1605,6 +1604,7 @@ Emacs frontend for unix "tree" command
        (kwarks--print-tree (kwarks--make-tree dir) "" "")
        (goto-char (point-min))
        (special-mode)
+       (toggle-truncate-lines 1)
        (switch-to-buffer buffer-name)))
    'kwarks/tree))
 #+END_SRC
