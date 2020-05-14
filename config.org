@@ -1507,6 +1507,108 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   
   (ivy-rich-mode 1))
 #+END_SRC
+
+Emacs frontend for unix "tree" command
+
+#+BEGIN_SRC emacs-lisp
+(require 'json)
+
+(defun kwarks--tree-node-action (action)
+  (interactive)
+  (let ((file-name (get-text-property (point) 'path)))
+    (if file-name (funcall action file-name))))
+
+(defvar kwarks--tree-view-keymap (make-sparse-keymap))
+
+(define-key kwarks--tree-view-keymap (kbd "v")
+  (lambda ()
+    (interactive)
+    (kwarks--tree-node-action 'view-file)))
+
+(define-key kwarks--tree-view-keymap (kbd "o")
+  (lambda ()
+    (interactive)
+    (kwarks--tree-node-action 'find-file)))
+
+(define-key kwarks--tree-view-keymap (kbd "RET")
+  (lambda ()
+    (interactive)
+    (kwarks--tree-node-action 'find-file)))
+
+(defun kwarks--make-tree (root)
+  (let ((cmd (format "tree %s --dirsfirst --noreport -J" root))
+        (json-object-type 'plist)
+        (json-array-type 'list)
+        (json-key-type 'symbol))
+    (json-read-from-string (shell-command-to-string cmd))))
+
+(defun kwarks--print-tree-node (node is-directory is-link)
+  (cond (is-directory (propertize node 'font-lock-face 'org-level-1))
+        (is-link (propertize node 'font-lock-face '(org-level-3 italic)))
+        (t (propertize node 'font-lock-face 'org-level-3))))
+
+(defun kwarks--make-full-name (parent name)
+  (cond ((= 0 (length parent)) name)
+        ((string-match "\/$" parent) (format "%s%s" parent name))
+        (t (format "%s/%s" parent name))))
+
+(defun kwarks--print-tree (tree parent spacing)
+  (while tree
+    (let* ((record (car tree))
+           (type (plist-get record 'type))
+           (is-link (string-equal type "link"))
+           (name (if is-link
+                     (format "%s -> %s"
+                             (plist-get record 'name)
+                             (plist-get record 'target))
+                   (plist-get record 'name)))
+           (full-name (kwarks--make-full-name parent (plist-get record 'name)))
+           (children (plist-get record 'contents))
+           (is-root (= (length spacing) 0))
+           (is-directory (string-equal type "directory"))
+           
+           (has-more (consp (cdr tree)))
+           (prefix (if has-more "├──" "└──"))
+           (pad (if is-root 0 3))
+           (child-spacing (if has-more
+                              (format "%s│%s" spacing (make-string pad ?\s))
+                            (format "%s %s" spacing (make-string pad ?\s)))))
+      (if is-root
+          (insert name)
+        (insert
+         (format "%s%s %s" spacing prefix
+                 (kwarks--print-tree-node
+                  (propertize name
+                              'path full-name
+                              'help-echo full-name
+                              'keymap kwarks--tree-view-keymap)
+                  is-directory is-link))))
+      (newline)
+      (kwarks--print-tree children full-name child-spacing)
+      (setq tree (cdr tree)))))
+
+(defun kwarks--get-buffer-directory ()
+  (let ((name (buffer-file-name)))
+    (cond ((null name) "~")
+          (t (file-name-directory name)))))
+
+(defun kwarks/tree ()
+  (interactive)
+  (counsel--find-file-1
+   "Root path: " (kwarks--get-buffer-directory)
+   (lambda (dir)
+     (let* ((buffer-name "*tree*"))
+       (get-buffer-create buffer-name)
+       (set-buffer buffer-name)
+       (read-only-mode -1)
+       (erase-buffer)
+       (kwarks--print-tree (kwarks--make-tree dir) "" "")
+       (goto-char (point-min))
+       (special-mode)
+       (switch-to-buffer buffer-name)))
+   'kwarks/tree))
+#+END_SRC
+
 ** fzf
 An Emacs front-end for fzf - a command-line fuzzy finder
 Not sure yet if I need it
