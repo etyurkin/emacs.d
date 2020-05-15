@@ -1535,17 +1535,25 @@ Emacs frontend for unix "tree" command
     (interactive)
     (kwarks--tree-node-action 'find-file)))
 
+(define-key kwarks--tree-view-keymap (kbd "c")
+  (lambda ()
+    (interactive)
+    (kwarks--tree-node-action 'kill-new)))
+
 (defun kwarks--make-tree (root)
-  (let ((cmd (format "tree %s --dirsfirst --noreport -J" root))
+  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l" root))
         (json-object-type 'plist)
         (json-array-type 'list)
         (json-key-type 'symbol))
     (json-read-from-string (shell-command-to-string cmd))))
 
 (defun kwarks--tree-node-set-face (node is-directory is-link)
-  (cond (is-directory (propertize node 'font-lock-face 'org-level-1))
-        (is-link (propertize node 'font-lock-face '(org-level-3 italic)))
-        (t (propertize node 'font-lock-face 'org-level-3))))
+  (cond (is-directory (propertize node 'font-lock-face
+                                  `(:foreground ,(face-foreground 'org-level-1))))
+        (is-link (propertize node 'font-lock-face
+                             `(:foreground ,(face-foreground 'org-level-3) :slant italic)))
+        (t (propertize node 'font-lock-face
+                       `(:foreground ,(face-foreground 'org-level-2))))))
 
 (defun kwarks--make-full-name (parent name)
   (cond ((= 0 (length parent)) name)
@@ -1591,22 +1599,19 @@ Emacs frontend for unix "tree" command
     (cond ((null name) "~")
           (t (file-name-directory name)))))
 
-(defun kwarks/tree ()
-  (interactive)
-  (counsel--find-file-1
-   "Root path: " (kwarks--get-buffer-directory)
-   (lambda (dir)
-     (let* ((buffer-name "*tree*"))
-       (get-buffer-create buffer-name)
-       (set-buffer buffer-name)
-       (read-only-mode -1)
-       (erase-buffer)
-       (kwarks--print-tree (kwarks--make-tree dir) "" "")
-       (goto-char (point-min))
-       (special-mode)
-       (toggle-truncate-lines 1)
-       (switch-to-buffer buffer-name)))
-   'kwarks/tree))
+(defun kwarks/tree (path)
+  (interactive (list (read-directory-name "Directory: " 
+                                          (kwarks--get-buffer-directory))))
+  (let* ((buffer-name (format "*tree %s*" path)))
+    (get-buffer-create buffer-name)
+    (set-buffer buffer-name)
+    (read-only-mode -1)
+    (erase-buffer)
+    (kwarks--print-tree (kwarks--make-tree path) "" "")
+    (goto-char (point-min))
+    (special-mode)
+    (toggle-truncate-lines 1)
+    (switch-to-buffer buffer-name)))
 #+END_SRC
 
 ** fzf
@@ -2320,7 +2325,9 @@ Git gutter:
 ztree-diff is a directory-diff tool for Emacs inspired by commercial tools like Beyond Compare or Araxis Merge. It supports showing the difference between two directories; calling Ediff for not matching files, copying between directories, deleting file/directories, hiding/showing equal files/directories.
 
 #+BEGIN_SRC emacs-lisp
-(use-package ztree)
+(use-package ztree
+  :config
+  (setq ztree-draw-unicode-lines t))
 #+END_SRC
 
 ** scratch
