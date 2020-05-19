@@ -1588,6 +1588,7 @@ Emacs frontend for unix "tree" command
                              (kwarks--tree-node-set-face (propertize name 'help-echo full-name)
                                                          is-directory is-link))
                      'path full-name
+                     'kbd-help full-name
                      'keymap kwarks--tree-view-keymap)))
       
       (newline)
@@ -1611,6 +1612,8 @@ Emacs frontend for unix "tree" command
     (goto-char (point-min))
     (special-mode)
     (toggle-truncate-lines 1)
+    (setq-local help-at-pt-display-when-idle t)
+    (help-at-pt-set-timer)
     (switch-to-buffer buffer-name)))
 #+END_SRC
 
