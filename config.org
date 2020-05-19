@@ -1123,7 +1123,7 @@ Ignore line wrappings and highlight entire line for org headers
   (set-face-foreground 'linum (kwarks/color-from-theme 20 20)))
 
 (defun kwarks/set-region-color ()
-  (set-face-background 'region (kwarks/color-from-theme 15 15)))
+  (set-face-background 'region "#2D383E"))
 
 (defun kwarks/set-border-color ()
   (let ((color (kwarks/color-from-theme 5 10)))
