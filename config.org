@@ -1046,7 +1046,6 @@ Major mode for unix "tree" command
            (children (plist-get record 'contents))
            (is-root (= (length spacing) 0))
            (is-directory (string-equal type "directory"))
-           
            (has-more (consp (cdr tree)))
            (prefix (if has-more "├──" "└──"))
            (pad (if is-root 0 3))
