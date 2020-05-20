@@ -1517,7 +1517,7 @@ Emacs frontend for unix "tree" command
   "Do not list files that match the given pattern.")
 
 (defmacro kwarks--tree-node-action (action)
-  `(let ((file-name (get-text-property (point) 'path)))
+  `(let ((file-name (get-text-property (point) 'kbd-help)))
      (if file-name (,action file-name))))
 
 (defun kwarks/tree-view-file ()
@@ -1597,9 +1597,7 @@ Emacs frontend for unix "tree" command
           (insert name)
         (insert
          (propertize (format "%s%s %s" spacing prefix
-                             (kwarks--tree-node-set-face (propertize name 'help-echo full-name)
-                                                         is-directory is-link))
-                     'path full-name
+                             (kwarks--tree-node-set-face name is-directory is-link))
                      'kbd-help full-name)))
       
       (newline)
