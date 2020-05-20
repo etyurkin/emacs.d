@@ -1513,6 +1513,9 @@ Emacs frontend for unix "tree" command
 #+BEGIN_SRC emacs-lisp
 (require 'json)
 
+(defvar kwarks/tree-ignore-list '("Icon?" ".git" ".idea")
+  "Do not list files that match the given pattern.")
+
 (defmacro kwarks--tree-node-action (action)
   `(let ((file-name (get-text-property (point) 'path)))
      (if file-name (,action file-name))))
@@ -1548,7 +1551,9 @@ Emacs frontend for unix "tree" command
   "Keymap for `tree-mode'.")
 
 (defun kwarks--make-tree (root)
-  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -q -I 'Icon?'" root))
+  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -a -q -I '%s'"
+                     root
+                     (string-join kwarks/tree-ignore-list "|")))
         (json-object-type 'plist)
         (json-array-type 'list)
         (json-key-type 'symbol))
