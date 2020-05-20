@@ -1020,10 +1020,16 @@ Major mode for unix "tree" command
         (json-key-type 'symbol))
     (json-read-from-string (shell-command-to-string cmd))))
 
-(defun kwarks--tree-node-set-face (node is-directory is-link)
+(defun kwarks--tree-node-set-face (node is-directory)
   (cond (is-directory (propertize node 'font-lock-face 'kwarks/tree-directory-face))
-        (is-link (propertize node 'font-lock-face 'kwarks/tree-link-face))
         (t (propertize node 'font-lock-face 'kwarks/tree-file-face))))
+
+(defun kwarks--tree-link-set-face (name target)
+  (let ((target-face (if (file-directory-p target)
+                         'kwarks/tree-directory-face
+                       'kwarks/tree-file-face)))
+    (format "%s -> %s" (propertize name 'font-lock-face 'kwarks/tree-link-face)
+            (propertize target 'font-lock-face target-face))))
 
 (defun kwarks--make-full-name (parent name)
   (cond ((= 0 (length parent)) name)
@@ -1035,11 +1041,7 @@ Major mode for unix "tree" command
     (let* ((record (car tree))
            (type (plist-get record 'type))
            (is-link (string-equal type "link"))
-           (name (if is-link
-                     (format "%s -> %s"
-                             (plist-get record 'name)
-                             (plist-get record 'target))
-                   (plist-get record 'name)))
+           (name (plist-get record 'name))
            (full-name (kwarks--make-full-name parent (plist-get record 'name)))
            (children (plist-get record 'contents))
            (is-root (= (length spacing) 0))
@@ -1054,9 +1056,13 @@ Major mode for unix "tree" command
       (if is-root
           (insert name)
         (insert
-         (propertize (format "%s%s %s" spacing prefix
-                             (kwarks--tree-node-set-face name is-directory is-link))
-                     'kbd-help full-name)))
+         (if is-link
+             (propertize (format "%s%s %s" spacing prefix
+                                 (kwarks--tree-link-set-face name (plist-get record 'target)))
+                         'kbd-help full-name)
+           (propertize (format "%s%s %s" spacing prefix
+                               (kwarks--tree-node-set-face name is-directory))
+                       'kbd-help full-name))))
       
       (newline)
       (if (and (consp children) (null (plist-get (car children) 'error)))
