@@ -1513,6 +1513,21 @@ Emacs frontend for unix "tree" command
 #+BEGIN_SRC emacs-lisp
 (require 'json)
 
+(defface kwarks/tree-directory-face
+  `((t :foreground ,(face-foreground 'org-level-1)))
+  "Face for the directory node."
+  :group 'tree-mode)
+
+(defface kwarks/tree-file-face
+  `((t :foreground ,(face-foreground 'org-level-2)))
+  "Face for the file node."
+  :group 'tree-mode)
+
+(defface kwarks/tree-link-face
+  `((t :foreground ,(face-foreground 'org-level-3) :slant italic))
+  "Face for the link node."
+  :group 'tree-mode)
+
 (defvar kwarks/tree-ignore-list '("Icon?" ".git" ".idea")
   "Do not list files that match the given pattern.")
 
@@ -1560,12 +1575,9 @@ Emacs frontend for unix "tree" command
     (json-read-from-string (shell-command-to-string cmd))))
 
 (defun kwarks--tree-node-set-face (node is-directory is-link)
-  (cond (is-directory (propertize node 'font-lock-face
-                                  `(:foreground ,(face-foreground 'org-level-1))))
-        (is-link (propertize node 'font-lock-face
-                             `(:foreground ,(face-foreground 'org-level-3) :slant italic)))
-        (t (propertize node 'font-lock-face
-                       `(:foreground ,(face-foreground 'org-level-2))))))
+  (cond (is-directory (propertize node 'font-lock-face 'kwarks/tree-directory-face))
+        (is-link (propertize node 'font-lock-face 'kwarks/tree-link-face))
+        (t (propertize node 'font-lock-face 'kwarks/tree-file-face))))
 
 (defun kwarks--make-full-name (parent name)
   (cond ((= 0 (length parent)) name)
