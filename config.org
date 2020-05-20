@@ -1513,6 +1513,16 @@ Emacs frontend for unix "tree" command
 #+BEGIN_SRC emacs-lisp
 (require 'json)
 
+(defvar tree-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "v" 'kwarks/tree-view-file)
+    (define-key map "o" 'kwarks/tree-find-file)
+    (define-key map (kbd "RET") 'kwarks/tree-find-file)
+    (define-key map "c" 'kwarks/tree-copy-file-path)
+    (define-key map "r" 'kwarks/tree-reload)
+    map)
+  "Keymap for `tree-mode'.")
+
 (defface kwarks/tree-directory-face
   `((t :foreground ,(face-foreground 'org-level-1)))
   "Face for the directory node."
@@ -1530,6 +1540,11 @@ Emacs frontend for unix "tree" command
 
 (defvar kwarks/tree-ignore-list '("Icon?" ".git" ".idea")
   "Do not list files that match the given pattern.")
+
+(defcustom kwarks/tree-inhibit-help-message nil
+  "Non-nil inhibits the help message shown upon entering Tree mode."
+  :type 'boolean
+  :group 'tree-mode)
 
 (defmacro kwarks--tree-node-action (action)
   `(let ((file-name (get-text-property (point) 'kbd-help)))
@@ -1554,16 +1569,6 @@ Emacs frontend for unix "tree" command
   "Reload tree."
   (interactive)
   (kwarks--reload-tree tree-path))
-
-(defvar tree-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "v") 'kwarks/tree-view-file)
-    (define-key map (kbd "o") 'kwarks/tree-find-file)
-    (define-key map (kbd "RET") 'kwarks/tree-find-file)
-    (define-key map (kbd "c") 'kwarks/tree-copy-file-path)
-    (define-key map (kbd "r") 'kwarks/tree-reload)
-    map)
-  "Keymap for `tree-mode'.")
 
 (defun kwarks--make-tree (root)
   (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -a -q -I '%s'"
@@ -1636,6 +1641,10 @@ Emacs frontend for unix "tree" command
   (setq-local help-at-pt-display-when-idle t)
   (help-at-pt-set-timer))
 
+(defun kwarks--tree-show-help ()
+  (unless kwarks/tree-inhibit-help-message
+    (message "Tree mode: type h for commands, q to quit.")))
+
 (defun kwarks/tree (path)
   "Display interactive directory tree."
   (interactive (list (read-directory-name "Directory: " 
@@ -1649,7 +1658,9 @@ Emacs frontend for unix "tree" command
     (tree-mode)
     (setq-local tree-path actual-path)
     (toggle-truncate-lines 1)
-    (switch-to-buffer buffer-name)))
+    (switch-to-buffer buffer-name))
+  (kwarks--tree-show-help))
+
 #+END_SRC
 
 ** fzf
