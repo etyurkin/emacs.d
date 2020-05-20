@@ -1548,7 +1548,7 @@ Emacs frontend for unix "tree" command
   "Keymap for `tree-mode'.")
 
 (defun kwarks--make-tree (root)
-  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l" root))
+  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -q -I 'Icon?'" root))
         (json-object-type 'plist)
         (json-array-type 'list)
         (json-key-type 'symbol))
