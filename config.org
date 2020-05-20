@@ -1622,24 +1622,24 @@ Emacs frontend for unix "tree" command
 
 (define-derived-mode tree-mode special-mode "Tree"
   "Major mode for viewing directory tree."
-  (let ((inhibit-message t))
-    (make-local-variable 'tree-path)
-    (toggle-truncate-lines 1)
-    (setq-local help-at-pt-display-when-idle t)
-    (help-at-pt-set-timer)))
+  (make-local-variable 'tree-path)
+  (setq-local help-at-pt-display-when-idle t)
+  (help-at-pt-set-timer))
 
 (defun kwarks/tree (path)
   "Display interactive directory tree."
   (interactive (list (read-directory-name "Directory: " 
                                           (kwarks--get-buffer-directory))))
-  (let ((actual-path (file-name-directory path)))
-    (let* ((buffer-name (format "*tree %s*" actual-path)))
-      (get-buffer-create buffer-name)
-      (set-buffer buffer-name)
-      (kwarks--reload-tree actual-path)
-      (tree-mode)
-      (setq-local tree-path actual-path)
-      (switch-to-buffer buffer-name))))
+  (let* ((actual-path (file-name-directory path))
+         (buffer-name (format "*tree %s*" actual-path))
+         (inhibit-message t))
+    (get-buffer-create buffer-name)
+    (set-buffer buffer-name)
+    (kwarks--reload-tree actual-path)
+    (tree-mode)
+    (setq-local tree-path actual-path)
+    (toggle-truncate-lines 1)
+    (switch-to-buffer buffer-name)))
 #+END_SRC
 
 ** fzf
