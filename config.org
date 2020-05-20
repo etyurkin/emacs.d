@@ -1513,32 +1513,39 @@ Emacs frontend for unix "tree" command
 #+BEGIN_SRC emacs-lisp
 (require 'json)
 
-(defun kwarks--tree-node-action (action)
+(defmacro kwarks--tree-node-action (action)
+  `(let ((file-name (get-text-property (point) 'path)))
+     (if file-name (,action file-name))))
+
+(defun kwarks/tree-view-file ()
+  "View file."
   (interactive)
-  (let ((file-name (get-text-property (point) 'path)))
-    (if file-name (funcall action file-name))))
+  (kwarks--tree-node-action view-file))
 
-(defvar kwarks--tree-view-keymap (make-sparse-keymap))
+(defun kwarks/tree-find-file ()
+  "Edit file."
+  (interactive)
+  (kwarks--tree-node-action find-file))
 
-(define-key kwarks--tree-view-keymap (kbd "v")
-  (lambda ()
-    (interactive)
-    (kwarks--tree-node-action 'view-file)))
+(defun kwarks/tree-copy-file-path ()
+  "Copy file path to clipboard."
+  (interactive)
+  (kwarks--tree-node-action kill-new))
 
-(define-key kwarks--tree-view-keymap (kbd "o")
-  (lambda ()
-    (interactive)
-    (kwarks--tree-node-action 'find-file)))
+(defun kwarks/tree-reload ()
+  "Reload tree."
+  (interactive)
+  (kwarks--reload-tree tree-path))
 
-(define-key kwarks--tree-view-keymap (kbd "RET")
-  (lambda ()
-    (interactive)
-    (kwarks--tree-node-action 'find-file)))
-
-(define-key kwarks--tree-view-keymap (kbd "c")
-  (lambda ()
-    (interactive)
-    (kwarks--tree-node-action 'kill-new)))
+(defvar tree-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "v") 'kwarks/tree-view-file)
+    (define-key map (kbd "o") 'kwarks/tree-find-file)
+    (define-key map (kbd "RET") 'kwarks/tree-find-file)
+    (define-key map (kbd "c") 'kwarks/tree-copy-file-path)
+    (define-key map (kbd "r") 'kwarks/tree-reload)
+    map)
+  "Keymap for `tree-mode'.")
 
 (defun kwarks--make-tree (root)
   (let ((cmd (format "tree %s --dirsfirst --noreport -J -l" root))
@@ -1588,33 +1595,46 @@ Emacs frontend for unix "tree" command
                              (kwarks--tree-node-set-face (propertize name 'help-echo full-name)
                                                          is-directory is-link))
                      'path full-name
-                     'kbd-help full-name
-                     'keymap kwarks--tree-view-keymap)))
+                     'kbd-help full-name)))
       
       (newline)
-      (kwarks--print-tree children full-name child-spacing)
+      (if (and (consp children) (null (plist-get (car children) 'error)))
+          (kwarks--print-tree children full-name child-spacing))
       (setq tree (cdr tree)))))
 
 (defun kwarks--get-buffer-directory ()
+  "Return active buffer directory or '~'"
   (let ((name (buffer-file-name)))
     (cond ((null name) "~")
           (t (file-name-directory name)))))
 
-(defun kwarks/tree (path)
-  (interactive (list (read-directory-name "Directory: " 
-                                          (kwarks--get-buffer-directory))))
-  (let* ((buffer-name (format "*tree %s*" path)))
-    (get-buffer-create buffer-name)
-    (set-buffer buffer-name)
+(defun kwarks--reload-tree (path)
+  (let ((pos (point)))
     (read-only-mode -1)
     (erase-buffer)
     (kwarks--print-tree (kwarks--make-tree path) "" "")
-    (goto-char (point-min))
-    (special-mode)
+    (goto-char pos)))
+
+(define-derived-mode tree-mode special-mode "Tree"
+  "Major mode for viewing directory tree."
+  (let ((inhibit-message t))
+    (make-local-variable 'tree-path)
     (toggle-truncate-lines 1)
     (setq-local help-at-pt-display-when-idle t)
-    (help-at-pt-set-timer)
-    (switch-to-buffer buffer-name)))
+    (help-at-pt-set-timer)))
+
+(defun kwarks/tree (path)
+  "Display interactive directory tree."
+  (interactive (list (read-directory-name "Directory: " 
+                                          (kwarks--get-buffer-directory))))
+  (let ((actual-path (file-name-directory path)))
+    (let* ((buffer-name (format "*tree %s*" actual-path)))
+      (get-buffer-create buffer-name)
+      (set-buffer buffer-name)
+      (kwarks--reload-tree actual-path)
+      (tree-mode)
+      (setq-local tree-path actual-path)
+      (switch-to-buffer buffer-name))))
 #+END_SRC
 
 ** fzf
