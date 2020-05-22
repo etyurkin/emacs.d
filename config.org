@@ -1316,7 +1316,7 @@ Ignore line wrappings and highlight entire line for org headers
   "Use JetBrains Mono font when available. The font should be installed from .emacs.d/fonts folder"
   (let ((theme-font "JetBrains Mono"))
     (when (member theme-font (font-family-list))
-      (set-default-font theme-font))))
+      (set-frame-font theme-font))))
 
 (defadvice load-theme (before theme-dont-propagate activate)
   (mapc #'disable-theme custom-enabled-themes))
