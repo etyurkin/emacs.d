@@ -959,7 +959,8 @@ Major mode for unix "tree" command
     (define-key map "v" 'kwarks/tree-view-file)
     (define-key map "o" 'kwarks/tree-find-file)
     (define-key map (kbd "RET") 'kwarks/tree-find-file)
-    (define-key map "c" 'kwarks/tree-copy-file-path)
+    (define-key map "c" 'kwarks/tree-copy-node-path)
+    (define-key map "s" 'kwarks/tree-subtree)
     (define-key map "r" 'kwarks/tree-reload)
     map)
   "Keymap for `tree-mode'.")
@@ -1001,8 +1002,13 @@ Major mode for unix "tree" command
   (interactive)
   (kwarks--tree-node-action find-file))
 
-(defun kwarks/tree-copy-file-path ()
-  "Copy file path to clipboard."
+(defun kwarks/tree-subtree ()
+  "Open subtree."
+  (interactive)
+  (kwarks--tree-node-action kwarks/tree))
+
+(defun kwarks/tree-copy-node-path ()
+  "Copy node path to clipboard."
   (interactive)
   (kwarks--tree-node-action kill-new))
 
@@ -1031,6 +1037,17 @@ Major mode for unix "tree" command
     (format "%s -> %s" (propertize name 'font-lock-face 'kwarks/tree-link-face)
             (propertize target 'font-lock-face target-face))))
 
+(defun kwarks--normalize-path (path record)
+  "Add forward slash to the end of the PATH if it's a directory
+   or a link to a directory."
+  (let ((type (plist-get record 'type))
+        (target (plist-get record 'target)))
+    (cond ((string-match "\/$" path) path)
+          ((or (and (string-equal type "link")
+                    (file-directory-p target))
+               (string-equal type "directory")) (format "%s/" path))
+          (t path))))
+
 (defun kwarks--make-full-name (parent name)
   (cond ((= 0 (length parent)) name)
         ((string-match "\/$" parent) (format "%s%s" parent name))
@@ -1042,7 +1059,8 @@ Major mode for unix "tree" command
            (type (plist-get record 'type))
            (is-link (string-equal type "link"))
            (name (plist-get record 'name))
-           (full-name (kwarks--make-full-name parent (plist-get record 'name)))
+           (full-name (kwarks--normalize-path
+                       (kwarks--make-full-name parent name) record))
            (children (plist-get record 'contents))
            (is-root (= (length spacing) 0))
            (is-directory (string-equal type "directory"))
