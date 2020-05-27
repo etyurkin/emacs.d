@@ -951,6 +951,8 @@ SET TRIMOUT ON;
 ** Tree mode
 Major mode for unix "tree" command
 
+TODO: check https://www.emacswiki.org/emacs/hide-lines.el
+
 #+BEGIN_SRC emacs-lisp
 (require 'json)
 
@@ -962,6 +964,8 @@ Major mode for unix "tree" command
     (define-key map "c" 'kwarks/tree-copy-node-path)
     (define-key map "s" 'kwarks/tree-subtree)
     (define-key map "r" 'kwarks/tree-reload)
+    (define-key map (kbd "TAB") 'kwarks/tree-toggle-node)
+    (define-key map (kbd "<S-tab>") 'kwarks/tree-toggle-all)
     map)
   "Keymap for `tree-mode'.")
 
@@ -982,6 +986,12 @@ Major mode for unix "tree" command
 
 (defvar kwarks/tree-ignore-list '("Icon?" ".git" ".idea")
   "Do not list files that match the given pattern.")
+
+(defvar-local tree-path ()
+  "Initial tree path")
+
+(defvar-local kwarks--tree-hidden-nodes (make-hash-table :test 'equal)
+  "hash-table of invisible nodes.")
 
 (defcustom kwarks/tree-inhibit-help-message nil
   "Non-nil inhibits the help message shown upon entering Tree mode."
@@ -1016,6 +1026,87 @@ Major mode for unix "tree" command
   "Reload tree."
   (interactive)
   (kwarks--reload-tree tree-path))
+
+(defun kwarks/tree-toggle-node ()
+  "Collapse/expand node."
+  (interactive)
+  (kwarks--tree-node-action kwarks--tree-toggle-node))
+
+(defun kwarks/tree-toggle-all ()
+  "Collapse/expand node including child nodes."
+  (interactive)
+  (kwarks--tree-node-action kwarks--tree-toggle-all))
+
+(defun kwarks--tree-toggle-all (node)
+  (if (gethash node kwarks--tree-hidden-nodes)
+      (kwarks--tree-expand-all node)
+    (kwarks--tree-collapse-all node)))
+
+(defun kwarks--tree-collapse-all (node)
+  (kwarks--tree-collapse-node node t))
+
+(defun kwarks--tree-expand-all (node)
+  (save-excursion
+    (mapc (lambda (parent)
+            (if (string-prefix-p node parent)
+                (kwarks--tree-expand-node parent)))
+          (hash-table-keys kwarks--tree-hidden-nodes))))
+
+(defun kwarks--tree-hide-node (node start end)
+  "Add an overlay from `start' to `end' in the current buffer. Push the
+overlay onto the kwarks--tree-hidden-nodes hash-table"
+  (let ((overlay (make-overlay start end))
+        (items (gethash node kwarks--tree-hidden-nodes)))
+    (puthash node (cons overlay items) kwarks--tree-hidden-nodes)
+    (overlay-put overlay 'invisible 'hl)))
+
+(defun kwarks--tree-expand-node (node)
+  (mapc (lambda (overlay) (delete-overlay overlay)) 
+        (gethash node kwarks--tree-hidden-nodes))
+  (remhash node kwarks--tree-hidden-nodes))
+
+;; (defun kwarks--tree-collapse-node (node collapse-children-p)
+;;   (save-excursion
+;;     (let ((has-children (file-directory-p node))
+;;           (dots-overlay (make-overlay (line-beginning-position) (line-end-position)))
+;;           (collaped-p nil))
+;;       (forward-line 1)
+;;       (while has-children
+;;         (let* ((line-start (point))
+;;                (line (buffer-substring line-start
+;;                                        (progn (forward-line 1) (point))))
+;;                (line-end (point))
+;;                (parent (get-text-property (point-min) 'parent line)))
+;;           (setq has-children (string-prefix-p node parent))
+;;           (if has-children
+;;               (progn 
+;;                 (setq collaped-p t)
+;;                 (kwarks--tree-hide-node
+;;                  (if collapse-children-p parent node) line-start line-end)))))
+;;       (if collaped-p
+;;           (progn
+;;             (puthash node (cons dots-overlay (gethash node kwarks--tree-hidden-nodes)) kwarks--tree-hidden-nodes)
+;;             (overlay-put dots-overlay 'after-string "..."))))))
+
+(defun kwarks--tree-collapse-node (node collapse-children-p)
+  (save-excursion
+    (let ((child-node-p t))
+      (forward-line 1)
+      (while child-node-p
+        (let* ((line-start (point))
+               (line (buffer-substring line-start
+                                       (progn (forward-line 1) (point))))
+               (line-end (point))
+               (parent (get-text-property (point-min) 'parent line)))
+          (setq child-node-p (string-prefix-p node parent))
+          (if child-node-p
+              (kwarks--tree-hide-node
+               (if collapse-children-p parent node) line-start line-end)))))))
+
+(defun kwarks--tree-toggle-node (node)
+  (if (gethash node kwarks--tree-hidden-nodes)
+      (kwarks--tree-expand-node node)
+    (kwarks--tree-collapse-node node nil)))
 
 (defun kwarks--make-tree (root)
   (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -a -q -I '%s'"
@@ -1073,13 +1164,12 @@ Major mode for unix "tree" command
       (if is-root
           (insert name)
         (insert
-         (if is-link
-             (propertize (format "%s%s %s" spacing prefix
-                                 (kwarks--tree-link-set-face name (plist-get record 'target)))
-                         'kbd-help full-name)
-           (propertize (format "%s%s %s" spacing prefix
-                               (kwarks--tree-node-set-face name is-directory))
-                       'kbd-help full-name))))
+         (propertize (format "%s%s %s" spacing prefix
+                             (if is-link
+                                 (kwarks--tree-link-set-face name (plist-get record 'target))
+                               (kwarks--tree-node-set-face name is-directory)))
+                     'kbd-help full-name
+                     'parent parent)))
       
       (newline)
       (if (and (consp children) (null (plist-get (car children) 'error)))
@@ -1101,7 +1191,7 @@ Major mode for unix "tree" command
 
 (define-derived-mode tree-mode special-mode "Tree"
   "Major mode for viewing directory tree."
-  (make-local-variable 'tree-path)
+  ;;(make-local-variable 'tree-path)
   (setq-local help-at-pt-display-when-idle t)
   (help-at-pt-set-timer))
 
