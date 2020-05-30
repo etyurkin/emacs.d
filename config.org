@@ -966,6 +966,7 @@ TODO: check https://www.emacswiki.org/emacs/hide-lines.el
     (define-key map "r" 'kwarks/tree-reload)
     (define-key map (kbd "TAB") 'kwarks/tree-toggle-node)
     (define-key map (kbd "<S-tab>") 'kwarks/tree-toggle-all)
+    (define-key map "q" 'kwarks/quit-window)
     map)
   "Keymap for `tree-mode'.")
 
@@ -990,7 +991,7 @@ TODO: check https://www.emacswiki.org/emacs/hide-lines.el
 (defvar-local tree-path ()
   "Initial tree path")
 
-(defvar-local kwarks--tree-hidden-nodes (make-hash-table :test 'equal)
+(defvar-local kwarks--tree-hidden-nodes ()
   "hash-table of invisible nodes.")
 
 (defcustom kwarks/tree-inhibit-help-message nil
@@ -1005,12 +1006,12 @@ TODO: check https://www.emacswiki.org/emacs/hide-lines.el
 (defun kwarks/tree-view-file ()
   "View file."
   (interactive)
-  (kwarks--tree-node-action view-file))
+  (kwarks--tree-node-action view-file-other-window))
 
 (defun kwarks/tree-find-file ()
   "Edit file."
   (interactive)
-  (kwarks--tree-node-action find-file))
+  (kwarks--tree-node-action find-file-other-window))
 
 (defun kwarks/tree-subtree ()
   "Open subtree."
@@ -1026,6 +1027,13 @@ TODO: check https://www.emacswiki.org/emacs/hide-lines.el
   "Reload tree."
   (interactive)
   (kwarks--reload-tree tree-path))
+
+(defun kwarks/quit-window ()
+  "Close tree buffer."
+  (interactive)
+  (clrhash kwarks--tree-hidden-nodes)
+  (setq-local kwarks--tree-hidden-nodes nil)
+  (quit-window t))
 
 (defun kwarks/tree-toggle-node ()
   "Collapse/expand node."
@@ -1065,43 +1073,15 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
         (gethash node kwarks--tree-hidden-nodes))
   (remhash node kwarks--tree-hidden-nodes))
 
-;; (defun kwarks--tree-collapse-node (node collapse-children-p)
-;;   (save-excursion
-;;     (let ((has-children (file-directory-p node))
-;;           (dots-overlay (make-overlay (line-beginning-position) (line-end-position)))
-;;           (collaped-p nil))
-;;       (forward-line 1)
-;;       (while has-children
-;;         (let* ((line-start (point))
-;;                (line (buffer-substring line-start
-;;                                        (progn (forward-line 1) (point))))
-;;                (line-end (point))
-;;                (parent (get-text-property (point-min) 'parent line)))
-;;           (setq has-children (string-prefix-p node parent))
-;;           (if has-children
-;;               (progn 
-;;                 (setq collaped-p t)
-;;                 (kwarks--tree-hide-node
-;;                  (if collapse-children-p parent node) line-start line-end)))))
-;;       (if collaped-p
-;;           (progn
-;;             (puthash node (cons dots-overlay (gethash node kwarks--tree-hidden-nodes)) kwarks--tree-hidden-nodes)
-;;             (overlay-put dots-overlay 'after-string "..."))))))
-
 (defun kwarks--tree-collapse-node (node collapse-children-p)
   (save-excursion
-    (let ((child-node-p t))
-      (forward-line 1)
-      (while child-node-p
-        (let* ((line-start (point))
-               (line (buffer-substring line-start
-                                       (progn (forward-line 1) (point))))
-               (line-end (point))
-               (parent (get-text-property (point-min) 'parent line)))
-          (setq child-node-p (string-prefix-p node parent))
-          (if child-node-p
-              (kwarks--tree-hide-node
-               (if collapse-children-p parent node) line-start line-end)))))))
+    (forward-line 1)
+    
+    (while (string-prefix-p node (get-text-property (point) 'parent))
+      (let* ((line-start (point))
+             (parent (get-text-property (point) 'parent)))
+        (kwarks--tree-hide-node
+         (if collapse-children-p parent node) line-start (progn (forward-line 1) (point)))))))
 
 (defun kwarks--tree-toggle-node (node)
   (if (gethash node kwarks--tree-hidden-nodes)
@@ -1183,6 +1163,7 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
           (t (file-name-directory name)))))
 
 (defun kwarks--reload-tree (path)
+  (clrhash kwarks--tree-hidden-nodes)
   (let ((pos (point)))
     (read-only-mode -1)
     (erase-buffer)
@@ -1191,8 +1172,8 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
 
 (define-derived-mode tree-mode special-mode "Tree"
   "Major mode for viewing directory tree."
-  ;;(make-local-variable 'tree-path)
   (setq-local help-at-pt-display-when-idle t)
+  (setq-local kwarks--tree-hidden-nodes (make-hash-table :test 'equal))
   (help-at-pt-set-timer))
 
 (defun kwarks--tree-show-help ()
@@ -1208,11 +1189,11 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
          (inhibit-message t))
     (get-buffer-create buffer-name)
     (set-buffer buffer-name)
-    (kwarks--reload-tree actual-path)
+    (switch-to-buffer buffer-name)
     (tree-mode)
     (setq-local tree-path actual-path)
-    (toggle-truncate-lines 1)
-    (switch-to-buffer buffer-name))
+    (kwarks--reload-tree actual-path)
+    (toggle-truncate-lines 1))
   (kwarks--tree-show-help))
 #+END_SRC
 
