@@ -495,12 +495,12 @@ It then indents the markup by using nxml's indentation rules."
     (let ((text (delete-and-extract-region start end)))
       (insert (funcall func text)))))
 
-(defun hex-region (start end)
+(defun kwarks/url-encode (start end)
   "urlencode the region between START and END in current buffer."
   (interactive "r")
   (kwarks/region-apply start end #'url-hexify-string))
 
-(defun unhex-region (start end)
+(defun kwarks/url-decode (start end)
   "de-urlencode the region between START and END in current buffer."
   (interactive "r")
   (kwarks/region-apply start end #'url-unhex-string))
