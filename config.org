@@ -125,6 +125,13 @@ This is helpful for writeroom-mode, in particular."
  (epa-file-enable))
 #+END_SRC
 
+** TLS1.3 workaround
+Looks like emacs 26 has problems with TLS1.3, temporary disable it.
+See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
+
+#+BEGIN_SRC emacs-lisp
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+#+END_SRC
 ** Backups
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq
