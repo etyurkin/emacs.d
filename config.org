@@ -2798,7 +2798,7 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
     (if (null lst) '()
       (cons (car lst) (kwarks/every-other (cddr lst)))))
 
-  (defun ivy-http-status-code ()
+  (defun kwarks/http-status-code ()
     (interactive)
     (ivy--know-your-http-well "HTTP status"
                               (mapcar (lambda (arg)
@@ -2806,21 +2806,21 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
                                               (list (format "%s, %s" (caadr arg) (cadadr arg)))))
                                       (kwarks/every-other http-status))))
 
-  (defun ivy-http-header ()
+  (defun kwarks/http-header ()
     (interactive)
     (ivy--know-your-http-well "HTTP header" http-headers))
 
-  (defun ivy-http-method ()
+  (defun kwarks/http-method ()
     "Look up the meaning of HTTP methods"
     (interactive)
     (ivy--know-your-http-well "HTTP method" http-methods))
 
-  (defun ivy-media-type ()
+  (defun kwarks/media-type ()
     "Look up the template of a media-type"
     (interactive)
     (ivy--know-your-http-well "Media-type" media-types))
 
-  (defun ivy-http-relation ()
+  (defun kwarks/http-relation ()
     "Look up the meaning of HTTP relations"
     (interactive)
     (ivy--know-your-http-well "HTTP relation" http-relations)))
