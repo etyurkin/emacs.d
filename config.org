@@ -1096,7 +1096,7 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
     (kwarks--tree-collapse-node node nil)))
 
 (defun kwarks--make-tree (root)
-  (let ((cmd (format "tree %s --dirsfirst --noreport -J -l -a -q -I '%s'"
+  (let ((cmd (format "tree \"%s\" --dirsfirst --noreport -J -l -a -q -I '%s'"
                      root
                      (string-join kwarks/tree-ignore-list "|")))
         (json-object-type 'plist)
