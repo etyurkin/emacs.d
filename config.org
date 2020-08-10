@@ -2456,6 +2456,28 @@ Don't forget to setenv TERM xterm-256color
   (init-compilation-shell-minor-mode))
 #+end_src
 
+** annot
+A global annotator/highlighter for GNU Emacs
+
+[C-x C-a] - Add a new annotation
+            Highlight the current region if any (annot-edit/add)
+[C-x C-r] - Remove the annotation/highlight at point (annot-remove)
+[C-x C-i] - Insert a new image at point (annot-add-image)
+
+#+BEGIN_SRC emacs-lisp
+(use-package annot
+  :quelpa (annot
+           :url "https://github.com/ghoshi/annot.git"
+           :fetcher git
+           :files ("src/*.el")
+           :upgrade nil)
+  :init
+  (require 'annot)
+  (setq annot-directory "~/.emacs.d/annot")
+  (custom-set-faces
+   '(annot-text-face ((t (:background nil :foreground "yellow" :slant italic))))))
+#+END_SRC
+
 * Programming
 ** magit
 The magical git client. Let's load magit only when one of the several entry pont
