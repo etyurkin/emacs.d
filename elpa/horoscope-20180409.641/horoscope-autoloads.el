@@ -18,9 +18,7 @@ insert the resulting horoscope into the current buffer.
 \(fn &optional INSERTP)" t nil)
 
 (autoload 'horoscope-psychoanalyze "horoscope" "\
-The astrologist goes to the analyst.
-
-\(fn)" t nil)
+The astrologist goes to the analyst." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "horoscope" '("horoscope--")))
 

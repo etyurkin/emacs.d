@@ -20,14 +20,10 @@ Add a REFERENCE to a PROJECT.
 \(fn REFERENCE PROJECT)" t nil)
 
 (autoload 'dotnet-build "dotnet" "\
-Build a .NET project.
-
-\(fn)" t nil)
+Build a .NET project." t nil)
 
 (autoload 'dotnet-clean "dotnet" "\
-Clean build output.
-
-\(fn)" t nil)
+Clean build output." t nil)
 
 (autoload 'dotnet-new "dotnet" "\
 Initialize a new console .NET project.
@@ -38,14 +34,10 @@ language (see `dotnet-langs').
 \(fn PROJECT-PATH TEMPLATE LANG)" t nil)
 
 (autoload 'dotnet-publish "dotnet" "\
-Publish a .NET project for deployment.
-
-\(fn)" t nil)
+Publish a .NET project for deployment." t nil)
 
 (autoload 'dotnet-restore "dotnet" "\
-Restore dependencies specified in the .NET project.
-
-\(fn)" t nil)
+Restore dependencies specified in the .NET project." t nil)
 
 (autoload 'dotnet-run "dotnet" "\
 Compile and execute a .NET project.  With ARG, query for project path again.
@@ -58,24 +50,16 @@ Compile and execute a .NET project with ARGS.
 \(fn ARGS)" t nil)
 
 (autoload 'dotnet-sln-add "dotnet" "\
-Add a project to a Solution.
-
-\(fn)" t nil)
+Add a project to a Solution." t nil)
 
 (autoload 'dotnet-sln-remove "dotnet" "\
-Remove a project from a Solution.
-
-\(fn)" t nil)
+Remove a project from a Solution." t nil)
 
 (autoload 'dotnet-sln-list "dotnet" "\
-List all projects in a Solution.
-
-\(fn)" t nil)
+List all projects in a Solution." t nil)
 
 (autoload 'dotnet-sln-new "dotnet" "\
-Create a new Solution.
-
-\(fn)" t nil)
+Create a new Solution." t nil)
 
 (autoload 'dotnet-test "dotnet" "\
 Launch project unit-tests, querying for a project on first call.  With ARG, query for project path again.
@@ -84,6 +68,11 @@ Launch project unit-tests, querying for a project on first call.  With ARG, quer
 
 (autoload 'dotnet-mode "dotnet" "\
 dotnet CLI minor mode.
+
+If called interactively, enable dotnet mode if ARG is positive,
+and disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it if
+ARG is `toggle'; disable the mode otherwise.
 
 \(fn &optional ARG)" t nil)
 

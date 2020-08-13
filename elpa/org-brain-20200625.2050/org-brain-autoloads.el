@@ -10,15 +10,11 @@
 ;;; Generated autoloads from org-brain.el
 
 (autoload 'org-brain-update-id-locations "org-brain" "\
-Scan `org-brain-files' using `org-id-update-id-locations'.
-
-\(fn)" t nil)
+Scan `org-brain-files' using `org-id-update-id-locations'." t nil)
 
 (autoload 'org-brain-get-id "org-brain" "\
 Get ID of headline at point, creating one if it doesn't exist.
-Run `org-brain-new-entry-hook' if a new ID is created.
-
-\(fn)" t nil)
+Run `org-brain-new-entry-hook' if a new ID is created." t nil)
 
 (autoload 'org-brain-switch-brain "org-brain" "\
 Choose another DIRECTORY to be your `org-brain-path'.
@@ -227,9 +223,7 @@ If STATUS is omitted, toggle between selected / not selected.
 \(fn ENTRY &optional STATUS)" t nil)
 
 (autoload 'org-brain-clear-selected "org-brain" "\
-Clear the selected list.
-
-\(fn)" t nil)
+Clear the selected list." t nil)
 
 (autoload 'org-brain-set-title "org-brain" "\
 Set the name of ENTRY to TITLE.
@@ -261,14 +255,10 @@ If interactive, also prompt for ENTRY.
 (autoload 'org-brain-ensure-ids-in-buffer "org-brain" "\
 Run `org-brain-get-id' on all headlines in current buffer.
 Only works if in an `org-mode' buffer inside `org-brain-path'.
-Suitable for use with `before-save-hook'.
-
-\(fn)" t nil)
+Suitable for use with `before-save-hook'." t nil)
 
 (autoload 'org-brain-agenda "org-brain" "\
-Like `org-agenda', but only for `org-brain-files'.
-
-\(fn)" t nil)
+Like `org-agenda', but only for `org-brain-files'." t nil)
 
 (autoload 'org-brain-create-relationships-from-links "org-brain" "\
 Add relationships for brain: links in `org-brain-path'.
@@ -277,9 +267,7 @@ Only create relationships to other files, not to headline entries.
 This function is meant to be used in order to convert old
 org-brain setups to the system introduced in version 0.4. Please
 make a backup of your `org-brain-path' before running this
-function.
-
-\(fn)" t nil)
+function." t nil)
 
 (autoload 'org-brain-visualize-follow "org-brain" "\
 Set if `org-brain-visualize' SHOULD-FOLLOW the current entry or not.
@@ -312,9 +300,7 @@ Unless WANDER is t, `org-brain-stop-wandering' will be run.
 
 (autoload 'org-brain-visualize-entry-at-pt "org-brain" "\
 Use `org-brain-visualize' on the `org-brain-entry-at-pt'.
-Useful if wanting to visualize the current `org-mode' entry.
-
-\(fn)" t nil)
+Useful if wanting to visualize the current `org-mode' entry." t nil)
 
 (autoload 'org-brain-visualize-random "org-brain" "\
 Run `org-brain-visualize' on a random org-brain entry.
@@ -326,9 +312,7 @@ restrict to descendants of the visualized entry.
 \(fn &optional RESTRICT-TO)" t nil)
 
 (autoload 'org-brain-select-button "org-brain" "\
-Toggle selection of the entry linked to by the button at point.
-
-\(fn)" t nil)
+Toggle selection of the entry linked to by the button at point." t nil)
 
 (autoload 'org-brain-select-dwim "org-brain" "\
 Use `org-brain-select-button' or `org-brain-select' depending on context.

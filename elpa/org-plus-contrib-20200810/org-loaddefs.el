@@ -879,9 +879,7 @@ used to limit the exported source code blocks by language.
 ;;; Generated autoloads from ol-bbdb.el
 
 (autoload 'org-bbdb-anniversaries "ol-bbdb" "\
-Extract anniversaries from BBDB for display in the agenda.
-
-\(fn)" nil nil)
+Extract anniversaries from BBDB for display in the agenda." nil nil)
 
 ;;;***
 
@@ -889,9 +887,7 @@ Extract anniversaries from BBDB for display in the agenda.
 ;;; Generated autoloads from ol-irc.el
 
 (autoload 'org-irc-store-link "ol-irc" "\
-Dispatch to the appropriate function to store a link to an IRC session.
-
-\(fn)" nil nil)
+Dispatch to the appropriate function to store a link to an IRC session." nil nil)
 
 ;;;***
 
@@ -1262,9 +1258,7 @@ This command is set with the variable `org-archive-default-command'.
 
 (autoload 'org-attach "org-attach" "\
 The dispatcher for attachment commands.
-Shows a list of commands and prompts for another key to execute a command.
-
-\(fn)" t nil)
+Shows a list of commands and prompts for another key to execute a command." t nil)
 
 (autoload 'org-attach-dired-to-subtree "org-attach" "\
 Attach FILES marked or current file in dired to subtree in other window.
@@ -2520,16 +2514,12 @@ Load FILE with optional arguments NOERROR and MUSTSUFFIX.
 (autoload 'org-mobile-push "org-mobile" "\
 Push the current state of Org affairs to the target directory.
 This will create the index file, copy all agenda files there, and also
-create all custom agenda views, for upload to the mobile phone.
-
-\(fn)" t nil)
+create all custom agenda views, for upload to the mobile phone." t nil)
 
 (autoload 'org-mobile-pull "org-mobile" "\
 Pull the contents of `org-mobile-capture-file' and integrate them.
 Apply all flagged actions, flag entries to be flagged and then call an
-agenda view showing the flagged items.
-
-\(fn)" t nil)
+agenda view showing the flagged items." t nil)
 
 ;;;***
 
@@ -2756,9 +2746,7 @@ Open A Dired buffer with unused screenshots marked
 (autoload 'org-table-create-with-table\.el "org-table" "\
 Use the table.el package to insert a new table.
 If there is already a table at point, convert between Org tables
-and table.el tables.
-
-\(fn)" t nil)
+and table.el tables." t nil)
 
 (autoload 'org-table-create-or-convert-from-region "org-table" "\
 Convert region to table, or create an empty table.
@@ -2837,26 +2825,18 @@ a table.
 
 (autoload 'org-table-next-field "org-table" "\
 Go to the next field in the current table, creating new lines as needed.
-Before doing so, re-align the table if necessary.
-
-\(fn)" t nil)
+Before doing so, re-align the table if necessary." t nil)
 
 (autoload 'org-table-previous-field "org-table" "\
 Go to the previous field in the table.
-Before doing so, re-align the table if necessary.
-
-\(fn)" t nil)
+Before doing so, re-align the table if necessary." t nil)
 
 (autoload 'org-table-next-row "org-table" "\
 Go to the next row (same column) in the current table.
-Before doing so, re-align the table if necessary.
-
-\(fn)" t nil)
+Before doing so, re-align the table if necessary." t nil)
 
 (autoload 'org-table-blank-field "org-table" "\
-Blank the current table field or active region.
-
-\(fn)" t nil)
+Blank the current table field or active region." t nil)
 
 (autoload 'org-table-field-info "org-table" "\
 Show info about the current field, and highlight any reference at point.
@@ -2873,48 +2853,32 @@ However, when FORCE is non-nil, create new columns if necessary.
 \(fn N &optional ON-DELIM FORCE)" t nil)
 
 (autoload 'org-table-insert-column "org-table" "\
-Insert a new column into the table.
-
-\(fn)" t nil)
+Insert a new column into the table." t nil)
 
 (autoload 'org-table-move-cell-up "org-table" "\
 Move a single cell up in a table.
-Swap with anything in target cell.
-
-\(fn)" t nil)
+Swap with anything in target cell." t nil)
 
 (autoload 'org-table-move-cell-down "org-table" "\
 Move a single cell down in a table.
-Swap with anything in target cell.
-
-\(fn)" t nil)
+Swap with anything in target cell." t nil)
 
 (autoload 'org-table-move-cell-left "org-table" "\
 Move a single cell left in a table.
-Swap with anything in target cell.
-
-\(fn)" t nil)
+Swap with anything in target cell." t nil)
 
 (autoload 'org-table-move-cell-right "org-table" "\
 Move a single cell right in a table.
-Swap with anything in target cell.
-
-\(fn)" t nil)
+Swap with anything in target cell." t nil)
 
 (autoload 'org-table-delete-column "org-table" "\
-Delete a column from the table.
-
-\(fn)" t nil)
+Delete a column from the table." t nil)
 
 (autoload 'org-table-move-column-right "org-table" "\
-Move column to the right.
-
-\(fn)" t nil)
+Move column to the right." t nil)
 
 (autoload 'org-table-move-column-left "org-table" "\
-Move column to the left.
-
-\(fn)" t nil)
+Move column to the left." t nil)
 
 (autoload 'org-table-move-column "org-table" "\
 Move the current column to the right.  With arg LEFT, move to the left.
@@ -2922,14 +2886,10 @@ Move the current column to the right.  With arg LEFT, move to the left.
 \(fn &optional LEFT)" t nil)
 
 (autoload 'org-table-move-row-down "org-table" "\
-Move table row down.
-
-\(fn)" t nil)
+Move table row down." t nil)
 
 (autoload 'org-table-move-row-up "org-table" "\
-Move table row up.
-
-\(fn)" t nil)
+Move table row up." t nil)
 
 (autoload 'org-table-move-row "org-table" "\
 Move the current table line down.  With arg UP, move it up.
@@ -2954,9 +2914,7 @@ Insert a hline and move to the row below that line.
 \(fn &optional SAME-COLUMN)" t nil)
 
 (autoload 'org-table-kill-row "org-table" "\
-Delete the current row or horizontal line from the table.
-
-\(fn)" t nil)
+Delete the current row or horizontal line from the table." t nil)
 
 (autoload 'org-table-cut-region "org-table" "\
 Copy region in table to the clipboard and blank all relevant fields.
@@ -3000,9 +2958,7 @@ Paste a rectangular region into a table.
 The upper right corner ends up in the current field.  All involved fields
 will be overwritten.  If the rectangle does not fit into the present table,
 the table is enlarged as needed.  The process ignores horizontal separator
-lines.
-
-\(fn)" t nil)
+lines." t nil)
 
 (autoload 'org-table-edit-field "org-table" "\
 Edit table field in a different window.
@@ -3025,9 +2981,7 @@ LOCATION is a buffer position, consider the formulas there.
 
 (autoload 'org-table-maybe-eval-formula "org-table" "\
 Check if the current field starts with \"=\" or \":=\".
-If yes, store the formula and apply it.
-
-\(fn)" nil nil)
+If yes, store the formula and apply it." nil nil)
 
 (autoload 'org-table-rotate-recalc-marks "org-table" "\
 Rotate the recalculation mark in the first column.
@@ -3041,9 +2995,7 @@ of the new mark.
 \(fn &optional NEWCHAR)" t nil)
 
 (autoload 'org-table-maybe-recalculate-line "org-table" "\
-Recompute the current line if marked for it, and if we haven't just done it.
-
-\(fn)" t nil)
+Recompute the current line if marked for it, and if we haven't just done it." t nil)
 
 (autoload 'org-table-eval-formula "org-table" "\
 Replace the table field value at the cursor by the result of a calculation.
@@ -3108,29 +3060,19 @@ with the prefix ARG.
 \(fn &optional ARG)" t nil)
 
 (autoload 'org-table-recalculate-buffer-tables "org-table" "\
-Recalculate all tables in the current buffer.
-
-\(fn)" t nil)
+Recalculate all tables in the current buffer." t nil)
 
 (autoload 'org-table-iterate-buffer-tables "org-table" "\
-Iterate all tables in the buffer, to converge inter-table dependencies.
-
-\(fn)" t nil)
+Iterate all tables in the buffer, to converge inter-table dependencies." t nil)
 
 (autoload 'org-table-edit-formulas "org-table" "\
-Edit the formulas of the current table in a separate buffer.
-
-\(fn)" t nil)
+Edit the formulas of the current table in a separate buffer." t nil)
 
 (autoload 'org-table-toggle-coordinate-overlays "org-table" "\
-Toggle the display of Row/Column numbers in tables.
-
-\(fn)" t nil)
+Toggle the display of Row/Column numbers in tables." t nil)
 
 (autoload 'org-table-toggle-formula-debugger "org-table" "\
-Toggle the formula debugger in tables.
-
-\(fn)" t nil)
+Toggle the formula debugger in tables." t nil)
 
 (autoload 'org-table-toggle-column-width "org-table" "\
 Shrink or expand current column in an Org table.
@@ -3301,17 +3243,18 @@ This function sets up the following dynamically scoped variables:
  `org-table-dlines',
  `org-table-hlines',
  `org-table-local-parameters',
- `org-table-named-field-locations'.
-
-\(fn)" nil nil)
+ `org-table-named-field-locations'." nil nil)
 
 (autoload 'turn-on-orgtbl "org-table" "\
-Unconditionally turn on `orgtbl-mode'.
-
-\(fn)" nil nil)
+Unconditionally turn on `orgtbl-mode'." nil nil)
 
 (autoload 'orgtbl-mode "org-table" "\
 The Org mode table editor as a minor mode for use in other modes.
+
+If called interactively, enable Orgtbl mode if ARG is positive,
+and disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it if
+ARG is `toggle'; disable the mode otherwise.
 
 \(fn &optional ARG)" t nil)
 
@@ -3551,9 +3494,7 @@ With prefix arg STOP, stop it entirely.
 \(fn &optional STOP)" t nil)
 
 (autoload 'org-timer-stop "org-timer" "\
-Stop the relative or countdown timer.
-
-\(fn)" t nil)
+Stop the relative or countdown timer." t nil)
 
 (autoload 'org-timer "org-timer" "\
 Insert a H:MM:SS string from the timer into the buffer.
@@ -4068,14 +4009,10 @@ When ARG is `\\[universal-argument] \\[universal-argument]', display the asynchr
 ;;; Generated autoloads from ox-ascii.el
 
 (autoload 'org-ascii-convert-region-to-ascii "ox-ascii" "\
-Assume region has Org syntax, and convert it to plain ASCII.
-
-\(fn)" t nil)
+Assume region has Org syntax, and convert it to plain ASCII." t nil)
 
 (autoload 'org-ascii-convert-region-to-utf8 "ox-ascii" "\
-Assume region has Org syntax, and convert it to UTF-8.
-
-\(fn)" t nil)
+Assume region has Org syntax, and convert it to UTF-8." t nil)
 
 (autoload 'org-ascii-export-as-ascii "ox-ascii" "\
 Export current buffer to a text buffer.
@@ -4180,6 +4117,11 @@ Return output file name.
 (autoload 'org-beamer-mode "ox-beamer" "\
 Support for editing Beamer oriented Org mode files.
 
+If called interactively, enable Org-Beamer mode if ARG is
+positive, and disable it if ARG is zero or negative.  If called
+from Lisp, also enable the mode if ARG is omitted or nil, and
+toggle it if ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (autoload 'org-beamer-export-as-latex "ox-beamer" "\
@@ -4281,9 +4223,7 @@ result of this command will be that the BEAMER_env *property* of
 the entry is set.
 
 In addition to this, the command will also set a tag as a visual
-aid, but the tag does not have any semantic meaning.
-
-\(fn)" t nil)
+aid, but the tag does not have any semantic meaning." t nil)
 
 (autoload 'org-beamer-publish-to-latex "ox-beamer" "\
 Publish an Org file to a Beamer presentation (LaTeX).
@@ -4400,9 +4340,7 @@ need into your CSS file.
 
 If you then set `org-html-htmlize-output-type' to `css', calls
 to the function `org-html-htmlize-region-for-paste' will
-produce code that uses these same face definitions.
-
-\(fn)" t nil)
+produce code that uses these same face definitions." t nil)
 
 (autoload 'org-html-export-as-html "ox-html" "\
 Export current buffer to an HTML buffer.
@@ -4440,9 +4378,7 @@ is non-nil.
 Assume the current region has Org syntax, and convert it to HTML.
 This can be used in any buffer.  For example, you can write an
 itemized list in Org syntax in an HTML buffer and use this command
-to convert it.
-
-\(fn)" t nil)
+to convert it." t nil)
 
 (autoload 'org-html-export-to-html "ox-html" "\
 Export current buffer to a HTML file.
@@ -4690,9 +4626,7 @@ is non-nil.
 Assume the current region has Org syntax, and convert it to LaTeX.
 This can be used in any buffer.  For example, you can write an
 itemized list in Org syntax in an LaTeX buffer and use this
-command to convert it.
-
-\(fn)" t nil)
+command to convert it." t nil)
 
 (autoload 'org-latex-export-to-latex "ox-latex" "\
 Export current buffer to a LaTeX file.
@@ -4815,9 +4749,7 @@ non-nil.
 Assume the current region has Org syntax, and convert it to Markdown.
 This can be used in any buffer.  For example, you can write an
 itemized list in Org syntax in a Markdown buffer and use
-this command to convert it.
-
-\(fn)" t nil)
+this command to convert it." t nil)
 
 (autoload 'org-md-export-to-markdown "ox-md" "\
 Export current buffer to a Markdown file.
@@ -4874,9 +4806,7 @@ MathML source to kill ring depending on the value of
 (autoload 'org-odt-export-as-odf-and-open "ox-odt" "\
 Export LaTeX fragment as OpenDocument formula and immediately open it.
 Use `org-odt-export-as-odf' to read LaTeX fragment and OpenDocument
-formula file.
-
-\(fn)" t nil)
+formula file." t nil)
 
 (autoload 'org-odt-export-to-odt "ox-odt" "\
 Export current buffer to a ODT file.
@@ -5281,9 +5211,7 @@ Return output file name.
 Assume the current region has Org syntax, and convert it to Texinfo.
 This can be used in any buffer.  For example, you can write an
 itemized list in Org syntax in an Texinfo buffer and use this
-command to convert it.
-
-\(fn)" t nil)
+command to convert it." t nil)
 
 ;;;***
 

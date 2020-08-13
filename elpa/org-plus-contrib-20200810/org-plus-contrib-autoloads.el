@@ -87,29 +87,26 @@ Don't auto jack in by default for not rude.")
 (custom-autoload 'ob-clojure-literate-auto-jackin-p "ob-clojure-literate" t)
 
 (autoload 'ob-clojure-literate-specify-session "ob-clojure-literate" "\
-Specify ob-clojure header argument :session with value selected from a list of available sessions.
-
-\(fn)" t nil)
+Specify ob-clojure header argument :session with value selected from a list of available sessions." t nil)
 
 (autoload 'ob-clojure-literate-auto-jackin "ob-clojure-literate" "\
-Auto setup ob-clojure-literate scaffold and jack-in Clojure project.
-
-\(fn)" t nil)
+Auto setup ob-clojure-literate scaffold and jack-in Clojure project." t nil)
 
 (autoload 'ob-clojure-literate-enable "ob-clojure-literate" "\
-Enable Org-mode buffer locally for `ob-clojure-literate'.
-
-\(fn)" nil nil)
+Enable Org-mode buffer locally for `ob-clojure-literate'." nil nil)
 
 (autoload 'ob-clojure-literate-disable "ob-clojure-literate" "\
-Disable Org-mode buffer locally for `ob-clojure-literate'.
-
-\(fn)" nil nil)
+Disable Org-mode buffer locally for `ob-clojure-literate'." nil nil)
 
 (if ob-clojure-literate-auto-jackin-p (ob-clojure-literate-auto-jackin))
 
 (autoload 'ob-clojure-literate-mode "ob-clojure-literate" "\
 A minor mode to toggle `ob-clojure-literate'.
+
+If called interactively, enable Ob-Clojure-Literate mode if ARG
+is positive, and disable it if ARG is zero or negative.  If
+called from Lisp, also enable the mode if ARG is omitted or nil,
+and toggle it if ARG is `toggle'; disable the mode otherwise.
 
 \(fn &optional ARG)" t nil)
 
@@ -127,7 +124,7 @@ A minor mode to toggle `ob-clojure-literate'.
 ;;;### (autoloads nil "ob-coq" "ob-coq.el" (0 0 0 0))
 ;;; Generated autoloads from ob-coq.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-coq" '("org-babel-" "coq-program-name")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-coq" '("coq-program-name" "org-babel-")))
 
 ;;;***
 
@@ -225,7 +222,7 @@ A minor mode to toggle `ob-clojure-literate'.
 ;;;### (autoloads nil "ob-gnuplot" "ob-gnuplot.el" (0 0 0 0))
 ;;; Generated autoloads from ob-gnuplot.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-gnuplot" '("org-babel-" "*org-babel-gnuplot-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-gnuplot" '("*org-babel-gnuplot-" "org-babel-")))
 
 ;;;***
 
@@ -295,7 +292,7 @@ A minor mode to toggle `ob-clojure-literate'.
 ;;;### (autoloads nil "ob-lilypond" "ob-lilypond.el" (0 0 0 0))
 ;;; Generated autoloads from ob-lilypond.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-lilypond" '("org-babel-" "lilypond-mode")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-lilypond" '("lilypond-mode" "org-babel-")))
 
 ;;;***
 
@@ -373,7 +370,7 @@ A minor mode to toggle `ob-clojure-literate'.
 ;;;### (autoloads nil "ob-oz" "ob-oz.el" (0 0 0 0))
 ;;; Generated autoloads from ob-oz.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-oz" '("oz-send-string-expression" "org-babel-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-oz" '("org-babel-" "oz-send-string-expression")))
 
 ;;;***
 
@@ -595,14 +592,10 @@ is non-nil, move backward.
 
 (autoload 'org-previous-link "ol" "\
 Move backward to the previous link.
-If the link is in hidden text, expose it.
-
-\(fn)" t nil)
+If the link is in hidden text, expose it." t nil)
 
 (autoload 'org-toggle-link-display "ol" "\
-Toggle the literal or descriptive display of links.
-
-\(fn)" t nil)
+Toggle the literal or descriptive display of links." t nil)
 
 (autoload 'org-store-link "ol" "\
 Store a link to the current location.
@@ -681,15 +674,11 @@ Insert the last link stored in `org-stored-links'.
 
 (autoload 'org-insert-link-global "ol" "\
 Insert a link like Org mode does.
-This command can be called in any mode to insert a link in Org syntax.
-
-\(fn)" t nil)
+This command can be called in any mode to insert a link in Org syntax." t nil)
 
 (autoload 'org-update-radio-target-regexp "ol" "\
 Find all radio targets in this file and update the regular expression.
-Also refresh fontification if needed.
-
-\(fn)" t nil)
+Also refresh fontification if needed." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ol" '("org-")))
 
@@ -858,9 +847,7 @@ FULL is given.
 \(fn &optional HERE FULL MESSAGE)" t nil)
 
 (autoload 'org-clock-persistence-insinuate "org" "\
-Set up hooks for clock persistence.
-
-\(fn)" nil nil)
+Set up hooks for clock persistence." nil nil)
 
 (autoload 'org-mode "org" "\
 Outline-based notes management and organizer, alias
@@ -980,9 +967,7 @@ Also follow links and emails as seen by `thing-at-point'.
 This command can be called in any mode to follow an external
 link or a time-stamp that has Org mode syntax.  Its behavior
 is undefined when called on internal links like fuzzy links.
-Raise a user error when there is nothing to follow.
-
-\(fn)" t nil)
+Raise a user error when there is nothing to follow." t nil)
 
 (autoload 'org-offer-links-in-entry "org" "\
 Offer links in the current entry and return the selected link.
@@ -1005,9 +990,7 @@ With `\\[universal-argument] \\[universal-argument]' prefix, restrict available 
 (autoload 'org-cycle-agenda-files "org" "\
 Cycle through the files in `org-agenda-files'.
 If the current buffer visits an agenda file, find the next one in the list.
-If the current buffer does not, find the first agenda file.
-
-\(fn)" t nil)
+If the current buffer does not, find the first agenda file." t nil)
 
 (autoload 'org-submit-bug-report "org" "\
 Submit a bug report on Org via mail.
@@ -1016,9 +999,7 @@ Don't hesitate to report any problems or inaccurate documentation.
 
 If you don't have setup sending mail from (X)Emacs, please copy the
 output buffer into your mail program, as it gives us important
-information about your Org version and configuration.
-
-\(fn)" t nil)
+information about your Org version and configuration." t nil)
 
 (autoload 'org-reload "org" "\
 Reload all Org Lisp files.
@@ -1027,9 +1008,7 @@ With prefix arg UNCOMPILED, load the uncompiled versions.
 \(fn &optional UNCOMPILED)" t nil)
 
 (autoload 'org-customize "org" "\
-Call the customize function with org as argument.
-
-\(fn)" t nil)
+Call the customize function with org as argument." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org" '("org-" "turn-on-org-cdlatex")))
 
@@ -1270,9 +1249,7 @@ subtree.
 
 (autoload 'org-calendar-goto-agenda "org-agenda" "\
 Compute the Org agenda for the calendar date displayed at the cursor.
-This is a command that has to be installed in `calendar-mode-map'.
-
-\(fn)" t nil)
+This is a command that has to be installed in `calendar-mode-map'." t nil)
 
 (autoload 'org-agenda-to-appt "org-agenda" "\
 Activate appointments found in `org-agenda-files'.
@@ -1320,9 +1297,7 @@ to override `appt-message-warning-time'.
 (autoload 'org-annotate-file "org-annotate-file" "\
 Visit `org-annotate-file-storage-file` and add a new annotation section.
 The annotation is opened at the new section which will be referencing
-the point in the current file.
-
-\(fn)" t nil)
+the point in the current file." t nil)
 
 (autoload 'org-annotate-file-show-section "org-annotate-file" "\
 Add or show annotation entry in STORAGE-FILE and return the buffer.
@@ -1348,9 +1323,7 @@ The annotation will link to ANNOTATED-BUFFER if specified,
 ;;; Generated autoloads from org-attach-embedded-images.el
 
 (autoload 'org-attach-embedded-images-in-subtree "org-attach-embedded-images" "\
-Save the displayed images as attachments and insert links to them.
-
-\(fn)" t nil)
+Save the displayed images as attachments and insert links to them." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-attach-embedded-images" '("org-attach-embedded-images--")))
 
@@ -1412,9 +1385,7 @@ of the day at point (if any) or the current HH:MM time.
 \(fn &optional GOTO KEYS)" t nil)
 
 (autoload 'org-capture-import-remember-templates "org-capture" "\
-Set `org-capture-templates' to be similar to `org-remember-templates'.
-
-\(fn)" t nil)
+Set `org-capture-templates' to be similar to `org-remember-templates'." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-capture" '("org-capture-")))
 
@@ -1437,7 +1408,7 @@ Set `org-capture-templates' to be similar to `org-remember-templates'.
 ;;;### (autoloads nil "org-collector" "org-collector.el" (0 0 0 0))
 ;;; Generated autoloads from org-collector.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-collector" '("org-" "and-rest")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-collector" '("and-rest" "org-")))
 
 ;;;***
 
@@ -1445,14 +1416,9 @@ Set `org-capture-templates' to be similar to `org-remember-templates'.
 ;;; Generated autoloads from org-colview.el
 
 (autoload 'org-columns-remove-overlays "org-colview" "\
-Remove all currently active column overlays.
+Remove all currently active column overlays." t nil)
 
-\(fn)" t nil)
-
-(autoload 'org-columns-get-format-and-top-level "org-colview" "\
-
-
-\(fn)" nil nil)
+(autoload 'org-columns-get-format-and-top-level "org-colview" nil nil nil)
 
 (autoload 'org-columns "org-colview" "\
 Turn on column view on an Org mode file.
@@ -1528,16 +1494,12 @@ PARAMS is a property list of parameters:
 \(fn PARAMS)" nil nil)
 
 (autoload 'org-columns-insert-dblock "org-colview" "\
-Create a dynamic block capturing a column view table.
-
-\(fn)" t nil)
+Create a dynamic block capturing a column view table." t nil)
 
 (eval-after-load 'org '(progn (org-dynamic-block-define "columnview" #'org-columns-insert-dblock)))
 
 (autoload 'org-agenda-columns "org-colview" "\
-Turn on or update column view in the agenda.
-
-\(fn)" t nil)
+Turn on or update column view in the agenda." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-colview" '("org-")))
 
@@ -1547,9 +1509,7 @@ Turn on or update column view in the agenda.
 ;;; Generated autoloads from org-compat.el
 
 (autoload 'org-check-version "org-compat" "\
-Try very hard to provide sensible version strings.
-
-\(fn)" nil t)
+Try very hard to provide sensible version strings." nil t)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-compat" '("org-")))
 
@@ -1563,7 +1523,7 @@ Create agenda view for contacts matching NAME.
 
 \(fn NAME)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-contacts" '("org-co" "erc-nicknames-list")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-contacts" '("erc-nicknames-list" "org-co")))
 
 ;;;***
 
@@ -1592,9 +1552,7 @@ Create agenda view for contacts matching NAME.
 ;;; Generated autoloads from org-duration.el
 
 (autoload 'org-duration-set-regexps "org-duration" "\
-Set duration related regexps.
-
-\(fn)" t nil)
+Set duration related regexps." t nil)
 
 (autoload 'org-duration-p "org-duration" "\
 Non-nil when string S is a time duration.
@@ -1656,9 +1614,7 @@ with \"H:MM:SS\" format, return `h:mm:ss'.  Otherwise, return
 ;;; Generated autoloads from org-eldoc.el
 
 (autoload 'org-eldoc-load "org-eldoc" "\
-Set up org-eldoc documentation function.
-
-\(fn)" t nil)
+Set up org-eldoc documentation function." t nil)
 
 (add-hook 'org-mode-hook #'org-eldoc-load)
 
@@ -1772,9 +1728,7 @@ With a prefix argument, use the alternative interface: e.g., if
 ;;; Generated autoloads from org-keys.el
 
 (autoload 'org-babel-describe-bindings "org-keys" "\
-Describe all keybindings behind `org-babel-key-prefix'.
-
-\(fn)" t nil)
+Describe all keybindings behind `org-babel-key-prefix'." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-keys" '("org-")))
 
@@ -1783,7 +1737,7 @@ Describe all keybindings behind `org-babel-key-prefix'.
 ;;;### (autoloads nil "org-learn" "org-learn.el" (0 0 0 0))
 ;;; Generated autoloads from org-learn.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-learn" '("org-" "determine-next-interval" "inter-repetition-interval" "initial-" "calculate-new-optimal-factor" "modify-" "set-optimal-factor" "get-optimal-factor")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-learn" '("calculate-new-optimal-factor" "determine-next-interval" "get-optimal-factor" "initial-" "inter-repetition-interval" "modify-" "org-" "set-optimal-factor")))
 
 ;;;***
 
@@ -1922,7 +1876,7 @@ ARG can also be a list of checker names, as symbols, to run.
 ;;;### (autoloads nil "org-mac-iCal" "org-mac-iCal.el" (0 0 0 0))
 ;;; Generated autoloads from org-mac-iCal.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-mac-iCal" '("org-mac-iCal" "omi-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-mac-iCal" '("omi-" "org-mac-iCal")))
 
 ;;;***
 
@@ -1931,109 +1885,47 @@ ARG can also be a list of checker names, as symbols, to run.
 
 (autoload 'org-mac-grab-link "org-mac-link" "\
 Prompt for an application to grab a link from.
-When done, go grab the link, and insert it at point.
+When done, go grab the link, and insert it at point." t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-firefox-get-frontmost-url "org-mac-link" nil t nil)
 
-(autoload 'org-mac-firefox-get-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-firefox-insert-frontmost-url "org-mac-link" nil t nil)
 
+(autoload 'org-mac-vimperator-get-frontmost-url "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-vimperator-insert-frontmost-url "org-mac-link" nil t nil)
 
-(autoload 'org-mac-firefox-insert-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-chrome-get-frontmost-url "org-mac-link" nil t nil)
 
+(autoload 'org-mac-chrome-insert-frontmost-url "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-brave-get-frontmost-url "org-mac-link" nil t nil)
 
-(autoload 'org-mac-vimperator-get-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-brave-insert-frontmost-url "org-mac-link" nil t nil)
 
+(autoload 'org-mac-safari-get-frontmost-url "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-safari-insert-frontmost-url "org-mac-link" nil t nil)
 
-(autoload 'org-mac-vimperator-insert-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-together-get-selected "org-mac-link" nil t nil)
 
+(autoload 'org-mac-together-insert-selected "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-finder-item-get-selected "org-mac-link" nil t nil)
 
-(autoload 'org-mac-chrome-get-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-finder-insert-selected "org-mac-link" nil t nil)
 
+(autoload 'org-mac-addressbook-item-get-selected "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-addressbook-insert-selected "org-mac-link" nil t nil)
 
-(autoload 'org-mac-chrome-insert-frontmost-url "org-mac-link" "\
+(autoload 'org-mac-skim-get-page "org-mac-link" nil t nil)
 
+(autoload 'org-mac-skim-insert-page "org-mac-link" nil t nil)
 
-\(fn)" t nil)
+(autoload 'org-mac-acrobat-get-page "org-mac-link" nil t nil)
 
-(autoload 'org-mac-brave-get-frontmost-url "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-brave-insert-frontmost-url "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-safari-get-frontmost-url "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-safari-insert-frontmost-url "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-together-get-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-together-insert-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-finder-item-get-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-finder-insert-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-addressbook-item-get-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-addressbook-insert-selected "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-skim-get-page "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-skim-insert-page "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-acrobat-get-page "org-mac-link" "\
-
-
-\(fn)" t nil)
-
-(autoload 'org-mac-acrobat-insert-page "org-mac-link" "\
-
-
-\(fn)" t nil)
+(autoload 'org-mac-acrobat-insert-page "org-mac-link" nil t nil)
 
 (autoload 'org-mac-outlook-message-get-links "org-mac-link" "\
 Create links to the messages currently selected or flagged in Microsoft Outlook.app.
@@ -2049,9 +1941,7 @@ The Org-syntax text will be pushed to the kill ring, and also returned.
 Insert a link to the messages currently selected in Microsoft Outlook.app.
 This will use AppleScript to get the message-id and the subject
 of the active mail in Microsoft Outlook.app and make a link out
-of it.
-
-\(fn)" t nil)
+of it." t nil)
 
 (autoload 'org-mac-outlook-message-insert-flagged "org-mac-link" "\
 Asks for an org buffer and a heading within it, and replace message links.
@@ -2065,16 +1955,12 @@ after heading.
 (autoload 'org-mac-evernote-note-insert-selected "org-mac-link" "\
 Insert a link to the notes currently selected in Evernote.app.
 This will use AppleScript to get the note id and the title of the
-note(s) in Evernote.app and make a link out of it/them.
-
-\(fn)" t nil)
+note(s) in Evernote.app and make a link out of it/them." t nil)
 
 (autoload 'org-mac-devonthink-item-insert-selected "org-mac-link" "\
 Insert a link to the item(s) currently selected in DEVONthink Pro Office.
 This will use AppleScript to get the `uuid'(s) and the name(s) of the
-selected items in DEVONthink Pro Office and make link(s) out of it/them.
-
-\(fn)" t nil)
+selected items in DEVONthink Pro Office and make link(s) out of it/them." t nil)
 
 (autoload 'org-mac-message-get-links "org-mac-link" "\
 Create links to the messages currently selected or flagged in Mail.app.
@@ -2089,9 +1975,7 @@ The Org-syntax text will be pushed to the kill ring, and also returned.
 (autoload 'org-mac-message-insert-selected "org-mac-link" "\
 Insert a link to the messages currently selected in Mail.app.
 This will use AppleScript to get the message-id and the subject of the
-active mail in Mail.app and make a link out of it.
-
-\(fn)" t nil)
+active mail in Mail.app and make a link out of it." t nil)
 
 (autoload 'org-mac-message-insert-flagged "org-mac-link" "\
 Asks for an org buffer and a heading within it, and replace message links.
@@ -2101,7 +1985,7 @@ list of message:// links to flagged mail after heading.
 
 \(fn ORG-BUFFER ORG-HEADING)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-mac-link" '("org-" "as-get-s")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-mac-link" '("as-get-s" "org-")))
 
 ;;;***
 
@@ -2165,6 +2049,11 @@ NUMBERING is a list of numbers.
 (autoload 'org-num-mode "org-num" "\
 Dynamic numbering of headlines in an Org buffer.
 
+If called interactively, enable Org-Num mode if ARG is positive,
+and disable it if ARG is zero or negative.  If called from Lisp,
+also enable the mode if ARG is omitted or nil, and toggle it if
+ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-num" '("org-num-")))
@@ -2207,7 +2096,7 @@ With a double prefix arg \\[universal-argument] \\[universal-argument], open the
 ;;;### (autoloads nil "org-pcomplete" "org-pcomplete.el" (0 0 0 0))
 ;;; Generated autoloads from org-pcomplete.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-pcomplete" '("pcomplete/org-mode/" "org-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-pcomplete" '("org-" "pcomplete/org-mode/")))
 
 ;;;***
 
@@ -2237,9 +2126,7 @@ buffer.
 
 (autoload 'org-registry-visit "org-registry" "\
 If an Org file contains a link to the current location, visit
-this file.
-
-\(fn)" t nil)
+this file." t nil)
 
 (autoload 'org-registry-initialize "org-registry" "\
 Initialize `org-registry-alist'.
@@ -2252,14 +2139,10 @@ exists, eval `org-registry-file' and make it the new value for
 
 (autoload 'org-registry-insinuate "org-registry" "\
 Call `org-registry-update' after saving in Org-mode.
-Use with caution.  This could slow down things a bit.
-
-\(fn)" t nil)
+Use with caution.  This could slow down things a bit." t nil)
 
 (autoload 'org-registry-update "org-registry" "\
-Update the registry for the current Org file.
-
-\(fn)" t nil)
+Update the registry for the current Org file." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-registry" '("org-registry-")))
 
@@ -2310,9 +2193,7 @@ in the other direction
 \(fn DIR)" t nil)
 
 (autoload 'org-screenshot-show-unused "org-screenshot" "\
-Open A Dired buffer with unused screenshots marked
-
-\(fn)" t nil)
+Open A Dired buffer with unused screenshots marked" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-screenshot" '("org-screenshot-")))
 
@@ -2321,7 +2202,7 @@ Open A Dired buffer with unused screenshots marked
 ;;;### (autoloads nil "org-secretary" "org-secretary.el" (0 0 0 0))
 ;;; Generated autoloads from org-secretary.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-secretary" '("org-sec-" "join")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-secretary" '("join" "org-sec-")))
 
 ;;;***
 
@@ -2417,15 +2298,11 @@ DIRECTORY is where the directory org-mode/ lives (i.e. the
 
 (autoload 'org-release "org-version" "\
 The release version of Org.
-Inserted by installing Org mode or when a release is made.
-
-\(fn)" nil nil)
+Inserted by installing Org mode or when a release is made." nil nil)
 
 (autoload 'org-git-version "org-version" "\
 The Git version of Org mode.
-Inserted by installing Org or when a release is made.
-
-\(fn)" nil nil)
+Inserted by installing Org or when a release is made." nil nil)
 
 ;;;***
 

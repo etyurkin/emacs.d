@@ -11,19 +11,13 @@
 ;;; Generated autoloads from osx-dictionary.el
 
 (autoload 'osx-dictionary-search-input "osx-dictionary" "\
-Search input word and display result with buffer.
-
-\(fn)" t nil)
+Search input word and display result with buffer." t nil)
 
 (autoload 'osx-dictionary-search-pointer "osx-dictionary" "\
-Search word around and display result with buffer.
-
-\(fn)" t nil)
+Search word around and display result with buffer." t nil)
 
 (autoload 'osx-dictionary-get-all-dictionaries "osx-dictionary" "\
-Get all dictionaries as a list.
-
-\(fn)" nil nil)
+Get all dictionaries as a list." nil nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "osx-dictionary" '("osx-dictionary-")))
 

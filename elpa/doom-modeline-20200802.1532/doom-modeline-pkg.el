@@ -3,7 +3,7 @@
     (all-the-icons "2.2.0")
     (shrink-path "0.2.0")
     (dash "2.11.0"))
-  :commit "881e099fe02e3dd5ad66c51156fcdcc60e093a9b" :keywords
+  :commit "386d75274c4d50f459e4a899c7b7bec617145480" :keywords
   '("faces" "mode-line")
   :authors
   '(("Vincent Zhang" . "seagle0128@gmail.com"))

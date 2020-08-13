@@ -23,6 +23,11 @@ or call the function `immortal-scratch-mode'.")
 (autoload 'immortal-scratch-mode "immortal-scratch" "\
 When the scratch buffer is killed, immediately respawn it.
 
+If called interactively, enable Immortal-Scratch mode if ARG is
+positive, and disable it if ARG is zero or negative.  If called
+from Lisp, also enable the mode if ARG is omitted or nil, and
+toggle it if ARG is `toggle'; disable the mode otherwise.
+
 \(fn &optional ARG)" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "immortal-scratch" '("immortal-scratch-")))

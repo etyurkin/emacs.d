@@ -18,9 +18,7 @@ file already exists.
 \(fn &optional PROMPT-EXISTS)" t nil)
 
 (autoload 'lsp-javacomp-update-server "lsp-javacomp" "\
-Update JavaComp jar file to the latest version.
-
-\(fn)" t nil)
+Update JavaComp jar file to the latest version." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "lsp-javacomp" '("lsp-javacomp-")))
 

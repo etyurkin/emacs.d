@@ -28,9 +28,7 @@ to it due to intermediate insert/delete elements in the
 Initialize package session and read previous session file.
 Setup hooks and load `session-save-file', see variable `session-initialize'.  At
 best, this function is called at the end of the Emacs startup, i.e., add
-this function to `after-init-hook'.
-
-\(fn)" t nil)
+this function to `after-init-hook'." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "session" '("session-")))
 

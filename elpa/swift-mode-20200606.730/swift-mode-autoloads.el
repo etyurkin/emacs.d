@@ -109,9 +109,7 @@ START and END define region within current buffer
 \(fn START END)" t nil)
 
 (autoload 'swift-mode:send-buffer "swift-mode-repl" "\
-Send the buffer to the Swift REPL process.
-
-\(fn)" t nil)
+Send the buffer to the Swift REPL process." t nil)
 
 (autoload 'swift-mode:build-swift-module "swift-mode-repl" "\
 Build a Swift module in the PROJECT-DIRECTORY.

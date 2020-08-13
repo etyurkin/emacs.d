@@ -53,9 +53,7 @@ the currently displayed directory).
 (autoload 'dired-single-toggle-buffer-name "dired-single" "\
 Toggle between the 'magic' buffer name and the 'real' dired buffer name.
 
-Will also seek to uniquify the 'real' buffer name.
-
-\(fn)" t nil)
+Will also seek to uniquify the 'real' buffer name." t nil)
 
 (autoload 'dired-single-up-directory "dired-single" "\
 Like `dired-up-directory' but with `dired-single-buffer'.
