@@ -1,2 +1,2 @@
-;;; -*- no-byte-compile: t -*-
-(define-package "git-commit" "20200701.2112" "Edit Git commit messages" '((emacs "25.1") (dash "20200524") (transient "20200601") (with-editor "20200522")) :stars '(#("3932" 0 4 (font-lock-face paradox-star-face))) :commit "3b21e89d7f88023a5b93e6dee3efe530108439eb" :keywords '("git" "tools" "vc") :maintainer '("Jonas Bernoulli" . "jonas@bernoul.li") :url "https://github.com/magit/magit")
+;;; Generated package description from /Users/etyurkin/.emacs.d/elpa/git-commit-20200701.2112/git-commit.el  -*- no-byte-compile: t -*-
+(define-package "git-commit" "20200701.2112" "Edit Git commit messages" '((emacs "25.1") (dash "20200524") (transient "20200601") (with-editor "20200522")) :commit "81a5f5668a7886dcb30c57bac8caf5cb29fbd7fb" :keywords '("git" "tools" "vc") :maintainer '("Jonas Bernoulli" . "jonas@bernoul.li") :url "https://github.com/magit/magit")
