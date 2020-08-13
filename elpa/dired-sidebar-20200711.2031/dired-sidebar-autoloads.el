@@ -18,9 +18,7 @@ With universal argument, use current directory.
 \(fn &optional DIR)" t nil)
 
 (autoload 'dired-sidebar-toggle-with-current-directory "dired-sidebar" "\
-Like `dired-sidebar-toggle-sidebar' but use current-directory.
-
-\(fn)" t nil)
+Like `dired-sidebar-toggle-sidebar' but use current-directory." t nil)
 
 (autoload 'dired-sidebar-show-sidebar "dired-sidebar" "\
 Show sidebar displaying buffer B.
@@ -28,16 +26,12 @@ Show sidebar displaying buffer B.
 \(fn &optional B)" t nil)
 
 (autoload 'dired-sidebar-hide-sidebar "dired-sidebar" "\
-Hide the sidebar in the selected frame.
-
-\(fn)" t nil)
+Hide the sidebar in the selected frame." t nil)
 
 (autoload 'dired-sidebar-jump-to-sidebar "dired-sidebar" "\
 Jump to `dired-sidebar' buffer if it is showing.
 
-If it's not showing, act as `dired-sidebar-toggle-sidebar'.
-
-\(fn)" t nil)
+If it's not showing, act as `dired-sidebar-toggle-sidebar'." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dired-sidebar" '("dired-sidebar-")))
 
