@@ -1952,11 +1952,6 @@ Include a newer version of org-mode than the one that is built in.
 (setq org-todo-keyword-faces
       (quote (("ACTIVE" :inherit warning)
               ("PROJECT" :inherit font-lock-string-face))))
-
-;; fix org-eldoc-get-mode-local-documentation-function
-(require 'org-src)
-(defun org-src-get-lang-mode (lang)
-  (org-src--get-lang-mode lang))
 #+END_SRC
 
 *** org-crypt
@@ -2088,6 +2083,35 @@ If OTHERS is true, skip all entries that do not correspond to TAG."
 
 (add-hook 'org-mode-hook 'kwarks/org-mode-config)
 #+END_SRC
+*** org-download
+https://zzamboni.org/post/how-to-insert-screenshots-in-org-documents-on-macos/
+
+Install pngpaste:
+#+BEGIN_SRC sh
+brew install pngpaste
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-download-image-dir "~/Dropbox/notes/screenshots")
+
+(use-package org-download
+  :after org
+  :defer nil
+  :init
+  (unless (file-directory-p org-download-image-dir)
+    (make-directory org-download-image-dir t))
+  :custom
+  (org-download-method 'directory)
+  (org-download-heading-lvl nil)
+  (org-download-timestamp "%Y%m%d-%H%M%S_")
+  (org-image-actual-width 600)
+  (org-download-screenshot-method "/usr/local/bin/pngpaste %s")
+  :bind
+  ("C-M-y" . org-download-screenshot)
+  :config
+  (require 'org-download))
+#+END_SRC
+
 ** toc-org
 toc-org helps to have an up-to-date table of contents in org files.
 
@@ -2138,6 +2162,7 @@ e.g. copy-as-format-slack, copy-as-format-github
            :url "https://bitbucket.org/alfaromurillo/org-passwords.el.git"
            :fetcher git))
 #+END_SRC
+
 ** org-wiki
 Org-wiki is a org-mode extension that provides tools to manage and build personal wiki or desktop wiki where each wiki page is a org-mode file.
 
@@ -2176,11 +2201,12 @@ It is heavily inspired by a piece of software called [[http://thebrain.com/][The
   (setq org-brain-visualize-default-choices 'all)
   (setq org-brain-title-max-length 50))
 #+end_src
+
 ** org-pretty-table
-#+BEGIN_SRC emacs-lisp :tangle no
 This package makes org tables use unicode symbols for drawing.
 Currently it is very inefficient...
 
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package org-pretty-table
   :quelpa (org-pretty-table
 	   :url "https://github.com/Fuco1/org-pretty-table.git"
@@ -2188,6 +2214,7 @@ Currently it is very inefficient...
 	   :files ("*.el")
 	   :upgrade nil))
 #+END_SRC
+
 ** counsel-dash
 Support for the http://kapeli.com/dash documentation browser. See https://github.com/dash-docs-el/counsel-dash
 
@@ -2364,6 +2391,7 @@ Commands that process HTML into Org require [[https://pandoc.org/][Pandoc]].
 #+BEGIN_SRC emacs-lisp
 (use-package org-web-tools)
 #+END_SRC
+
 ** dired-sidebar
 #+BEGIN_SRC emacs-lisp
 (use-package dired-sidebar
