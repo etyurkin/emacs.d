@@ -11,21 +11,15 @@
 
 (autoload 'switch-window-then-delete "switch-window" "\
 Display an overlay in each window showing a unique key.
-In the mean time, user will be asked to choose the window deleted.
-
-\(fn)" t nil)
+In the mean time, user will be asked to choose the window deleted." t nil)
 
 (autoload 'switch-window-then-maximize "switch-window" "\
 Display an overlay in each window showing a unique key.
-In the mean time, ask user which window to maximize
-
-\(fn)" t nil)
+In the mean time, ask user which window to maximize" t nil)
 
 (autoload 'switch-window "switch-window" "\
 Display an overlay in each window showing a unique key.
-In the mean time, ask user for the window where move to
-
-\(fn)" t nil)
+In the mean time, ask user for the window where move to" t nil)
 
 (autoload 'switch-window-then-split-horizontally "switch-window" "\
 Select a window then split it horizontally.
@@ -60,46 +54,34 @@ TODO: Argument ARG.
 (autoload 'switch-window-then-find-file "switch-window" "\
 Select a window, then find a file in it.
 
-Designed to replace `find-file-other-window'.
-
-\(fn)" t nil)
+Designed to replace `find-file-other-window'." t nil)
 
 (autoload 'switch-window-then-find-file-read-only "switch-window" "\
 Select a window, then find a file in it, read-only.
 
-Designed to replace `find-file-read-only-other-window'.
-
-\(fn)" t nil)
+Designed to replace `find-file-read-only-other-window'." t nil)
 
 (autoload 'switch-window-then-display-buffer "switch-window" "\
 Select a window, display a buffer in it, then return.
 
-Designed to replace `display-buffer'.
-
-\(fn)" t nil)
+Designed to replace `display-buffer'." t nil)
 
 (autoload 'switch-window-then-kill-buffer "switch-window" "\
 Select a window, then kill its buffer, then close it.
 
-Designed to replace `kill-buffer-and-window'.
-
-\(fn)" t nil)
+Designed to replace `kill-buffer-and-window'." t nil)
 
 (autoload 'switch-window-then-dired "switch-window" "\
 Select a window, then dired in it.
 
-Designed to replace `dired-other-window'.
-
-\(fn)" t nil)
+Designed to replace `dired-other-window'." t nil)
 
 (autoload 'switch-window-then-compose-mail "switch-window" "\
 Select a window, then start composing mail in it.
 
-Designed to replace `compose-mail-other-window'.
+Designed to replace `compose-mail-other-window'." t nil)
 
-\(fn)" t nil)
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "switch-window" '("switch-window-" "delete-other-window")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "switch-window" '("delete-other-window" "switch-window-")))
 
 ;;;***
 

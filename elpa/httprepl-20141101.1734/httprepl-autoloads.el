@@ -13,9 +13,7 @@
 Interactively evaluate HTTP requests at a REPL-like
 interface. Switches to the buffer specified by
 `httprepl-buffer-name', or creates it if it does not exist. See
-`httprepl-mode' for a reference on constructing requests.
-
-\(fn)" t nil)
+`httprepl-mode' for a reference on constructing requests." t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "httprepl" '("httprepl-")))
 
