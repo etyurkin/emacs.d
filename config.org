@@ -2035,7 +2035,7 @@ If OTHERS is true, skip all entries that do not correspond to TAG."
                           (zin/org-agenda-skip-tag "PROJECT")
                           (org-agenda-skip-if nil '(scheduled deadline))))))))))
 
-(defun display-agenda (&optional arg)
+(defun kwarks/agenda (&optional arg)
   "Display up-to-date week agenda."
   (interactive)
   (org-agenda arg "c")
@@ -2077,11 +2077,11 @@ If OTHERS is true, skip all entries that do not correspond to TAG."
       (org-mode))
     (switch-to-buffer-other-window result-buffer)))
 
-(defun kwarks/org-mode-config ()
+(defun kwarks--org-mode-config ()
   "To use with `org-mode-hook'"
   (local-set-key (kbd "C-c C-e") 'kwarks/org-babel-to-buffer))
 
-(add-hook 'org-mode-hook 'kwarks/org-mode-config)
+(add-hook 'org-mode-hook 'kwarks--org-mode-config)
 #+END_SRC
 *** org-download
 https://zzamboni.org/post/how-to-insert-screenshots-in-org-documents-on-macos/
