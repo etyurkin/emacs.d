@@ -2075,7 +2075,7 @@ If OTHERS is true, skip all entries that do not correspond to TAG."
       (insert result)
       (goto-char (point-min))
       (org-mode))
-    (switch-to-buffer-other-window result-buffer)))
+    (display-buffer result-buffer)))
 
 (defun kwarks--org-mode-config ()
   "To use with `org-mode-hook'"
