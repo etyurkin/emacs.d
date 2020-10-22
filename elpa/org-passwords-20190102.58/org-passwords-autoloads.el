@@ -24,7 +24,7 @@ With prefix arg ARG, open the file for editing.
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-passwords" '("org-passwords-")))
+(register-definition-prefixes "org-passwords" '("org-passwords-"))
 
 ;;;***
 

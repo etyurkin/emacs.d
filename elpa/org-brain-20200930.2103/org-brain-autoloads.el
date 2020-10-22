@@ -321,7 +321,7 @@ then always use `org-brain-select'.
 
 \(fn ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-brain" '("org-brain-")))
+(register-definition-prefixes "org-brain" '("org-brain-"))
 
 ;;;***
 

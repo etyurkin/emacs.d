@@ -14,7 +14,7 @@ Display weather information for CITY.
 
 \(fn CITY)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "wttrin" '("wttrin-")))
+(register-definition-prefixes "wttrin" '("wttrin-"))
 
 ;;;***
 

@@ -33,7 +33,7 @@ Jump to `dired-sidebar' buffer if it is showing.
 
 If it's not showing, act as `dired-sidebar-toggle-sidebar'." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dired-sidebar" '("dired-sidebar-")))
+(register-definition-prefixes "dired-sidebar" '("dired-sidebar-"))
 
 ;;;***
 

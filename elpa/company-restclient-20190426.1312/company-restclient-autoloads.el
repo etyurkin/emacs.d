@@ -16,7 +16,7 @@ Provide completion info according to COMMAND and ARG.  IGNORED, not used.
 
 \(fn COMMAND &optional ARG &rest IGNORED)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "company-restclient" '("company-restclient-")))
+(register-definition-prefixes "company-restclient" '("company-restclient-"))
 
 ;;;***
 
