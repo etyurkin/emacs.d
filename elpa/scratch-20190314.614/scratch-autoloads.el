@@ -19,7 +19,7 @@ When called interactively with a prefix arg, prompt for the mode.
 
 \(fn MODE)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "scratch" '("scratch-")))
+(register-definition-prefixes "scratch" '("scratch-"))
 
 ;;;***
 

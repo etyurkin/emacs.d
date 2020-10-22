@@ -85,13 +85,16 @@ positive, and disable it if ARG is zero or negative.  If called
 from Lisp, also enable the mode if ARG is omitted or nil, and
 toggle it if ARG is `toggle'; disable the mode otherwise.
 
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
 If this mode causes problems for a function, you can customize
 when ido completion is or is not used by customizing
 `ido-cr+-function-blacklist'.
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ido-completing-read+" '("define-ido-internal-var" "ido-" "minibuf-eldef-update-minibuffer@ido-cr+-compat")))
+(register-definition-prefixes "ido-completing-read+" '("define-ido-internal-var" "ido-" "minibuf-eldef-update-minibuffer@ido-cr+-compat"))
 
 ;;;***
 

@@ -5,6 +5,7 @@
 ;; or tangling and loading a literate org configuration file.
 
 ;;; Code:
+;;(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/10")
 
 ;; Don't attempt to find/apply special file handlers to files loaded during startup.
 (let ((file-name-handler-alist nil))

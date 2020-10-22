@@ -103,7 +103,7 @@ It works exactly the same as global dired filters, only
 restricted to a subtree.  The global filter is also applied to
 the subtree.  The filter action is read from `dired-filter-map'." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dired-subtree" '("dired-")))
+(register-definition-prefixes "dired-subtree" '("dired-"))
 
 ;;;***
 

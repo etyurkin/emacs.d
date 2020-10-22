@@ -54,7 +54,7 @@ Given a string PATTERN, query docsets and retrieve result.
 
 \(fn PATTERN)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dash-docs" '("dash-docs-")))
+(register-definition-prefixes "dash-docs" '("dash-docs-"))
 
 ;;;***
 

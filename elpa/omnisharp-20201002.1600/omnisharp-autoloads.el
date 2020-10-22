@@ -18,6 +18,9 @@ positive, and disable it if ARG is zero or negative.  If called
 from Lisp, also enable the mode if ARG is omitted or nil, and
 toggle it if ARG is `toggle'; disable the mode otherwise.
 
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
 \(fn &optional ARG)" t nil)
 
 (autoload 'omnisharp-start-omnisharp-server "omnisharp" "\
@@ -54,7 +57,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 
 \(fn COMMAND &optional ARG &rest IGNORED)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp" '("omnisharp-")))
+(register-definition-prefixes "omnisharp" '("omnisharp-"))
 
 ;;;***
 
@@ -62,7 +65,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-auto-complete-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-auto-complete-actions" '("ac-" "omnisharp-")))
+(register-definition-prefixes "omnisharp-auto-complete-actions" '("ac-" "omnisharp-"))
 
 ;;;***
 
@@ -70,7 +73,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-code-structure.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-code-structure" '("omnisharp--cs-")))
+(register-definition-prefixes "omnisharp-code-structure" '("omnisharp--cs-"))
 
 ;;;***
 
@@ -78,7 +81,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-current-symbol-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-current-symbol-actions" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-current-symbol-actions" '("omnisharp-"))
 
 ;;;***
 
@@ -86,7 +89,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-format-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-format-actions" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-format-actions" '("omnisharp-"))
 
 ;;;***
 
@@ -94,7 +97,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-http-utils.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-http-utils" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-http-utils" '("omnisharp-"))
 
 ;;;***
 
@@ -102,7 +105,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-navigation-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-navigation-actions" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-navigation-actions" '("omnisharp-"))
 
 ;;;***
 
@@ -110,7 +113,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-server-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-server-actions" '("omnisharp--")))
+(register-definition-prefixes "omnisharp-server-actions" '("omnisharp--"))
 
 ;;;***
 
@@ -118,7 +121,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-server-installation.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-server-installation" '("omnisharp--")))
+(register-definition-prefixes "omnisharp-server-installation" '("omnisharp--"))
 
 ;;;***
 
@@ -126,7 +129,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-server-management.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-server-management" '("comment" "make-omnisharp--server-info" "omnisharp-")))
+(register-definition-prefixes "omnisharp-server-management" '("comment" "make-omnisharp--server-info" "omnisharp-"))
 
 ;;;***
 
@@ -134,7 +137,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-settings.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-settings" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-settings" '("omnisharp-"))
 
 ;;;***
 
@@ -142,7 +145,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-solution-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-solution-actions" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-solution-actions" '("omnisharp-"))
 
 ;;;***
 
@@ -150,7 +153,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from omnisharp-unit-test-actions.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-unit-test-actions" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-unit-test-actions" '("omnisharp-"))
 
 ;;;***
 
@@ -158,7 +161,7 @@ Installs OmniSharp server locally into ~/.emacs/cache/omnisharp/server/$(version
 ;;;;;;  0 0))
 ;;; Generated autoloads from omnisharp-utils.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "omnisharp-utils" '("omnisharp-")))
+(register-definition-prefixes "omnisharp-utils" '("omnisharp-"))
 
 ;;;***
 

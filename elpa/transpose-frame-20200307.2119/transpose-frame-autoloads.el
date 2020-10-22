@@ -46,7 +46,7 @@ Omitting FRAME means currently selected frame.
 
 \(fn &optional FRAME)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "transpose-frame" '("transpose-frame-")))
+(register-definition-prefixes "transpose-frame" '("transpose-frame-"))
 
 ;;;***
 

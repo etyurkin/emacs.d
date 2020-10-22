@@ -9,7 +9,7 @@
 ;;;### (autoloads nil "org-wiki" "org-wiki.el" (0 0 0 0))
 ;;; Generated autoloads from org-wiki.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-wiki" '("org-wiki-")))
+(register-definition-prefixes "org-wiki" '("org-wiki-"))
 
 ;;;***
 

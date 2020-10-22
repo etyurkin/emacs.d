@@ -165,6 +165,9 @@ is positive, and disable it if ARG is zero or negative.  If
 called from Lisp, also enable the mode if ARG is omitted or nil,
 and toggle it if ARG is `toggle'; disable the mode otherwise.
 
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
 \(fn &optional ARG)" t nil)
 
 (autoload 'crux-insert-date "crux" "\
@@ -234,7 +237,7 @@ abort completely with `C-g'.
 
 \(fn P)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "crux" '("crux-")))
+(register-definition-prefixes "crux" '("crux-"))
 
 ;;;***
 

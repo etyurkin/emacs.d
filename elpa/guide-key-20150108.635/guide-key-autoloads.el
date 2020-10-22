@@ -29,7 +29,7 @@ positive, otherwise disable.
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "guide-key" '("guide-key/")))
+(register-definition-prefixes "guide-key" '("guide-key/"))
 
 ;;;***
 

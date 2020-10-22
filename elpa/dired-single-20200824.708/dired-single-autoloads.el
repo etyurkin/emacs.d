@@ -60,7 +60,7 @@ Like `dired-up-directory' but with `dired-single-buffer'.
 
 \(fn &optional OTHER-WINDOW)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "dired-single" '("dired-single-")))
+(register-definition-prefixes "dired-single" '("dired-single-"))
 
 ;;;***
 

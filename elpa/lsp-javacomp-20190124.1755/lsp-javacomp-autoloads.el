@@ -20,7 +20,7 @@ file already exists.
 (autoload 'lsp-javacomp-update-server "lsp-javacomp" "\
 Update JavaComp jar file to the latest version." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "lsp-javacomp" '("lsp-javacomp-")))
+(register-definition-prefixes "lsp-javacomp" '("lsp-javacomp-"))
 
 ;;;***
 

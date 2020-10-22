@@ -35,7 +35,7 @@ The values of all the environment variables named in
 `exec-path-from-shell-variables' are set from the corresponding
 values used in the user's shell." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "exec-path-from-shell" '("exec-path-from-shell-")))
+(register-definition-prefixes "exec-path-from-shell" '("exec-path-from-shell-"))
 
 ;;;***
 
