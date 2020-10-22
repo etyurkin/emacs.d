@@ -1933,6 +1933,12 @@ Include a newer version of org-mode than the one that is built in.
 ;; Disable sub-superscripts
 (setq org-use-sub-superscripts '{})
 
+;; Disable indentations
+(add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
+
+;; Fold all nodes
+(setq org-startup-folded t)
+
 ;; inline images
 (setq org-startup-with-inline-images t)
 (setq org-image-actual-width nil)
