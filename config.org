@@ -2302,13 +2302,14 @@ Creates translation mappings for input-methods other than default english one, s
   (setq wttrin-default-cities '("Toronto"))
   (setq wttrin-default-accept-language '("Accept-Language" . "en-US")))
 
-(defun weather ()
+(defun kwarks/weather ()
   "Show weather with default city and metric units"
   (interactive)
   (require 'wttrin)
 
   (let* ((city (car wttrin-default-cities))
-         (weather-buffer (format "*Weather - %s*" city)))
+         (weather-buffer (format "*Weather - %s*" city))
+         (url-user-agent "curl"))
     (if (buffer-live-p (get-buffer weather-buffer))
         (kill-buffer weather-buffer))
     (wttrin-query (format "%s?m" city))
