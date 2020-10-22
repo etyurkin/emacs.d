@@ -505,7 +505,7 @@ Local bindings (`counsel-mode-map'):
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "counsel" '("counsel-" "ivy-function-called-at-point" "tmm-km-list")))
+(register-definition-prefixes "counsel" '("counsel-" "ivy-function-called-at-point" "tmm-km-list"))
 
 ;;;***
 

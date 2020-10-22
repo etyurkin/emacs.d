@@ -14,7 +14,7 @@ Major mode for reading EPUB documents
 
 \(fn)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "nov" '("nov-")))
+(register-definition-prefixes "nov" '("nov-"))
 
 ;;;***
 
