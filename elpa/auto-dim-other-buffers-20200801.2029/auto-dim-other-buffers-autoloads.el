@@ -28,6 +28,9 @@ ARG is positive, and disable it if ARG is zero or negative.  If
 called from Lisp, also enable the mode if ARG is omitted or nil,
 and toggle it if ARG is `toggle'; disable the mode otherwise.
 
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
+
 Windows without input focus are made to look less prominent by
 applying ‘auto-dim-other-buffers-face’ to them.  With many
 windows in a frame, the idea is that this mode helps recognise
@@ -42,7 +45,7 @@ behaviour is where the mode gets its name from.
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "auto-dim-other-buffers" '("adob--" "auto-dim-other-buffers-dim-on-")))
+(register-definition-prefixes "auto-dim-other-buffers" '("adob--" "auto-dim-other-buffers-dim-on-"))
 
 ;;;***
 

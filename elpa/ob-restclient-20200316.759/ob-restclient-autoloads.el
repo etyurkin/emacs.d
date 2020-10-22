@@ -15,7 +15,7 @@ This function is called by `org-babel-execute-src-block'
 
 \(fn BODY PARAMS)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "ob-restclient" '("org-babel-")))
+(register-definition-prefixes "ob-restclient" '("org-babel-"))
 
 ;;;***
 

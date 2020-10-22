@@ -9,7 +9,7 @@
 ;;;### (autoloads nil "annot" "annot.el" (0 0 0 0))
 ;;; Generated autoloads from annot.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "annot" '("annot-")))
+(register-definition-prefixes "annot" '("annot-"))
 
 ;;;***
 

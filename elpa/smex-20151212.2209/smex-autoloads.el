@@ -16,7 +16,7 @@ Like `smex', but limited to commands that are relevant to the active major mode.
 
 (autoload 'smex-initialize "smex" nil t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "smex" '("smex-")))
+(register-definition-prefixes "smex" '("smex-"))
 
 ;;;***
 
