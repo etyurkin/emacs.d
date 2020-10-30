@@ -761,6 +761,18 @@ see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/s
 (global-set-key (kbd "M-C-0") '(lambda() (interactive) (modify-frame-parameters nil `((alpha . 100)))))
 #+END_SRC
 
+** Font size
+#+begin_src emacs-lisp
+(defun font-size-fn (step)
+  (lambda ()
+    (interactive)
+    (text-scale-adjust step)))
+
+(global-set-key (kbd "C-(") (font-size-fn 0.5))
+(global-set-key (kbd "C-*") (font-size-fn -0.5))
+(global-set-key (kbd "C-)") (font-size-fn 0))
+#+end_src
+
 ** Custom scrolling
 #+BEGIN_SRC emacs-lisp
 (defun kwarks/next-line ()
