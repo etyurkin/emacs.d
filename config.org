@@ -146,7 +146,8 @@ See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
 ** Sessions
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq desktop-path (list user-emacs-directory)
-      desktop-auto-save-timeout 600)
+      desktop-auto-save-timeout 600
+      desktop-load-locked-desktop t)
 
 (desktop-save-mode 1)
 
@@ -2699,8 +2700,13 @@ Geiser is a collection of Emacs major and minor modes that conspire with one or 
   :init
   (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode))
-
 #+END_SRC
+
+*** litable
+#+BEGIN_SRC emacs-lisp
+(use-package litable)
+#+END_SRC
+
 ** racket
 #+BEGIN_SRC emacs-lisp
 (use-package racket-mode)
