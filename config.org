@@ -2522,6 +2522,8 @@ A global annotator/highlighter for GNU Emacs
   :init
   (require 'annot)
   (setq annot-directory "~/.emacs.d/annot")
+  ;; C-x C-a conflicts with Slime, disable it
+  (define-key ctl-x-map "\C-a" nil)
   (custom-set-faces
    '(annot-text-face ((t (:background nil :foreground "yellow" :slant italic))))))
 #+END_SRC
