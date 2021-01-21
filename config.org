@@ -2623,6 +2623,11 @@ A Emacs Lisp library for implementing clients for servers using Microsoft's Lang
 (use-package lsp-ui)
 #+END_SRC
 ** lisp
+
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.sexp\\'" . lisp-mode))
+#+end_src
+
 *** electric-pair-mode
 Electric Pair mode, a global minor mode, provides a way to easily insert matching delimiters. 
 
