@@ -1,0 +1,2 @@
+;;; Generated package description from /Users/etyurkin/.emacs.d/elpa/nov-20210228.2125/nov.el  -*- no-byte-compile: t -*-
+(define-package "nov" "20210228.2125" "Featureful EPUB reader mode" '((dash "2.12.0") (esxml "0.3.5") (emacs "24.4")) :stars '(#("341" 0 3 (font-lock-face paradox-star-face))) :commit "b6138895ace3042ed78140b6f4859e544fbca27e" :authors '(("Vasilij Schneidermann" . "mail@vasilij.de")) :maintainer '("Vasilij Schneidermann" . "mail@vasilij.de") :keywords '("hypermedia" "multimedia" "epub") :url "https://depp.brause.cc/nov.el")
