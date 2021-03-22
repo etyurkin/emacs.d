@@ -1,0 +1,2 @@
+;;; Generated package description from /Users/etyurkin/.emacs.d/elpa/indent-guide-20210115.400/indent-guide.el  -*- no-byte-compile: t -*-
+(define-package "indent-guide" "20210115.400" "show vertical lines to guide indentation" 'nil :stars '(#("259" 0 3 (font-lock-face paradox-star-face))) :commit "d388c3387781a370ca13233ff445d03f3c5cf12f" :authors '(("zk_phi")) :maintainer '("zk_phi") :url "http://hins11.yu-yake.com/")
