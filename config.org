@@ -2799,6 +2799,23 @@ This will copy all managed dependencies to <build-root>/lib_managed/ and make it
 (setq python-shell-interpreter "/usr/local/bin/python3")
 #+end_src
 
+** hy
+An Emacs major mode for Hy, a lisp embedded in python.
+
+Provides autocompletion, documentation lookup, and all features required to make developing in Hy enjoyable and productive.
+
+IDE components like autocompletion via company-mode rely on jedhy, which can be installed as standard with pip install jedhy in your virtual environment of choice, see https://github.com/ekaschalk/jedhy.
+
+For REPL use M-x run-hy
+
+#+BEGIN_SRC emacs-lisp
+(use-package hy-mode
+  :config
+  (setq hy-shell--interpreter-args '("--repl-output-fn" "hy.contrib.hy-repr.hy-repr"))
+  :bind (:map hy-mode-map
+	      ("C-x C-e" . #'hy-shell-eval-last-sexp)))
+#+END_SRC
+
 ** immortal-scratch
 #+BEGIN_SRC emacs-lisp
 (use-package immortal-scratch)
