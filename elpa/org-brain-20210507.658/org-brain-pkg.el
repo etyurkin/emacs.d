@@ -1,2 +1,0 @@
-;;; Generated package description from org-brain.el  -*- no-byte-compile: t -*-
-(define-package "org-brain" "20210507.658" "Org-mode concept mapping" '((emacs "25.1") (org "9.2")) :stars '(#("896" 0 3 (font-lock-face paradox-star-face))) :commit "e0c02b57836d4882da9aa3e65f04ba6045aae537" :authors '(("Erik Sjöstrand" . "sjostrand.erik@gmail.com")) :maintainer '("Erik Sjöstrand" . "sjostrand.erik@gmail.com") :keywords '("outlines" "hypermedia") :url "http://github.com/Kungsgeten/org-brain")
