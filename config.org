@@ -1784,6 +1784,18 @@ Smex is a M-x enhancement for Emacs. Built on top of Ido, it provides a convenie
   (ivy-rich-mode 1))
 #+END_SRC
 
+** flyspell-correct
+Correcting misspelled words with flyspell using favourite interface.
+
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell-correct
+  :after flyspell
+  :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+
+(use-package flyspell-correct-ivy
+  :after flyspell-correct)
+#+END_SRC
+
 ** fzf
 An Emacs front-end for fzf - a command-line fuzzy finder
 Not sure yet if I need it
