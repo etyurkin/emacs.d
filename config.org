@@ -2275,7 +2275,7 @@ Support for the http://kapeli.com/dash documentation browser. See https://github
   (unless (file-exists-p counsel-dash-docsets-path)
     (make-directory counsel-dash-docsets-path))
 
-  (setq counsel-dash-common-docsets '("Common Lisp"))
+  (setq counsel-dash-common-docsets '("Common Lisp" "Python 3"))
 
   (counsel-dash--use-docset "Common Lisp" "Common_Lisp")
   (add-hook 'lisp-mode-hook (lambda ()
@@ -2283,7 +2283,11 @@ Support for the http://kapeli.com/dash documentation browser. See https://github
 
   (counsel-dash--use-docset "Emacs Lisp" "Emacs_Lisp")
   (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                    (setq-local counsel-dash-docsets '("Emacs Lisp")))))
+                                    (setq-local counsel-dash-docsets '("Emacs Lisp"))))
+
+  (counsel-dash--use-docset "Python 3" "Python 3")
+  (add-hook 'python-mode-hook (lambda ()
+                                (setq-local counsel-dash-docsets '("Python 3")))))
 #+END_SRC
 ** transpose-frame
 Transpose windows arrangement in a frame.
@@ -2814,8 +2818,29 @@ This will copy all managed dependencies to <build-root>/lib_managed/ and make it
 #+END_SRC
 
 ** python
+Configure python auto-completion using Jedi.
+Install server with /M-x jedi:install-server/
+
+- /<C-tab>/ jedi:complete
+Complete code at point.
+
+- /C-c ?/ jedi:show-doc
+Show the documentation of the object at point.
+
+- /C-c ./ jedi:goto-definition
+Goto the definition of the object at point.
+
+- /C-c ,/ jedi:goto-definition-pop-marker
+Goto the last point where jedi:goto-definition was called.
+
 #+begin_src emacs-lisp
 (setq python-shell-interpreter "/usr/local/bin/python3")
+(add-hook 'python-mode-hook 'auto-complete-mode)
+
+(use-package jedi
+  :config
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (setq jedi:complete-on-dot t))
 #+end_src
 
 ** hy
