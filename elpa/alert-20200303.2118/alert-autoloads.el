@@ -87,7 +87,7 @@ Here are some more typical examples of usage:
 
 \(fn MESSAGE &key (SEVERITY \\='normal) TITLE ICON CATEGORY BUFFER MODE DATA STYLE PERSISTENT NEVER-PERSIST ID)" nil nil)
 
-(register-definition-prefixes "alert" '("alert-" "x-urgen"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "alert" '("alert-" "x-urgen")))
 
 ;;;***
 

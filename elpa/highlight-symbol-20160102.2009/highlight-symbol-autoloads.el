@@ -19,9 +19,6 @@ positive, and disable it if ARG is zero or negative.  If called
 from Lisp, also enable the mode if ARG is omitted or nil, and
 toggle it if ARG is `toggle'; disable the mode otherwise.
 
-The mode's hook is called both when the mode is enabled and when
-it is disabled.
-
 \(fn &optional ARG)" t nil)
 
 (defalias 'highlight-symbol-at-point 'highlight-symbol)
@@ -88,7 +85,7 @@ before if NLINES is negative.
 
 \(fn &optional NLINES)" t nil)
 
-(register-definition-prefixes "highlight-symbol" '("highlight-symbol"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "highlight-symbol" '("highlight-symbol")))
 
 ;;;***
 

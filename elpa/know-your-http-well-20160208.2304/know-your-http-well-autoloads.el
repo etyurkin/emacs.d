@@ -14,7 +14,7 @@ Display the meaning of an HTTP header
 
 \(fn HEADER)" t nil)
 
-(register-definition-prefixes "http-headers" '("http-headers"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "http-headers" '("http-headers")))
 
 ;;;***
 
@@ -26,7 +26,7 @@ Display the meaning of an HTTP method
 
 \(fn METHOD)" t nil)
 
-(register-definition-prefixes "http-methods" '("http-methods"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "http-methods" '("http-methods")))
 
 ;;;***
 
@@ -39,7 +39,7 @@ Display the meaning of an HTTP relation
 
 \(fn RELATION)" t nil)
 
-(register-definition-prefixes "http-relations" '("http-relations"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "http-relations" '("http-relations")))
 
 ;;;***
 
@@ -52,7 +52,7 @@ Display the meaning of an HTTP status code or phrase
 
 \(fn STATUS)" t nil)
 
-(register-definition-prefixes "http-status-codes" '("http-status"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "http-status-codes" '("http-status")))
 
 ;;;***
 
@@ -64,7 +64,7 @@ Display the template of a media-type
 
 \(fn MEDIA-TYPE)" t nil)
 
-(register-definition-prefixes "media-types" '("media-types"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "media-types" '("media-types")))
 
 ;;;***
 

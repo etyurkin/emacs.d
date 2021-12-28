@@ -17,9 +17,6 @@ positive, and disable it if ARG is zero or negative.  If called
 from Lisp, also enable the mode if ARG is omitted or nil, and
 toggle it if ARG is `toggle'; disable the mode otherwise.
 
-The mode's hook is called both when the mode is enabled and when
-it is disabled.
-
 \\<macrostep-keymap>Progressively expand macro forms with \\[macrostep-expand], collapse them with \\[macrostep-collapse],
 and move back and forth with \\[macrostep-next-macro] and \\[macrostep-prev-macro].
 Use \\[macrostep-collapse-all] or collapse all visible expansions to
@@ -44,7 +41,7 @@ behaviors.
 
 \(fn &optional TOGGLE-SEPARATE-BUFFER)" t nil)
 
-(register-definition-prefixes "macrostep" '("macrostep-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "macrostep" '("macrostep-")))
 
 ;;;***
 
@@ -55,7 +52,7 @@ behaviors.
 
 (add-hook 'c-mode-hook #'macrostep-c-mode-hook)
 
-(register-definition-prefixes "macrostep-c" '("macrostep-c-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "macrostep-c" '("macrostep-c-")))
 
 ;;;***
 

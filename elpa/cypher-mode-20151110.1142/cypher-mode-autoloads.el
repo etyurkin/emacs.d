@@ -18,7 +18,7 @@ Major mode for editing web templates.
 
 (add-to-list 'auto-mode-alist '("\\.cyp\\'" . cypher-mode))
 
-(register-definition-prefixes "cypher-mode" '("cypher-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "cypher-mode" '("cypher-")))
 
 ;;;***
 

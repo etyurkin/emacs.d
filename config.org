@@ -73,6 +73,7 @@ if you would like to see any and all byte compiler warnings.
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq create-lockfiles nil)
+(put 'upcase-region 'disabled nil)
 #+END_SRC
 
 ** Disable custom settings
@@ -121,7 +122,7 @@ This is helpful for writeroom-mode, in particular."
 #+BEGIN_SRC emacs-lisp :tangle yes
 (unless-windows
  (require 'epa-file)
- (custom-set-variables `(epg-gpg-program  ,(if (osx-p) "/usr/local/bin/gpg" "gpg")))
+ (custom-set-variables `(epg-gpg-program  ,(if (osx-p) "/opt/homebrew/bin/gpg" "gpg")))
  (epa-file-enable))
 #+END_SRC
 
@@ -1278,24 +1279,26 @@ Since the code is automatically compiled during runtime, if the configuration ha
 previously compiled manually then all of the package initialization will still take place at startup.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(eval-when-compile
-  (require 'package)
+  (eval-when-compile
+    (require 'package)
 
-  (unless (assoc-default "melpa" package-archives)
-    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-    (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+    (unless (assoc-default "melpa" package-archives)
+      (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+      (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+;;      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
-  (package-initialize)
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-  (require 'use-package)
-  (setq use-package-always-ensure t))
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (require 'use-package)
+    (setq use-package-always-ensure t))
 
-(use-package quelpa-use-package
-  :demand t
-  :init (setq quelpa-update-melpa-p nil)
-  :config (quelpa-use-package-activate-advice))
+  (use-package quelpa-use-package
+    :demand t
+    :init (setq quelpa-update-melpa-p nil)
+    :config (quelpa-use-package-activate-advice))
 #+END_SRC
 
 * Theme
@@ -1503,6 +1506,224 @@ Ignore line wrappings and highlight entire line for org headers
 #+end_src
 
 * Packages
+** org
+Include a newer version of org-mode than the one that is built in. 
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package org
+;;   :ensure org-plus-contrib
+;;   :pin org
+;;   :defer t
+;;   :config
+;;   (require 'ox-confluence))
+(use-package org)
+(use-package org-contrib)
+(use-package ox-gfm)
+(require 'org)
+#+END_SRC
+
+*** basic settings
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+;; Create empty diary file if doesn't exists
+(unless (file-exists-p diary-file)
+  (write-region "" "" diary-file))
+
+;; Show entries for 3 days
+(setq diary-number-of-entries 3)
+(setq calendar-week-start-day 1)
+
+;; Highlight diary entries in calendar
+(setq calendar-mark-diary-entries-flag t)
+
+;; Disable sub-superscripts
+(setq org-use-sub-superscripts '{})
+
+;; Disable indentations
+(add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
+
+;; Fold all nodes
+(setq org-startup-folded t)
+
+;; inline images
+(setq org-startup-with-inline-images t)
+(setq org-image-actual-width nil)
+
+(setq org-src-fontify-natively t
+      org-src-window-setup 'current-window
+      org-src-strip-leading-and-trailing-blank-lines t
+      org-src-preserve-indentation t
+      org-src-tab-acts-natively t)
+
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "ACTIVE(a)" "|" "DONE(d!/!)")
+              (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
+              (sequence "WAITING(w@/!)" "DELEGATED(e!)" "HOLD(h)" "|" "CANCELLED(c@/!)")))
+      org-todo-repeat-to-state "ACTIVE")
+
+(setq org-todo-keyword-faces
+      (quote (("ACTIVE" :inherit warning)
+              ("PROJECT" :inherit font-lock-string-face))))
+#+END_SRC
+
+*** org-crypt
+#+BEGIN_SRC emacs-lisp
+;; Encrypted entries
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+
+;; org entries with :crypt: tag will be encrypted automatically
+;; use C-c C-c to add tag
+;; use M-x org-decrypt-entry to decrypt
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+
+;; GPG key to use for encryption
+;; Either the Key ID or set to nil to use symmetric encryption.
+;; use gpg --list-keys to find key id
+(setq org-crypt-key "0645F0FB333B0EAA60279838995D889E67758C18")
+#+END_SRC
+
+*** org-agenda
+see https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-block-separator 8211 ; nicer separators
+      org-agenda-compact-blocks nil)
+
+(setq org-todo-dir (expand-file-name "org-todo" user-emacs-directory))
+(unless (file-directory-p org-todo-dir)
+  (make-directory org-todo-dir t))
+
+(setq org-agenda-exclude-list '("inbox.org"))
+(setq org-agenda-files
+      (seq-filter (lambda (file)
+                    (let ((regex
+                           (mapconcat (lambda (x)
+                                        (concat x "$")) org-agenda-exclude-list  "\\|")))
+                      (not (s-matches? regex file))))
+                  (file-expand-wildcards (concat org-todo-dir "/*.org"))))
+
+(setq org-tag-alist '(("PROJECT" . ?p)))
+
+(defun air-org-skip-subtree-if-priority (priority)
+  "Skip an agenda subtree if it has a priority of PRIORITY.
+
+PRIORITY may be one of the characters ?A, ?B, or ?C."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (pri-value (* 1000 (- org-lowest-priority priority)))
+        (pri-current (org-get-priority (thing-at-point 'line t))))
+    (if (= pri-value pri-current)
+        subtree-end
+      nil)))
+
+(defun zin/org-agenda-skip-tag (tag &optional others)
+  "Skip all entries that correspond to TAG.
+
+If OTHERS is true, skip all entries that do not correspond to TAG."
+  (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+        (current-headline (or (and (org-at-heading-p)
+                                   (point))
+                              (save-excursion (org-back-to-heading)))))
+    (if others
+        (if (not (member tag (org-get-tags-at current-headline)))
+            next-headline
+          nil)
+      (if (member tag (org-get-tags-at current-headline))
+          next-headline
+        nil))))
+
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((tags "PROJECT"
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "Projects:")))
+          (tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "")
+          (alltodo ""
+                   ((org-agenda-skip-function
+                     '(or (air-org-skip-subtree-if-priority ?A)
+                          (zin/org-agenda-skip-tag "PROJECT")
+                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
+
+(defun kwarks/agenda (&optional arg)
+  "Display up-to-date week agenda."
+  (interactive)
+  (org-agenda arg "c")
+  (org-agenda-redo)
+  (toggle-truncate-lines 1))
+#+END_SRC
+
+*** org-babel-to-buffer
+/C-c C-e/ to evaluate org source blocks to a separate buffer.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks--org-babel-get-result ()
+  "Get the result of the current source block."
+  (let ((location (org-babel-where-is-src-block-result)))
+    (when location
+      (save-excursion
+        (goto-char location)
+        (when (looking-at (concat org-babel-result-regexp ".*$"))
+          (buffer-substring
+           (save-excursion
+             (skip-chars-backward " \r\t\n")
+             (line-beginning-position 2))
+           (progn (forward-line) (org-babel-result-end))))))))
+
+(defun kwarks/org-babel-to-buffer ()
+  "Open babel code block results in a separate buffer"
+  (interactive)
+  
+  (org-babel-execute-src-block)
+
+  (let ((result (kwarks--org-babel-get-result))
+        (result-buffer (get-buffer-create "*Org-Babel Results*")))
+    (org-babel-remove-result)
+    
+    (with-current-buffer result-buffer
+      (erase-buffer)
+      (insert result)
+      (goto-char (point-min))
+      (org-mode))
+    (display-buffer result-buffer)))
+
+(defun kwarks--org-mode-config ()
+  "To use with `org-mode-hook'"
+  (local-set-key (kbd "C-c C-e") 'kwarks/org-babel-to-buffer))
+
+(add-hook 'org-mode-hook 'kwarks--org-mode-config)
+#+END_SRC
+*** org-download
+https://zzamboni.org/post/how-to-insert-screenshots-in-org-documents-on-macos/
+
+Install pngpaste:
+#+BEGIN_SRC sh
+brew install pngpaste
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-download-image-dir "~/Dropbox/notes/screenshots")
+
+(use-package org-download
+  :after org
+  :defer nil
+  :init
+  (unless (file-directory-p org-download-image-dir)
+    (make-directory org-download-image-dir t))
+  :custom
+  (org-download-method 'directory)
+  (org-download-heading-lvl nil)
+  (org-download-timestamp "%Y%m%d-%H%M%S_")
+  (org-image-actual-width 600)
+  (org-download-screenshot-method "/usr/local/bin/pngpaste %s")
+  :bind
+  ("C-M-y" . org-download-screenshot)
+  :config
+  (require 'org-download))
+#+END_SRC
+
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
 (defun init-doom-modeline ()
@@ -1932,222 +2153,6 @@ This Emacs library provides a global mode which displays ugly form feed characte
   :init
   (global-page-break-lines-mode)
   :diminish page-break-lines-mode)
-#+END_SRC
-
-** org
-Include a newer version of org-mode than the one that is built in. 
-
-#+BEGIN_SRC emacs-lisp
-(use-package org
-  :ensure org-plus-contrib
-  :pin org
-  :defer t
-  :config
-  (require 'ox-confluence))
-
-(use-package ox-gfm)
-#+END_SRC
-
-*** basic settings
-#+BEGIN_SRC emacs-lisp
-(require 'org)
-;; Create empty diary file if doesn't exists
-(unless (file-exists-p diary-file)
-  (write-region "" "" diary-file))
-
-;; Show entries for 3 days
-(setq diary-number-of-entries 3)
-(setq calendar-week-start-day 1)
-
-;; Highlight diary entries in calendar
-(setq calendar-mark-diary-entries-flag t)
-
-;; Disable sub-superscripts
-(setq org-use-sub-superscripts '{})
-
-;; Disable indentations
-(add-hook 'org-mode-hook (lambda () (electric-indent-local-mode -1)))
-
-;; Fold all nodes
-(setq org-startup-folded t)
-
-;; inline images
-(setq org-startup-with-inline-images t)
-(setq org-image-actual-width nil)
-
-(setq org-src-fontify-natively t
-      org-src-window-setup 'current-window
-      org-src-strip-leading-and-trailing-blank-lines t
-      org-src-preserve-indentation t
-      org-src-tab-acts-natively t)
-
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "ACTIVE(a)" "|" "DONE(d!/!)")
-              (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
-              (sequence "WAITING(w@/!)" "DELEGATED(e!)" "HOLD(h)" "|" "CANCELLED(c@/!)")))
-      org-todo-repeat-to-state "ACTIVE")
-
-(setq org-todo-keyword-faces
-      (quote (("ACTIVE" :inherit warning)
-              ("PROJECT" :inherit font-lock-string-face))))
-#+END_SRC
-
-*** org-crypt
-#+BEGIN_SRC emacs-lisp
-;; Encrypted entries
-(require 'org-crypt)
-(org-crypt-use-before-save-magic)
-
-;; org entries with :crypt: tag will be encrypted automatically
-;; use C-c C-c to add tag
-;; use M-x org-decrypt-entry to decrypt
-(setq org-tags-exclude-from-inheritance (quote ("crypt")))
-
-;; GPG key to use for encryption
-;; Either the Key ID or set to nil to use symmetric encryption.
-;; use gpg --list-keys to find key id
-(setq org-crypt-key "0645F0FB333B0EAA60279838995D889E67758C18")
-#+END_SRC
-
-*** org-agenda
-see https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
-
-#+BEGIN_SRC emacs-lisp
-(setq org-agenda-block-separator 8211 ; nicer separators
-      org-agenda-compact-blocks nil)
-
-(setq org-todo-dir (expand-file-name "org-todo" user-emacs-directory))
-(unless (file-directory-p org-todo-dir)
-  (make-directory org-todo-dir t))
-
-(setq org-agenda-exclude-list '("inbox.org"))
-(setq org-agenda-files
-      (seq-filter (lambda (file)
-                    (let ((regex
-                           (mapconcat (lambda (x)
-                                        (concat x "$")) org-agenda-exclude-list  "\\|")))
-                      (not (s-matches? regex file))))
-                  (file-expand-wildcards (concat org-todo-dir "/*.org"))))
-
-(setq org-tag-alist '(("PROJECT" . ?p)))
-
-(defun air-org-skip-subtree-if-priority (priority)
-  "Skip an agenda subtree if it has a priority of PRIORITY.
-
-PRIORITY may be one of the characters ?A, ?B, or ?C."
-  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-        (pri-value (* 1000 (- org-lowest-priority priority)))
-        (pri-current (org-get-priority (thing-at-point 'line t))))
-    (if (= pri-value pri-current)
-        subtree-end
-      nil)))
-
-(defun zin/org-agenda-skip-tag (tag &optional others)
-  "Skip all entries that correspond to TAG.
-
-If OTHERS is true, skip all entries that do not correspond to TAG."
-  (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-        (current-headline (or (and (org-at-heading-p)
-                                   (point))
-                              (save-excursion (org-back-to-heading)))))
-    (if others
-        (if (not (member tag (org-get-tags-at current-headline)))
-            next-headline
-          nil)
-      (if (member tag (org-get-tags-at current-headline))
-          next-headline
-        nil))))
-
-(setq org-agenda-custom-commands
-      '(("c" "Simple agenda view"
-         ((tags "PROJECT"
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "Projects:")))
-          (tags "PRIORITY=\"A\""
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
-          (agenda "")
-          (alltodo ""
-                   ((org-agenda-skip-function
-                     '(or (air-org-skip-subtree-if-priority ?A)
-                          (zin/org-agenda-skip-tag "PROJECT")
-                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
-
-(defun kwarks/agenda (&optional arg)
-  "Display up-to-date week agenda."
-  (interactive)
-  (org-agenda arg "c")
-  (org-agenda-redo)
-  (toggle-truncate-lines 1))
-#+END_SRC
-
-*** org-babel-to-buffer
-/C-c C-e/ to evaluate org source blocks to a separate buffer.
-
-#+BEGIN_SRC emacs-lisp
-(defun kwarks--org-babel-get-result ()
-  "Get the result of the current source block."
-  (let ((location (org-babel-where-is-src-block-result)))
-    (when location
-      (save-excursion
-        (goto-char location)
-        (when (looking-at (concat org-babel-result-regexp ".*$"))
-          (buffer-substring
-           (save-excursion
-             (skip-chars-backward " \r\t\n")
-             (line-beginning-position 2))
-           (progn (forward-line) (org-babel-result-end))))))))
-
-(defun kwarks/org-babel-to-buffer ()
-  "Open babel code block results in a separate buffer"
-  (interactive)
-  
-  (org-babel-execute-src-block)
-
-  (let ((result (kwarks--org-babel-get-result))
-        (result-buffer (get-buffer-create "*Org-Babel Results*")))
-    (org-babel-remove-result)
-    
-    (with-current-buffer result-buffer
-      (erase-buffer)
-      (insert result)
-      (goto-char (point-min))
-      (org-mode))
-    (display-buffer result-buffer)))
-
-(defun kwarks--org-mode-config ()
-  "To use with `org-mode-hook'"
-  (local-set-key (kbd "C-c C-e") 'kwarks/org-babel-to-buffer))
-
-(add-hook 'org-mode-hook 'kwarks--org-mode-config)
-#+END_SRC
-*** org-download
-https://zzamboni.org/post/how-to-insert-screenshots-in-org-documents-on-macos/
-
-Install pngpaste:
-#+BEGIN_SRC sh
-brew install pngpaste
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(setq org-download-image-dir "~/Dropbox/notes/screenshots")
-
-(use-package org-download
-  :after org
-  :defer nil
-  :init
-  (unless (file-directory-p org-download-image-dir)
-    (make-directory org-download-image-dir t))
-  :custom
-  (org-download-method 'directory)
-  (org-download-heading-lvl nil)
-  (org-download-timestamp "%Y%m%d-%H%M%S_")
-  (org-image-actual-width 600)
-  (org-download-screenshot-method "/usr/local/bin/pngpaste %s")
-  :bind
-  ("C-M-y" . org-download-screenshot)
-  :config
-  (require 'org-download))
 #+END_SRC
 
 ** toc-org
@@ -2638,11 +2643,6 @@ A Emacs Lisp library for implementing clients for servers using Microsoft's Lang
 
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode)
-(use-package company-lsp
-  :config
-  (setq company-lsp-enable-snippet t
-	company-lsp-cache-candidates t))
-
 (use-package lsp-ui)
 #+END_SRC
 ** lisp

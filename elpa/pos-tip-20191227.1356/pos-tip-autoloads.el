@@ -9,7 +9,7 @@
 ;;;### (autoloads nil "pos-tip" "pos-tip.el" (0 0 0 0))
 ;;; Generated autoloads from pos-tip.el
 
-(register-definition-prefixes "pos-tip" '("pos-tip-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "pos-tip" '("pos-tip-")))
 
 ;;;***
 

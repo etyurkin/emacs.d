@@ -30,7 +30,7 @@ Setup hooks and load `session-save-file', see variable `session-initialize'.  At
 best, this function is called at the end of the Emacs startup, i.e., add
 this function to `after-init-hook'." t nil)
 
-(register-definition-prefixes "session" '("session-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "session" '("session-")))
 
 ;;;***
 

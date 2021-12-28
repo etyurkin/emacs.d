@@ -34,7 +34,7 @@ content is processed with `eww-readable'.  All links in the
 current entry (i.e. this does not look deeper in the subtree, nor
 outside of it) will be converted." t nil)
 
-(register-definition-prefixes "org-web-tools" '("org-web-tools-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-web-tools" '("org-web-tools-")))
 
 ;;;***
 
@@ -57,7 +57,7 @@ Extracts to a temp directory and opens with
 `browse-url-default-browser'.  Note: the extracted files are left
 on-disk in the temp directory." t nil)
 
-(register-definition-prefixes "org-web-tools-archive" '("org-web-tools-a"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-web-tools-archive" '("org-web-tools-a")))
 
 ;;;***
 
