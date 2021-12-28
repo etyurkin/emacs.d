@@ -18,9 +18,6 @@ positive, and disable it if ARG is zero or negative.  If called
 from Lisp, also enable the mode if ARG is omitted or nil, and
 toggle it if ARG is `toggle'; disable the mode otherwise.
 
-The mode's hook is called both when the mode is enabled and when
-it is disabled.
-
 In Page Break mode, page breaks (^L characters) are displayed as a
 horizontal line of `page-break-lines-char' characters.
 
@@ -55,7 +52,7 @@ See `page-break-lines-mode' for more information on Page-Break-Lines mode.
 
 \(fn &optional ARG)" t nil)
 
-(register-definition-prefixes "page-break-lines" '("page-break-lines-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "page-break-lines" '("page-break-lines-")))
 
 ;;;***
 
