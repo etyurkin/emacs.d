@@ -38,7 +38,7 @@ The text in the mode line is controlled by
 
 \(fn &optional ARG)" t nil)
 
-(register-definition-prefixes "fancy-battery" '("fancy-battery-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "fancy-battery" '("fancy-battery-")))
 
 ;;;***
 

@@ -20,7 +20,7 @@ insert the resulting horoscope into the current buffer.
 (autoload 'horoscope-psychoanalyze "horoscope" "\
 The astrologist goes to the analyst." t nil)
 
-(register-definition-prefixes "horoscope" '("horoscope--"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "horoscope" '("horoscope--")))
 
 ;;;***
 

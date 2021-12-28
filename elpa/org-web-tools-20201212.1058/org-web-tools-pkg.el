@@ -5,12 +5,12 @@
     (esxml "0.3.4")
     (s "1.10.0")
     (request "0.3.0"))
-  :commit "b94a07add8558ef7b0666173dbb8a2554f1d41a6" :keywords
-  ("hypermedia" "outlines" "org" "web")
-  :authors
-  (("Adam Porter" . "adam@alphapapa.net"))
+  :commit "b94a07add8558ef7b0666173dbb8a2554f1d41a6" :authors
+  '(("Adam Porter" . "adam@alphapapa.net"))
   :maintainer
-  ("Adam Porter" . "adam@alphapapa.net")
+  '("Adam Porter" . "adam@alphapapa.net")
+  :keywords
+  '("hypermedia" "outlines" "org" "web")
   :url "http://github.com/alphapapa/org-web-tools")
 ;; Local Variables:
 ;; no-byte-compile: t

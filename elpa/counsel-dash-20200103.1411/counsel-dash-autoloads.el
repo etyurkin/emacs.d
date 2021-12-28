@@ -18,7 +18,7 @@ INITIAL will be used as the initial input, if given.
 (autoload 'counsel-dash-at-point "counsel-dash" "\
 Bring up a `counsel-dash' search interface with symbol at point." t nil)
 
-(register-definition-prefixes "counsel-dash" '("counsel-dash-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "counsel-dash" '("counsel-dash-")))
 
 ;;;***
 
