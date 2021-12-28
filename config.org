@@ -1506,6 +1506,14 @@ Ignore line wrappings and highlight entire line for org headers
 #+end_src
 
 * Packages
+** s.el
+Emacs string manipulation library. 
+https://github.com/magnars/s.el
+
+#+BEGIN_SRC emacs-lisp
+(use-package s)
+#+END_SRC
+
 ** org
 Include a newer version of org-mode than the one that is built in. 
 
@@ -1594,13 +1602,14 @@ see https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.htm
 (unless (file-directory-p org-todo-dir)
   (make-directory org-todo-dir t))
 
+(require 's)
 (setq org-agenda-exclude-list '("inbox.org"))
 (setq org-agenda-files
       (seq-filter (lambda (file)
                     (let ((regex
                            (mapconcat (lambda (x)
                                         (concat x "$")) org-agenda-exclude-list  "\\|")))
-                      (not (s-matches? regex file))))
+                      (not (s-matches-p regex file))))
                   (file-expand-wildcards (concat org-todo-dir "/*.org"))))
 
 (setq org-tag-alist '(("PROJECT" . ?p)))
