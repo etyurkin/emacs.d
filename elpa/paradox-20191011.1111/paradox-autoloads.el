@@ -64,7 +64,7 @@ empty.  Passing a non-nil REFRESH argument forces this update.
 
 \(fn FEATURE &optional FILENAME NOERROR PACKAGE REFRESH)" nil nil)
 
-(register-definition-prefixes "paradox" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox" '("paradox-")))
 
 ;;;***
 
@@ -72,14 +72,14 @@ empty.  Passing a non-nil REFRESH argument forces this update.
 ;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from paradox-commit-list.el
 
-(register-definition-prefixes "paradox-commit-list" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox-commit-list" '("paradox-")))
 
 ;;;***
 
 ;;;### (autoloads nil "paradox-core" "paradox-core.el" (0 0 0 0))
 ;;; Generated autoloads from paradox-core.el
 
-(register-definition-prefixes "paradox-core" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox-core" '("paradox-")))
 
 ;;;***
 
@@ -87,7 +87,7 @@ empty.  Passing a non-nil REFRESH argument forces this update.
 ;;;;;;  0 0))
 ;;; Generated autoloads from paradox-execute.el
 
-(register-definition-prefixes "paradox-execute" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox-execute" '("paradox-")))
 
 ;;;***
 
@@ -95,14 +95,14 @@ empty.  Passing a non-nil REFRESH argument forces this update.
 ;;;;;;  0))
 ;;; Generated autoloads from paradox-github.el
 
-(register-definition-prefixes "paradox-github" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox-github" '("paradox-")))
 
 ;;;***
 
 ;;;### (autoloads nil "paradox-menu" "paradox-menu.el" (0 0 0 0))
 ;;; Generated autoloads from paradox-menu.el
 
-(register-definition-prefixes "paradox-menu" '("paradox-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "paradox-menu" '("paradox-")))
 
 ;;;***
 

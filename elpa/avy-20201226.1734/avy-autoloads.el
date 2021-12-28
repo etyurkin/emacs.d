@@ -262,7 +262,7 @@ The window scope is determined by `avy-all-windows' (ARG negates it).
 (autoload 'avy-transpose-lines-in-region "avy" "\
 Transpose lines in the active region." t nil)
 
-(register-definition-prefixes "avy" '("avy-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "avy" '("avy-")))
 
 ;;;***
 

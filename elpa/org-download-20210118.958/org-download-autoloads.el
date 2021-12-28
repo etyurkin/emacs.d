@@ -12,7 +12,7 @@
 (autoload 'org-download-enable "org-download" "\
 Enable org-download." nil nil)
 
-(register-definition-prefixes "org-download" '("org-download-"))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "org-download" '("org-download-")))
 
 ;;;***
 
