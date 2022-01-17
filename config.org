@@ -525,35 +525,141 @@ It then indents the markup by using nxml's indentation rules."
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 #+END_SRC
 
-** Hash-pass for emacs (http://hashapass.com/)
+** Passwords management
+/C-c C-p u/ - get user name
+/C-c C-p p/ - get password
+/C-c C-p g/ - generate password
+/C-c C-p h/ - generate hashed password
 
-#+BEGIN_SRC emacs-lisp
-(defvar hash-pass-password-wait-time "30 sec"
+For password generation install /pwgen/
+For hashed passwords install /openssl/
+
+See https://bitbucket.org/alfaromurillo/org-passwords.el/src/master/org-passwords.el
+See http://hashapass.com/
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+;; disable encrypted & temporary files scanning
+(setq dabbrev-ignored-buffer-regexps '(".*\.gpg$" "^ [*].*"))
+
+(defun kwarks--company-dabbrev-ignore (buffer)
+  (let (res)
+    ;; don't search in encrypted files, or hidden buffers
+    (dolist (re dabbrev-ignored-buffer-regexps res)
+      (if (string-match-p re (buffer-name buffer))
+          (setq res t)))))
+
+(setq company-dabbrev-ignore-buffers 'kwarks--company-dabbrev-ignore)
+
+(require 'org)
+
+(define-derived-mode kwarks/org-passwords-mode org-mode
+  "org-passwords-mode"
+  "Mode for storing passwords"
+  nil)
+
+(defgroup kwarks/org-passwords nil
+  "Options for password management."
+  :group 'org)
+
+(defcustom kwarks/org-passwords-file "~/Dropbox/private/passwords.org.gpg"
+  "Default file name for the file that contains the passwords."
+  :type 'file
+  :group 'kwarks/org-passwords)
+
+(defcustom kwarks/org-passwords-kill-password-buffer-timer-time 60
+  "Time in seconds that the password file will remain open.  It
+  may be an integer or a floating point number."
+  :type 'number
+  :group 'kwarks/org-passwords)
+
+(setq kwarks/org-passwords-kill-password-buffer-timer nil)
+
+(defcustom kwarks/org-passwords-wait-time "30 sec"
   "The default period to wait before erasing the password from the clipboard.
-Must be compatible with `run-at-time'.")
+Must be compatible with `run-at-time'."
+  :type 'string
+  :group 'kwarks/org-passwords)
 
-(defvar hash-pass-system-clipboard-only nil
-  "If T hash-pass will not put generated password to Emacs kill ring.")
+(defcustom kwarks/org-passwords-system-clipboard-only nil
+  "If T password will not put generated password to Emacs kill ring."
+  :type 'boolean
+  :group 'kwarks/org-passwords)
 
-(defun string->clipboard (string)
+(defun kwarks/string->clipboard (string)
   "Copy STRING to system clipboard."
-  (if hash-pass-system-clipboard-only
+  (if kwarks/org-passwords-system-clipboard-only
       (funcall interprogram-cut-function string)
     (kill-new string)))
 
-(defun hash-pass ()
+(defun kwarks/org-passwords-copy-username ()
+  "Put username associated with the entry at the location of the cursor into system clipboard."
+  (interactive)
+  (kwarks/string->clipboard (org-entry-get (point) "USERNAME" t)))
+
+(defun kwarks/org-passwords-copy-password ()
+  "Put password associated with the entry at the location of the cursor into system clipboard."
+  (interactive)
+  (kwarks/string->clipboard (org-entry-get (point) "PASSWORD")))
+
+(defun kwarks/org-passwords-open-url ()
+  "Browse the URL associated with the entry at the location of the cursor."
+  (interactive)
+  (browse-url (org-entry-get (point) "URL" t)))
+
+(defun kwarks/org-passwords-random-password ()
+  (interactive)
+  (let ((pwd (string-trim (shell-command-to-string "pwgen -n -c -N1 10"))))
+    (kwarks/string->clipboard pwd)
+    (run-at-time kwarks/org-passwords-wait-time nil (lambda () (kwarks/string->clipboard "")))
+    (message "Generated password has been copied to clipboard")))
+
+(defun kwarks/org-passwords-hashed-password ()
   "Generate strong password based on parameter and master password."
   (interactive)
-  (let ((param (read-string "parameter: "))
-        (password (read-passwd "master password: ")))
-    (string->clipboard (trim
-                        (shell-command-to-string
-                         (format "echo -n %s | openssl dgst -sha1 -binary -hmac %s | openssl enc -base64 | cut -c 1-8" param password))))
+  (let* ((param (read-string "parameter: "))
+         (password (read-passwd "master password: "))
+         (hashed-pwd (trim (shell-command-to-string
+                            (format "echo -n %s | openssl dgst -sha1 -binary -hmac %s | openssl enc -base64 | cut -c 1-8" param password)))))
+    (kwarks/string->clipboard hashed-pwd)
+    (run-at-time kwarks/org-passwords-wait-time nil (lambda () (kwarks/string->clipboard "")))
+    (message "Generated password has been copied to clipboard")))
 
-    (run-at-time hash-pass-password-wait-time nil (lambda () (string->clipboard "")))
-    (message "Generated hash has been copied to clipboard")))
+(defun kwarks/org-passwords (&optional arg)
+  (interactive "P")
+  (if kwarks/org-passwords-file
+      (progn
+        (add-to-list 'auto-mode-alist
+                     (cons
+                      (regexp-quote
+                       (expand-file-name kwarks/org-passwords-file))
+                      'kwarks/org-passwords-mode))
+        (if kwarks/org-passwords-kill-password-buffer-timer
+            (setq kwarks/org-passwords-kill-password-buffer-timer nil))
+        (and (or
+              (and arg (find-file kwarks/org-passwords-file))
+              (find-file-read-only kwarks/org-passwords-file))
+             (kwarks/org-passwords-set-up-kill-password-buffer-timer)))
+    (minibuffer-message "No default password file defined.  Set the variable `org-password-file'.")))
+
+(defun kwarks/org-passwords-set-up-kill-password-buffer-timer ()
+  (setq kwarks/org-passwords-kill-password-buffer-timer
+        (run-with-idle-timer kwarks/org-passwords-kill-password-buffer-timer-time
+                             nil
+                             '(lambda ()
+                                (if (get-file-buffer kwarks/org-passwords-file)
+                                    (kill-buffer
+                                     (get-file-buffer kwarks/org-passwords-file)))))))
+
+(define-key kwarks/org-passwords-mode-map (kbd "C-c C-p u") 'kwarks/org-passwords-copy-username)
+(define-key kwarks/org-passwords-mode-map (kbd "C-c C-p p") 'kwarks/org-passwords-copy-password)
+(define-key kwarks/org-passwords-mode-map (kbd "C-c C-p g") 'kwarks/org-passwords-random-password)
+(define-key kwarks/org-passwords-mode-map (kbd "C-c C-p h") 'kwarks/org-passwords-hashed-password)
+(define-key kwarks/org-passwords-mode-map (kbd "C-c C-p o") '(lambda ()
+                                                               (interactive)
+                                                               (kwarks/org-passwords-copy-password)
+                                                               (kwarks/org-passwords-open-url)))
+
 #+END_SRC
-
 ** Number to string convertion
 
 Port of common lisp (format nil "~r" 1234) and (format nil "~:r" 1234) functions:
@@ -1515,24 +1621,10 @@ https://github.com/magnars/s.el
 #+END_SRC
 
 ** org
-Include a newer version of org-mode than the one that is built in. 
-
-#+BEGIN_SRC emacs-lisp
-;; (use-package org
-;;   :ensure org-plus-contrib
-;;   :pin org
-;;   :defer t
-;;   :config
-;;   (require 'ox-confluence))
-(use-package org)
-(use-package org-contrib)
-(use-package ox-gfm)
-(require 'org)
-#+END_SRC
-
 *** basic settings
 #+BEGIN_SRC emacs-lisp
 (require 'org)
+
 ;; Create empty diary file if doesn't exists
 (unless (file-exists-p diary-file)
   (write-region "" "" diary-file))
@@ -1552,6 +1644,9 @@ Include a newer version of org-mode than the one that is built in.
 
 ;; Fold all nodes
 (setq org-startup-folded t)
+
+;; Restore window configuration upon exiting agenda.
+(setq org-agenda-restore-windows-after-quit t)
 
 ;; inline images
 (setq org-startup-with-inline-images t)
@@ -2202,19 +2297,6 @@ e.g. copy-as-format-slack, copy-as-format-github
   (when-osx
     (setq alert-default-style 'osx-notifier)))
 #+END_SRC
-** org-passwords
-#+BEGIN_SRC emacs-lisp
-
-(use-package org-passwords
-  :bind (:map org-passwords-mode-map
-              ("C-c C-p u" . org-passwords-copy-username)
-              ("C-c C-p p" . org-passwords-copy-password)
-              ("C-c C-p o" . org-passwords-open-url))
-  :quelpa (org-passwords
-           :url "https://bitbucket.org/alfaromurillo/org-passwords.el.git"
-           :fetcher git))
-#+END_SRC
-
 ** org-wiki
 Org-wiki is a org-mode extension that provides tools to manage and build personal wiki or desktop wiki where each wiki page is a org-mode file.
 
