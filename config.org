@@ -286,6 +286,15 @@ See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
 #+END_SRC
 
 ** Platform-specific
+Set zsh as default
+
+#+begin_src emacs-lisp
+(setq explicit-shell-file-name "/bin/zsh"
+      shell-file-name          "/bin/zsh"
+      explicit-zsh-args        '("--login" "-i")
+      shell-command-switch     "-c")
+#+end_src
+
 Shell initialization for Windows
 
 #+BEGIN_SRC emacs-lisp
