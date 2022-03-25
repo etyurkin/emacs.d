@@ -3090,10 +3090,10 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
 * Post init
 ** Start server
 #+BEGIN_SRC emacs-lisp
-(unless-windows
- (require 'server)
- (unless (server-running-p)
-   (server-start)))
+(cond ((or (linux-p) (osx-p))
+        (require 'server)
+        (unless (server-running-p)
+          (server-start))))
 #+END_SRC
 
 ** Garbage collection
