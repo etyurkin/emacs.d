@@ -2301,7 +2301,7 @@ e.g. copy-as-format-slack, copy-as-format-github
 Org-wiki is a org-mode extension that provides tools to manage and build personal wiki or desktop wiki where each wiki page is a org-mode file.
 
 #+BEGIN_SRC emacs-lisp
-(use-package helm-core)
+(use-package helm)
 (use-package org-wiki
   :demand t
   :init
