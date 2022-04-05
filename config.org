@@ -319,6 +319,9 @@ Shell initialization for Windows
      (setq exec-path (cons cygwin-bin exec-path))
      (setenv "PATH" (concat cygwin-bin ";" (getenv "PATH")))
      (init-bash "bash"))))
+
+(when-linux
+ (init-bash "/bin/bash"))
 #+END_SRC
 
 ** Cookies
