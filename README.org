@@ -1,2 +1,10 @@
 * Personal Emacs config
 This is a personal Emacs configuration.
+
+For 28.1 nativecomp to work on OSX add this to ~/.emacs:
+#+begin_src elisp
+;; see https://github.com/d12frosted/homebrew-emacs-plus/issues/323#issuecomment-805490388
+(setenv "LIBRARY_PATH" "/opt/homebrew/lib/gcc/11:/opt/homebrew/Cellar/libgccjit/11.3.0/lib/gcc/11:/opt/homebrew/lib/gcc/11/gcc/aarch64-apple-darwin21/11")
+
+(load "~/.emacs.d/init.el")
+#+end_src
