@@ -1913,6 +1913,8 @@ Use "C-/" or "C-z" for undo, and "C-?" or "C-Z" for redo, "C-x u" to display a t
   ;; Disabled for now, test later
   ;; (kwarks/init-persistent-undo)
   (defalias 'redo 'undo-tree-redo)
+  ;; Don't save undo history as it leaks encrypted files data
+  (setq undo-tree-auto-save-history nil)
 
   :init
   (global-undo-tree-mode 1))
