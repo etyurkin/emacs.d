@@ -23,4 +23,11 @@
   (message "compiling config.org...")
   (org-babel-load-file (expand-file-name "config.org" user-emacs-directory)))
 
+;; load private extensions from lisp/private folder
+(let ((private (expand-file-name "lisp/private" user-emacs-directory)))
+  (if (file-directory-p private)
+      (progn
+        (message "Loading private extensions...")
+        (mapc 'load (file-expand-wildcards (concat private "/*.el"))))))
+
 ;;; init.el ends here
