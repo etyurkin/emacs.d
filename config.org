@@ -74,6 +74,8 @@ if you would like to see any and all byte compiler warnings.
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq create-lockfiles nil)
 (put 'upcase-region 'disabled nil)
+
+(global-set-key (kbd "C-e") 'end-of-line)
 #+END_SRC
 
 ** Disable custom settings
@@ -3037,9 +3039,11 @@ HTTP encodings, headers, media types, methods, relations and status codes, all s
   (require 'http-relations)
 
   (defmacro ivy--know-your-http-well (title source)
-    `(ivy-read (format "%s: ^" ,title) (mapcar (lambda (arg)
-                                                 (format "%s - %s" (car arg) (caadr arg)))
-                                               ,source)))
+    `(ivy-read (format "%s: " ,title)
+               (mapcar (lambda (arg)
+                         (format "%s - %s" (car arg) (caadr arg)))
+                       ,source)
+               :initial-input "^"))
 
   (defun kwarks/every-other (lst)
     "Return odd elements of the lst"

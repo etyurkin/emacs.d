@@ -59,3 +59,4 @@ site-lisp/package/
 /.docsets
 /nov-places
 /annot/
+/lisp/private
