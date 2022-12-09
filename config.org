@@ -1144,10 +1144,16 @@ TODO: check https://www.emacswiki.org/emacs/hide-lines.el
   `(let ((file-name (get-text-property (point) 'kbd-help)))
      (if file-name (,action file-name))))
 
+(defun kwarks--tree-view-file (file-name)
+  "Open FILE-NAME in other window but keep tree window active."
+  (let ((tree-window (get-buffer-window (current-buffer))))
+    (view-file-other-window file-name)
+    (select-window tree-window)))
+
 (defun kwarks/tree-view-file ()
   "View file."
   (interactive)
-  (kwarks--tree-node-action view-file-other-window))
+  (kwarks--tree-node-action kwarks--tree-view-file))
 
 (defun kwarks/tree-find-file ()
   "Edit file."
@@ -1230,7 +1236,7 @@ overlay onto the kwarks--tree-hidden-nodes hash-table"
     (kwarks--tree-collapse-node node nil)))
 
 (defun kwarks--make-tree (root)
-  (let ((cmd (format "tree \"%s\" --dirsfirst --noreport -J -l -a -q -I '%s'"
+  (let ((cmd (format "tree \"%s\" --dirsfirst --noreport -J -a -q -I '%s'"
                      root
                      (string-join kwarks/tree-ignore-list "|")))
         (json-object-type 'plist)
@@ -1642,6 +1648,9 @@ https://github.com/magnars/s.el
 ;; Create empty diary file if doesn't exists
 (unless (file-exists-p diary-file)
   (write-region "" "" diary-file))
+
+;; Disable code block evaluation prompts
+(setq org-confirm-babel-evaluate nil)
 
 ;; Show entries for 3 days
 (setq diary-number-of-entries 3)
