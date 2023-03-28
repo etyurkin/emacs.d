@@ -1632,6 +1632,12 @@ Ignore line wrappings and highlight entire line for org headers
 #+end_src
 
 * Packages
+** shell completion
+#+begin_src emacs-lisp
+(use-package pcmpl-git :after pcomplete)
+(use-package pcmpl-args :after pcomplete)
+#+end_src
+
 ** s.el
 Emacs string manipulation library. 
 https://github.com/magnars/s.el
@@ -2670,6 +2676,20 @@ A global annotator/highlighter for GNU Emacs
   (define-key ctl-x-map "\C-a" nil)
   (custom-set-faces
    '(annot-text-face ((t (:background nil :foreground "yellow" :slant italic))))))
+#+END_SRC
+** latex-preview-pane
+Install pdflatext first:
+#+begin_src sh
+brew install mactex
+#+end_src
+
+Open .tex file
+
+[M-p] preview in Emacs
+[M-P] external preview
+
+#+BEGIN_SRC emacs-lisp
+(use-package latex-preview-pane)
 #+END_SRC
 
 * Programming
