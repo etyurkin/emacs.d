@@ -2793,8 +2793,8 @@ Electric Pair mode, a global minor mode, provides a way to easily insert matchin
 #+BEGIN_SRC emacs-lisp
 (electric-pair-mode)
 #+END_SRC
-*** slime
-#+BEGIN_SRC emacs-lisp
+*** slime 
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package slime
   :init
   (setq slime-protocol-version 'ignore)
@@ -2815,6 +2815,11 @@ It should simply work:
 M-x run-scheme
 M-x scheme-mode
 C-x C-e to run code
+
+Set scheme mode for microscheme
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.ms\\'" . scheme-mode))
+#+end_src
 
 Chicken integration instructions:
 
@@ -2872,6 +2877,28 @@ Geiser is a collection of Emacs major and minor modes that conspire with one or 
 #+BEGIN_SRC emacs-lisp
 (use-package litable)
 #+END_SRC
+
+** clojure
+#+begin_src emacs-lisp
+(use-package clojure-mode)
+#+end_src
+
+** forth
+brew install gforth
+
+| C-M-a, C-M-e | beginning / end of colon definition                 |
+| C-M-f, C-M-b | forward / backward expression (not very useful yet) |
+| C-M-h        | mark colon definition                               |
+| C-c C-l      | load file                                           |
+| C-c C-r      | evaluate region                                     |
+| C-c C-k      | kill interactive Forth                              |
+| M-TAB, C-M-i | complete-symbol                                     |
+
+#+begin_src emacs-lisp
+(use-package forth-mode
+  :config
+  (setq forth-executable "gforth"))
+#+end_src
 
 ** racket
 #+BEGIN_SRC emacs-lisp
