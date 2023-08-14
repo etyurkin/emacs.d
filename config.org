@@ -993,10 +993,6 @@ Ignore line wrappings and highlight entire line for org headers
 (defun kwarks/set-hl-line-color ()
   (set-face-background 'hl-line (kwarks/color-from-theme 6 7)))
 
-(defun kwarks/set-linum-color ()
-  (require 'linum)
-  (set-face-foreground 'linum (kwarks/color-from-theme 20 20)))
-
 (defun kwarks/set-region-color ()
   (set-face-background 'region (color-lighten-name "#2D383E" 10)))
 
@@ -1021,7 +1017,6 @@ Ignore line wrappings and highlight entire line for org headers
 (defun kwarks/set-theme-colors (&rest args)
   (kwarks/set-cursor-color)
   (kwarks/set-hl-line-color)
-  (kwarks/set-linum-color)
   (kwarks/set-region-color)
   (kwarks/set-border-color)
   (kwarks/set-titlebar-style)
@@ -2499,6 +2494,14 @@ For REPL use M-x run-hy
   :bind (:map hy-mode-map
 	      ("C-x C-e" . #'hy-shell-eval-last-sexp)))
 #+END_SRC
+
+** dart
+#+begin_src emacs-lisp
+(use-package lsp-dart)
+(use-package dart-mode
+  :config
+  (add-hook 'dart-mode-hook 'lsp))
+#+end_src
 
 ** immortal-scratch
 #+BEGIN_SRC emacs-lisp
