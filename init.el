@@ -31,3 +31,4 @@
         (mapc 'load (file-expand-wildcards (concat private "/*.el"))))))
 
 ;;; init.el ends here
+(put 'downcase-region 'disabled nil)
