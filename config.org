@@ -2503,6 +2503,13 @@ For REPL use M-x run-hy
   (add-hook 'dart-mode-hook 'lsp))
 #+end_src
 
+** pho
+#+begin_src emacs-lisp
+(use-package php-mode
+  :config
+  (add-hook 'php-mode-hook 'php))
+#+end_src
+
 ** immortal-scratch
 #+BEGIN_SRC emacs-lisp
 (use-package immortal-scratch)
