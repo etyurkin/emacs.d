@@ -1,2 +1,0 @@
-;;; Generated package description from litable.el  -*- no-byte-compile: t -*-
-(define-package "litable" "20221028.1640" "dynamic evaluation replacement with emacs" '((dash "2.6.0")) :stars '(#("272" 0 3 (font-lock-face paradox-star-face))) :commit "0a75befedbf826c9779f83500792b044658f2374" :authors '(("Matus Goljer" . "matus.goljer@gmail.com")) :maintainer '("Matus Goljer" . "matus.goljer@gmail.com") :keywords '("lisp"))
