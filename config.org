@@ -2165,6 +2165,14 @@ Open .tex file
 #+END_SRC
 
 * Programming
+** general
+Turn on line numbers for programming modes
+
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook '(lambda () 
+  (display-line-numbers-mode 1)))
+#+end_src
+
 ** magit
 The magical git client. Let's load magit only when one of the several entry pont
 functions we invoke regularly outside of magit is called.
@@ -2453,6 +2461,8 @@ This will copy all managed dependencies to <build-root>/lib_managed/ and make it
 #+END_SRC
 
 ** python
+Install python via [[https://github.com/pyenv/pyenv/][pyenv]]!
+
 Configure python auto-completion using Jedi.
 Install server with /M-x jedi:install-server/
 
@@ -2469,8 +2479,13 @@ Goto the definition of the object at point.
 Goto the last point where jedi:goto-definition was called.
 
 #+begin_src emacs-lisp
-(setq python-shell-interpreter "/usr/local/bin/python3")
 (add-hook 'python-mode-hook 'auto-complete-mode)
+
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+
+(add-hook 'python-mode-hook '(lambda () 
+ (setq python-indent 2)))
 
 (use-package jedi
   :config
