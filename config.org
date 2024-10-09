@@ -892,7 +892,8 @@ previously compiled manually then all of the package initialization will still t
       (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
 ;;      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
-    (package-initialize)
+;; looks like it's already been initialized somewhere else    
+;;    (package-initialize)
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
