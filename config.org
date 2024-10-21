@@ -2166,6 +2166,59 @@ Open .tex file
 (use-package latex-preview-pane)
 #+END_SRC
 
+** ellama
+AI assistant in Emacs - https://github.com/s-kostyaev/ellama
+
+- Download and install [[https://ollama.com][Ollama]]
+- Install default model and codellama
+
+#+begin_src sh
+ollama run zephyr
+ollama run codellama
+#+end_src
+
+Ellama commands:
+- /ellama-chat/ Ask Ellama about something by entering a prompt in an interactive buffer and continue conversation.
+- /ellama-ask-about/ Ask Ellama about a selected region or the current buffer.  
+- /ellama-ask-selection/ Send selected region or current buffer to ellama chat.
+- /ellama-ask-line/ Send current line to ellama chat.
+- /ellama-complete/ Complete text in current buffer with ellama.
+- /ellama-translate/ Ask Ellama to translate a selected region or word at the point.
+- /ellama-translate-buffer/ Translate current buffer.
+- /ellama-define-word/ Find the definition of the current word using Ellama.
+- /ellama-summarize/ Summarize a selected region or the current buffer using Ellama.
+- /ellama-summarize-killring/ Summarize text from the kill ring.
+- /ellama-code-review/ Review code in a selected region or the current buffer using Ellama.
+- /ellama-change/ Change text in a selected region or the current buffer according to a provided change.
+- /ellama-make-list/ Create a markdown list from the active region or the current buffer using Ellama.
+- /ellama-make-table/ Create a markdown table from the active region or the current buffer using Ellama.
+- /ellama-summarize-webpage/ Summarize a webpage fetched from a URL using Ellama.
+- /ellama-provider-select/ Select ellama provider.
+- /ellama-code-complete/ Complete selected code or code in the current buffer according to a provided change using Ellama.
+- /ellama-code-add/ Add new code according to a description, generating it with a provided context from the selected region or the current buffer using Ellama.
+- /ellama-code-edit/ Change selected code or code in the current buffer according to a provided change using Ellama.
+- /ellama-code-improve/ Change selected code or code in the current buffer according to a provided change using Ellama.
+- /ellama-generate-commit-message/ Generate commit message based on diff.
+- /ellama-improve-wording/ Enhance the wording in the currently selected region or buffer using Ellama.
+- /ellama-improve-grammar/ Enhance the grammar and spelling in the currently selected region or buffer using Ellama.
+- /ellama-improve-conciseness/ Make the text of the currently selected region or buffer concise and simple using Ellama.
+- /ellama-make-format/ Render the currently selected text or the text in the current buffer as a specified format using Ellama.
+- /ellama-solve-reasoning-problem/ Solve reasoning problem with Absctraction of Thought technique.
+- /ellama-solve-domain-specific-problem/ Solve domain specific problem with simple chain.
+
+#+begin_src emacs-lisp
+(use-package ellama
+  :init
+  (setopt ellama-language "English")
+  (require 'llm-ollama)
+  (setopt ellama-user-nick "Me")
+  (setopt ellama-assistant-nick "AI")
+  ;; (setopt ellama-provider
+  ;;   	  (make-llm-ollama
+  ;;   	   :chat-model "codellama" :embedding-model "codellama"))
+)
+#+end_src  
+  
 * Programming
 ** general
 Turn on line numbers for programming modes
