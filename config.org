@@ -2540,7 +2540,8 @@ Goto the last point where jedi:goto-definition was called.
       python-shell-interpreter-args "-i")
 
 (add-hook 'python-mode-hook '(lambda () 
- (setq python-indent 2)))
+ (setq python-indent 2)
+ (setq python-indent-offset 2)))
 
 (use-package jedi
   :config
