@@ -818,9 +818,14 @@ buffer."
 ** Server shutdown
 #+BEGIN_SRC emacs-lisp
 (defun server-shutdown ()
-  "Save buffers, Quit, and Shutdown (kill) server"
+  "Save buffers and the desktop, then shut down Emacs.
+`kill-emacs' is supposed to save the desktop via `kill-emacs-hook', but that
+path does not reliably fire here, so save the desktop explicitly first."
   (interactive)
   (save-some-buffers)
+  (when (and (bound-and-true-p desktop-save-mode)
+             desktop-dirname)
+    (desktop-save-in-desktop-dir))
   (kill-emacs))
 
 ;; Quit with the usual keystroke but actually kill Emacs (and thus save the
