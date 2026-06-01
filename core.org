@@ -127,6 +127,16 @@ GnuPG support: transparently read and write =.gpg= files and enable org-crypt.
  (epa-file-enable))
 #+END_SRC
 
+Keep =dabbrev= and =cape-dabbrev= from harvesting completion candidates out of
+encrypted buffers (such as a =.gpg= password file).  =dabbrev-ignored-buffer-regexps=
+is consulted whenever dabbrev scans other buffers for candidates, and cape-dabbrev
+reuses the same dabbrev machinery.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'dabbrev
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\.gpg\\(?:<[0-9]+>\\)?\\'"))
+#+END_SRC
+
 ** Backups
 #+BEGIN_SRC emacs-lisp
 (setq

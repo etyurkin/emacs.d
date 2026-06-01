@@ -12,15 +12,6 @@
 ;; disable encrypted & temporary files scanning
 (setq dabbrev-ignored-buffer-regexps '(".*\.gpg$" "^ [*].*"))
 
-(defun kwarks--company-dabbrev-ignore (buffer)
-  (let (res)
-    ;; don't search in encrypted files, or hidden buffers
-    (dolist (re dabbrev-ignored-buffer-regexps res)
-      (if (string-match-p re (buffer-name buffer))
-          (setq res t)))))
-
-(setq company-dabbrev-ignore-buffers 'kwarks--company-dabbrev-ignore)
-
 (require 'org)
 
 (define-derived-mode kwarks/org-passwords-mode org-mode
