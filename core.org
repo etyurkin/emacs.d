@@ -1254,8 +1254,22 @@ the former.  If something goes missing, restore the default by setting
 Make the non-current buffer less prominent.
 
 #+BEGIN_SRC emacs-lisp
+;; How much to darken the inactive (dimmed) buffer background, in HSL lightness
+;; points.  Bump these up for more contrast between active and inactive buffers.
+(defvar kwarks/auto-dim-darken-dark 12
+  "Darken amount for the dimmed face on dark themes.")
+(defvar kwarks/auto-dim-darken-light 6
+  "Darken amount for the dimmed face on light themes.")
+
 (defun kwarks/set-auto-dim-other-buffers-background (&rest args)
-  (set-face-background 'auto-dim-other-buffers-face (kwarks/color-from-theme 3 3)))
+  "Make the inactive (dimmed) buffer background darker than the active one."
+  (let* ((bg (face-background 'default))
+         (bg (if (or (null bg) (string= bg "unspecified-bg")) "#000000" bg)))
+    (set-face-background
+     'auto-dim-other-buffers-face
+     (color-darken-name bg (kwarks/if-dark-theme
+                            kwarks/auto-dim-darken-dark
+                            kwarks/auto-dim-darken-light)))))
 
 (use-package auto-dim-other-buffers
   :config
