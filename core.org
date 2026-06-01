@@ -152,7 +152,9 @@ reuses the same dabbrev machinery.
 #+BEGIN_SRC emacs-lisp
 (setq desktop-path (list user-emacs-directory)
       desktop-auto-save-timeout 600
-      desktop-load-locked-desktop t)
+      desktop-load-locked-desktop t
+      ;; Always save the desktop on exit (kill-emacs) without prompting.
+      desktop-save t)
 
 (desktop-save-mode 1)
 (desktop-read)
