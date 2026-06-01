@@ -1,0 +1,12 @@
+#+TITLE: swift
+#+PROPERTY: header-args :tangle yes
+
+Swift editing with =swift-mode=.  Completion and navigation use =eglot= when
+=sourcekit-lsp= is on the PATH.
+
+#+BEGIN_SRC emacs-lisp
+(use-package swift-mode
+  :config
+  (add-hook 'swift-mode-hook
+            (lambda () (kwarks/eglot-ensure-if "sourcekit-lsp"))))
+#+END_SRC

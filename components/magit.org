@@ -1,0 +1,10 @@
+#+TITLE: magit
+#+PROPERTY: header-args :tangle yes
+
+The magical git client.  Loaded lazily through its common entry points.
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :commands (magit-status magit-blame magit-log-buffer-file magit-log-all)
+  :bind (("C-x g" . magit-status)))
+#+END_SRC

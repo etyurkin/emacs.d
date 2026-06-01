@@ -1,0 +1,9 @@
+#+TITLE: latex
+#+PROPERTY: header-args :tangle yes
+
+Live LaTeX preview.  Install a TeX distribution first (=brew install mactex=).
+Open a =.tex= file, then =M-p= previews in Emacs and =M-P= previews externally.
+
+#+BEGIN_SRC emacs-lisp
+(use-package latex-preview-pane)
+#+END_SRC

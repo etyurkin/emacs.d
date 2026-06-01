@@ -1,0 +1,12 @@
+#+TITLE: dart
+#+PROPERTY: header-args :tangle yes
+
+Dart/Flutter editing with =dart-mode= and =eglot= (uses the =dart= analysis
+server bundled with the Dart SDK).
+
+#+BEGIN_SRC emacs-lisp
+(use-package dart-mode
+  :config
+  (add-hook 'dart-mode-hook
+            (lambda () (kwarks/eglot-ensure-if "dart"))))
+#+END_SRC

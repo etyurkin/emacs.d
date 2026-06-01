@@ -1,0 +1,41 @@
+#+TITLE: lisp
+#+PROPERTY: header-args :tangle yes
+
+Common Lisp and Emacs Lisp tooling.  =electric-pair-mode=, =rainbow-delimiters=
+and =highlight-symbol= already come from core; this adds structured editing and
+a modern Common Lisp REPL.
+
+* File associations
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.sexp\\'" . lisp-mode))
+#+END_SRC
+
+* sly
+SLY is the actively maintained successor to SLIME.
+
+#+BEGIN_SRC emacs-lisp
+(use-package sly
+  :init
+  (setq inferior-lisp-program "sbcl"
+        sly-net-coding-system 'utf-8-unix)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.cl\\'" . lisp-mode)))
+#+END_SRC
+
+* paredit
+#+BEGIN_SRC emacs-lisp
+(use-package paredit
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          lisp-interaction-mode
+          lisp-data-mode
+          scheme-mode) . enable-paredit-mode))
+#+END_SRC
+
+* aggressive-indent
+#+BEGIN_SRC emacs-lisp
+(use-package aggressive-indent
+  :init
+  (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
+  (add-hook 'emacs-lisp-mode-hook 'aggressive-indent-mode))
+#+END_SRC

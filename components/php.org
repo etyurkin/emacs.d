@@ -1,0 +1,12 @@
+#+TITLE: php
+#+PROPERTY: header-args :tangle yes
+
+PHP editing with =php-mode=.  Completion and navigation use =eglot= when a PHP
+language server (=intelephense= or =phpactor=) is installed.
+
+#+BEGIN_SRC emacs-lisp
+(use-package php-mode
+  :config
+  (add-hook 'php-mode-hook
+            (lambda () (kwarks/eglot-ensure-if "intelephense" "phpactor"))))
+#+END_SRC

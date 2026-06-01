@@ -1,0 +1,22 @@
+#+TITLE: org-wiki
+#+PROPERTY: header-args :tangle yes
+
+Personal desktop wiki where each page is an org-mode file.  org-wiki depends on
+helm, so helm is pulled in alongside it (only when this component is enabled).
+Installed from source via =package-vc-install=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm :demand t)
+
+(unless (package-installed-p 'org-wiki)
+  (ignore-errors
+    (package-vc-install '(org-wiki :url "https://github.com/caiorss/org-wiki"))))
+
+(use-package org-wiki
+  :ensure nil
+  :demand t
+  :init
+  (setq org-wiki-location (expand-file-name "wiki" user-emacs-directory))
+  (unless (file-directory-p org-wiki-location)
+    (make-directory org-wiki-location t)))
+#+END_SRC

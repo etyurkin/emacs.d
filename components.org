@@ -1,0 +1,34 @@
+#+TITLE: Emacs Components
+
+Toggle a component by flipping =[ ]= (off) to =[X]= (on) and restarting Emacs.
+On the next start =config.el= is regenerated from =core.org= plus every enabled
+component below. =core.org= is always loaded.
+
+* Components
+- [X] magit
+- [X] org-wiki
+- [X] org-extras
+- [X] lisp
+- [X] python
+- [X] yaml
+- [X] http
+- [X] agent-shell
+- [ ] clojure
+- [ ] scala
+- [ ] java
+- [ ] scheme
+- [ ] racket
+- [ ] dart
+- [ ] php
+- [ ] forth
+- [ ] hy
+- [ ] swift
+- [ ] csharp
+- [ ] ellama
+- [ ] nov
+- [ ] org-brain
+- [ ] weather
+- [ ] eww-tweaks
+- [ ] dired-sidebar
+- [ ] latex
+- [ ] annot

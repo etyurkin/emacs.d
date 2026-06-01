@@ -1,0 +1,26 @@
+#+TITLE: annot
+#+PROPERTY: header-args :tangle yes
+
+A global annotator/highlighter.  Installed from source via =package-vc-install=;
+the elisp lives in the repo's =src/= directory.
+
+| C-x C-a | Add annotation / highlight region (annot-edit/add) |
+| C-x C-r | Remove annotation at point (annot-remove)          |
+| C-x C-i | Insert image at point (annot-add-image)            |
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'annot)
+  (ignore-errors
+    (package-vc-install '(annot :url "https://github.com/ghoshi/annot" :lisp-dir "src"))))
+
+(use-package annot
+  :ensure nil
+  :demand t
+  :init
+  (setq annot-directory (expand-file-name "annot" user-emacs-directory))
+  :config
+  ;; C-x C-a conflicts with sly, free it for annot.
+  (define-key ctl-x-map "\C-a" nil)
+  (custom-set-faces
+   '(annot-text-face ((t (:background nil :foreground "yellow" :slant italic))))))
+#+END_SRC
