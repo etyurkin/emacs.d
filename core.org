@@ -156,7 +156,11 @@ reuses the same dabbrev machinery.
       ;; Always save the desktop on exit (kill-emacs) without prompting.
       desktop-save t
       ;; Restore the window/frame layout (splits), not just the buffer list.
-      desktop-restore-frames t)
+      desktop-restore-frames t
+      ;; Don't clamp frames onto the primary display; restore their saved
+      ;; geometry as-is (important for multi-monitor setups, otherwise the
+      ;; frame size/position is reset when a monitor sits above/left of main).
+      desktop-restore-forces-onscreen nil)
 
 (desktop-save-mode 1)
 
