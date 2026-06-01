@@ -18,5 +18,17 @@ Installed from source via =package-vc-install=.
   :init
   (setq org-wiki-location (expand-file-name "wiki" user-emacs-directory))
   (unless (file-directory-p org-wiki-location)
-    (make-directory org-wiki-location t)))
+    (make-directory org-wiki-location t))
+  :config
+  ;; org-wiki only registers its `wiki:' link type from `org-mode-hook'.  If the
+  ;; index buffer is restored (e.g. by desktop) before this package loads, that
+  ;; hook already ran without it, so following a link falls back to a fuzzy
+  ;; heading search ("No match - create this as a new heading?").  Register the
+  ;; link types eagerly so they work regardless of buffer/hook order.
+  (org-link-set-parameters "wiki"
+                           :follow #'org-wiki--open-page
+                           :export #'org-wiki--org-link)
+  (org-link-set-parameters "wiki-asset-sys"
+                           :follow #'org-wiki--protocol-open-assets-with-sys
+                           :export #'org-wiki--asset-link))
 #+END_SRC
