@@ -172,10 +172,16 @@ reuses the same dabbrev machinery.
   default-directory)
 
 (defun kwarks/desktop-restore-shell (_file-name buffer-name dir)
-  "Restart a shell named BUFFER-NAME in its saved directory DIR."
-  (let ((default-directory (or dir default-directory)))
-    (shell buffer-name))
-  (current-buffer))
+  "Restart a shell named BUFFER-NAME in its saved directory DIR.
+Desktop pre-creates the buffer, so set its `default-directory' explicitly;
+otherwise `shell' starts the process in the buffer's stale directory."
+  (let* ((dir (or dir default-directory))
+         (buf (get-buffer-create buffer-name)))
+    (with-current-buffer buf
+      (setq default-directory dir))
+    (let ((default-directory dir))
+      (shell buf))
+    buf))
 
 (add-hook 'shell-mode-hook
           (lambda ()
