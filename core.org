@@ -383,8 +383,8 @@ still loaded eagerly.
 (defun org-copy-link ()
   "Extract the link location at point and put it on the killring."
   (interactive)
-  (when (org-in-regexp org-bracket-link-regexp 1)
-    (kill-new (org-link-unescape (org-match-string-no-properties 1)))))
+  (when (org-in-regexp org-link-bracket-re 1)
+    (kill-new (org-link-unescape (match-string-no-properties 1)))))
 #+END_SRC
 
 ** Toggle delete-other-window command
@@ -418,24 +418,6 @@ it will restore the window configuration to prior to full-framing."
   (insert #x0C))
 #+END_SRC
 
-** Remove leading and tailing spaces.
-#+BEGIN_SRC emacs-lisp
-(defun trim (str)
-  "Remove leading and tailing whitespace from STR."
-  (replace-regexp-in-string (rx (or (: bos (* (any " \t\n")))
-                                    (: (* (any " \t\n")) eos)))
-                            ""
-                            str))
-#+END_SRC
-
-** Check if string is empty
-#+BEGIN_SRC emacs-lisp
-(defun empty-string-p (string)
-  "Return true if the STRING is empty or nil.  Expects string."
-  (or (null string)
-      (zerop (length (trim string)))))
-#+END_SRC
-
 ** Execute shell command in an active shell session
 #+BEGIN_SRC emacs-lisp
 (defun run-shell-command (cmd)
@@ -466,7 +448,7 @@ it will restore the window configuration to prior to full-framing."
   (let ((proxy-host
          (read-string "proxy host: "
                       (if (bound-and-true-p *proxy-host*) *proxy-host* ""))))
-    (unless (empty-string-p proxy-host)
+    (unless (string-blank-p proxy-host)
       (kwarks/set-proxy proxy-host)
       (message "proxy is set to %s" proxy-host))))
 
@@ -1193,13 +1175,6 @@ Built-in since Emacs 30. Shows available keybindings in a popup.
 (use-package pcmpl-args :after pcomplete)
 #+END_SRC
 
-** s.el
-Emacs string manipulation library used by several helpers.
-
-#+BEGIN_SRC emacs-lisp
-(use-package s :demand t)
-#+END_SRC
-
 ** crux
 Set C-a to move to the first non-whitespace character on a line, and then to
 toggle between that and the beginning of the line.
@@ -1336,20 +1311,12 @@ Make "C-x o" prompt for a target window when there are more than 2.
   :bind (("C-x o" . switch-window)))
 #+END_SRC
 
-** dired-single
+** dired single buffer
+Reuse a single dired buffer when navigating directories instead of spawning a
+new buffer per directory.  Built in since Emacs 28, so no extra package needed.
+
 #+BEGIN_SRC emacs-lisp
-(use-package dired-single)
-
-(defun kwarks/dired-init ()
-  (define-key dired-mode-map [return] 'dired-single-buffer)
-  (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
-  (define-key dired-mode-map "^"
-    (function
-     (lambda nil (interactive) (dired-single-buffer "..")))))
-
-(if (boundp 'dired-mode-map)
-    (kwarks/dired-init)
-  (add-hook 'dired-load-hook 'kwarks/dired-init))
+(setq dired-kill-when-opening-new-dired-buffer t)
 #+END_SRC
 
 ** copy-as-format
@@ -1434,14 +1401,13 @@ replacement for the old =highlight-symbol= package.
   (diminish 'symbol-overlay-mode))
 #+END_SRC
 
-** projectile
-Project management that "just works".
+** project.el
+Use the built-in project manager (=C-x p ...=).  It integrates with eglot,
+xref and consult out of the box, so no external package is required.
 
 #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :demand t
-  :init
-  (projectile-mode))
+(use-package project
+  :ensure nil)
 #+END_SRC
 
 ** ztree

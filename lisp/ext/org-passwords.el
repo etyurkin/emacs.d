@@ -80,7 +80,7 @@ Must be compatible with `run-at-time'."
   (interactive)
   (let* ((param (read-string "parameter: "))
          (password (read-passwd "master password: "))
-         (hashed-pwd (trim (shell-command-to-string
+         (hashed-pwd (string-trim (shell-command-to-string
                             (format "echo -n %s | openssl dgst -sha1 -binary -hmac %s | openssl enc -base64 | cut -c 1-8" param password)))))
     (kwarks/string->clipboard hashed-pwd)
     (run-at-time kwarks/org-passwords-wait-time nil (lambda () (kwarks/string->clipboard "")))
