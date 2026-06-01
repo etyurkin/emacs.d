@@ -752,6 +752,10 @@ buffer."
   (interactive)
   (save-some-buffers)
   (kill-emacs))
+
+;; Quit with the usual keystroke but actually kill Emacs (and thus save the
+;; desktop) instead of only closing the server frame.
+(global-set-key (kbd "C-x C-c") #'server-shutdown)
 #+END_SRC
 
 ** SQLi configuration
