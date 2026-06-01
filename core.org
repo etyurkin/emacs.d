@@ -912,9 +912,9 @@ Ignore line wrappings and highlight entire line for org headers
 
 (defun kwarks/set-border-color ()
   (let ((color (kwarks/color-from-theme 5 10)))
-    (set-face-attribute 'mode-line nil :foreground "gray" :background nil :box nil :overline color)
-    (set-face-attribute 'mode-line-inactive nil :background nil :box nil :foreground "gray" :overline color)
-    (set-face-attribute 'vertical-border nil :background nil :foreground color)))
+    (set-face-attribute 'mode-line nil :foreground "gray" :background 'unspecified :box nil :overline color)
+    (set-face-attribute 'mode-line-inactive nil :background 'unspecified :box nil :foreground "gray" :overline color)
+    (set-face-attribute 'vertical-border nil :background 'unspecified :foreground color)))
 
 (defun kwarks/set-titlebar-style ()
   (set-frame-parameter nil 'ns-transparent-titlebar t)
@@ -946,9 +946,9 @@ Ignore line wrappings and highlight entire line for org headers
 (defun kwarks/set-theme-faces ()
   (custom-set-faces
    `(cursor                   ((t (:background ,(kwarks/color-from-theme 100 100)))))
-   '(font-lock-comment-face   ((t (:slant italic :background nil))))
+   '(font-lock-comment-face   ((t (:slant italic :background unspecified))))
    '(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
-   '(fringe                   ((t (:foreground "SkyBlue4" :background nil))))))
+   '(fringe                   ((t (:foreground "SkyBlue4" :background unspecified))))))
 
 (defun kwarks/setup-frame (&rest args)
   "Apply titlebar theme for new frames"
@@ -976,14 +976,14 @@ Ignore line wrappings and highlight entire line for org headers
  (let ((font-size (if (or (cygwin-p) (ms-windows-p))
                       100 130)))
    (custom-set-faces
-    `(org-level-1             ((t (:box nil :height ,font-size :foreground "#51afef" :background nil))))
-    '(org-level-2             ((t (:foreground "#c678dd" :background nil))))
-    '(org-level-3             ((t (:foreground "#a9a1e1" :background nil))))
-    '(org-block               ((t (:background nil))))
-    '(org-block-begin-line    ((t (:background nil :slant italic))))
-    '(org-block-end-line      ((t (:background nil :slant italic))))
-    '(font-lock-comment-face  ((t (:background nil))))
-    '(org-ellipsis            ((t (:background nil :strike-through nil))))
+    `(org-level-1             ((t (:box nil :height ,font-size :foreground "#51afef" :background unspecified))))
+    '(org-level-2             ((t (:foreground "#c678dd" :background unspecified))))
+    '(org-level-3             ((t (:foreground "#a9a1e1" :background unspecified))))
+    '(org-block               ((t (:background unspecified))))
+    '(org-block-begin-line    ((t (:background unspecified :slant italic))))
+    '(org-block-end-line      ((t (:background unspecified :slant italic))))
+    '(font-lock-comment-face  ((t (:background unspecified))))
+    '(org-ellipsis            ((t (:background unspecified :strike-through nil))))
     '(org-done                ((t (:strike-through t))))
     '(org-headline-done       ((t (:strike-through t))))
     '(org-agenda-done         ((t (:strike-through t))))
@@ -1410,7 +1410,7 @@ Directory diff tool.
 
   (doom-modeline-def-modeline 'my-simple-line
     '(matches buffer-info remote-host parrot)
-    '(buffer-position selection-info minor-modes process vcs checker input-method buffer-encoding battery misc-info major-mode))
+    '(buffer-position selection-info minor-modes process vcs input-method buffer-encoding battery misc-info major-mode))
 
   (doom-modeline-set-modeline 'my-simple-line 'default))
 
