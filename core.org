@@ -215,7 +215,9 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (when (and kwarks/frame-geometry (display-graphic-p))
     (modify-frame-parameters (selected-frame) kwarks/frame-geometry)))
 
-(add-to-list 'desktop-globals-to-save 'kwarks/frame-geometry)
+;; NOTE: `kwarks/frame-geometry' is registered in `desktop-globals-to-save'
+;; further below (that list is set with `setq', so adding it here would be
+;; clobbered).
 ;; Capture geometry right before the desktop is written (covers exit and
 ;; the periodic auto-save), so the saved value is always current.
 (advice-add 'desktop-save :before #'kwarks/save-frame-geometry)
@@ -252,7 +254,8 @@ otherwise `shell' starts the process in the buffer's stale directory."
                        line-end))))))
 
 (setq desktop-globals-to-save
-      (append '((comint-input-ring        . 50)
+      (append '(kwarks/frame-geometry
+                (comint-input-ring        . 50)
                 (compile-history          . 30)
                 desktop-missing-file-warning
                 (dired-regexp-history     . 20)
