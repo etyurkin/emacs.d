@@ -154,9 +154,33 @@ reuses the same dabbrev machinery.
       desktop-auto-save-timeout 600
       desktop-load-locked-desktop t
       ;; Always save the desktop on exit (kill-emacs) without prompting.
-      desktop-save t)
+      desktop-save t
+      ;; Restore the window/frame layout (splits), not just the buffer list.
+      desktop-restore-frames t)
 
 (desktop-save-mode 1)
+
+;; Desktop does not restore live process buffers (like *shell*) by default.
+;; Teach it to remember a shell buffer's directory and restart the shell there,
+;; so a "doc on the left, shell on the right" layout comes back intact.
+(defun kwarks/desktop-save-shell (_desktop-dirname)
+  "Return the data needed to restore a shell buffer (its directory)."
+  default-directory)
+
+(defun kwarks/desktop-restore-shell (_file-name buffer-name dir)
+  "Restart a shell named BUFFER-NAME in its saved directory DIR."
+  (let ((default-directory (or dir default-directory)))
+    (shell buffer-name))
+  (current-buffer))
+
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (setq-local desktop-save-buffer #'kwarks/desktop-save-shell)))
+
+(with-eval-after-load 'desktop
+  (add-to-list 'desktop-buffer-mode-handlers
+               '(shell-mode . kwarks/desktop-restore-shell)))
+
 (desktop-read)
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
