@@ -82,14 +82,13 @@ See https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.htm
 (unless (file-directory-p org-todo-dir)
   (make-directory org-todo-dir t))
 
-(require 's)
 (setq org-agenda-exclude-list '("inbox.org"))
 (setq org-agenda-files
       (seq-filter (lambda (file)
                     (let ((regex
                            (mapconcat (lambda (x)
                                         (concat x "$")) org-agenda-exclude-list  "\\|")))
-                      (not (s-matches-p regex file))))
+                      (not (string-match-p regex file))))
                   (file-expand-wildcards (concat org-todo-dir "/*.org"))))
 
 (setq org-tag-alist '(("PROJECT" . ?p)))
