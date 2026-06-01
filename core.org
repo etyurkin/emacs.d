@@ -191,6 +191,39 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (add-to-list 'desktop-buffer-mode-handlers
                '(shell-mode . kwarks/desktop-restore-shell)))
 
+;; Frameset restores frame size/position, but on macOS the window manager
+;; reapplies geometry asynchronously during startup and the restored frame
+;; ends up slightly smaller and loses its fullscreen state.  Capture the exact
+;; geometry ourselves at save time (persisted via the desktop globals) and
+;; re-assert it shortly after startup, once macOS has settled the frame.
+(defvar kwarks/frame-geometry nil
+  "Saved geometry of the main frame, restored on the next startup.")
+
+(defun kwarks/save-frame-geometry (&rest _)
+  "Capture the selected frame's size/position into `kwarks/frame-geometry'."
+  (when (display-graphic-p)
+    (let ((frame (selected-frame)))
+      (setq kwarks/frame-geometry
+            (list (cons 'fullscreen (frame-parameter frame 'fullscreen))
+                  (cons 'width  (frame-parameter frame 'width))
+                  (cons 'height (frame-parameter frame 'height))
+                  (cons 'left   (frame-parameter frame 'left))
+                  (cons 'top    (frame-parameter frame 'top)))))))
+
+(defun kwarks/restore-frame-geometry ()
+  "Re-apply `kwarks/frame-geometry' to the selected frame."
+  (when (and kwarks/frame-geometry (display-graphic-p))
+    (modify-frame-parameters (selected-frame) kwarks/frame-geometry)))
+
+(add-to-list 'desktop-globals-to-save 'kwarks/frame-geometry)
+;; Capture geometry right before the desktop is written (covers exit and
+;; the periodic auto-save), so the saved value is always current.
+(advice-add 'desktop-save :before #'kwarks/save-frame-geometry)
+;; Re-assert geometry after startup; the idle delay lets macOS finish its own
+;; frame placement first so ours is the value that sticks.
+(add-hook 'emacs-startup-hook
+          (lambda () (run-with-idle-timer 0.3 nil #'kwarks/restore-frame-geometry)))
+
 (desktop-read)
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
