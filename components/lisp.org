@@ -10,6 +10,16 @@ a modern Common Lisp REPL.
 (add-to-list 'auto-mode-alist '("\\.sexp\\'" . lisp-mode))
 #+END_SRC
 
+* Neutralize stale SLIME
+We migrated from SLIME to SLY.  The old =slime= package may still be installed,
+and its autoloads unconditionally add =slime-lisp-mode-hook= to
+=lisp-mode-hook=, which makes SLY prompt about a conflict on every session.
+Remove it so SLY owns Lisp editing.
+
+#+BEGIN_SRC emacs-lisp
+(remove-hook 'lisp-mode-hook 'slime-lisp-mode-hook)
+#+END_SRC
+
 * sly
 SLY is the actively maintained successor to SLIME.
 
