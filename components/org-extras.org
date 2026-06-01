@@ -155,7 +155,7 @@ If OTHERS is true, skip all entries that do not correspond to TAG."
       (save-excursion
         (goto-char location)
         (when (looking-at (concat org-babel-result-regexp ".*$"))
-          (buffer-substring
+          (buffer-substring-no-properties
            (save-excursion
              (skip-chars-backward " \r\t\n")
              (line-beginning-position 2))
