@@ -69,7 +69,8 @@ intermediate files are removed."
           (goto-char (point-max))
           (delete-file tangled)))
       (insert "\n(provide 'config)\n;;; config.el ends here\n"))
-    (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+    (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local
+                                      obsolete docstrings lambda interactive-only))
     (byte-compile-file out)
     out))
 

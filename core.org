@@ -62,7 +62,8 @@ We'll lower this value significantly after initialization has completed.
 Disable certain byte compiler warnings to cut down on the noise.
 
 #+BEGIN_SRC emacs-lisp
-(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local
+                                  obsolete docstrings lambda interactive-only))
 #+END_SRC
 
 ** Some basic variables
@@ -203,6 +204,24 @@ GnuPG support: transparently read and write =.gpg= files and enable org-crypt.
 
 (setq-default history-length 1000)
 (savehist-mode t)
+#+END_SRC
+
+Desktop restores the window layout from the previous session, which can leave
+diagnostic buffers (=*Messages*=, =*Warnings*=, =*Compile-Log*=) occupying a
+window on startup.  Bury them once startup finishes, keeping the rest of the
+restored layout intact.
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/hide-startup-noise-windows ()
+  "Hide windows showing diagnostic buffers left over after startup."
+  (dolist (name '("*Messages*" "*Warnings*" "*Compile-Log*"))
+    (let ((buf (get-buffer name)))
+      (when buf
+        (dolist (win (get-buffer-window-list buf nil t))
+          (if (> (length (window-list (window-frame win))) 1)
+              (delete-window win)
+            (switch-to-prev-buffer win)))))))
+
+(add-hook 'emacs-startup-hook #'kwarks/hide-startup-noise-windows 90)
 #+END_SRC
 
 ** Calendar
@@ -596,7 +615,7 @@ It then indents the markup by using nxml's indentation rules."
 
 (global-set-key (kbd "M-C-9") (transparency-fn 5))
 (global-set-key (kbd "M-C-8") (transparency-fn -5))
-(global-set-key (kbd "M-C-0") '(lambda() (interactive) (modify-frame-parameters nil `((alpha . 100)))))
+(global-set-key (kbd "M-C-0") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
 #+END_SRC
 
 ** Font size
@@ -1051,6 +1070,7 @@ Practical search and navigation commands, the spiritual successor to counsel/swi
   :bind (("M-x"     . execute-extended-command)
          ("C-s"     . consult-line)
          ("C-x b"   . consult-buffer)
+         ("C-x C-b" . consult-buffer)
          ("C-x C-r" . consult-recent-file)
          ("C-c C-r" . consult-recent-file)
          ("M-y"     . consult-yank-pop)
