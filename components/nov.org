@@ -1,0 +1,9 @@
+#+TITLE: nov
+#+PROPERTY: header-args :tangle yes
+
+ePub reader.
+
+#+BEGIN_SRC emacs-lisp
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode))
+#+END_SRC

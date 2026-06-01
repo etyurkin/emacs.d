@@ -1,0 +1,89 @@
+#+TITLE: http
+#+PROPERTY: header-args :tangle yes
+
+HTTP tooling: a reference lookup for status codes/headers/methods, a REST client
+with org-babel integration, and an HTTP REPL.
+
+* know-your-http-well
+HTTP encodings, headers, media types, methods, relations and status codes,
+summarized with links to their specifications.  Looked up through
+=completing-read= (vertico/consult provide the UI).
+
+#+BEGIN_SRC emacs-lisp
+(use-package know-your-http-well
+  :init
+  (require 'http-status-codes)
+  (require 'http-headers)
+  (require 'http-methods)
+  (require 'media-types)
+  (require 'http-relations)
+
+  (defun kwarks--khw-read (title source)
+    "Pick an entry from SOURCE (an alist) with prompt TITLE."
+    (completing-read (format "%s: " title)
+                     (mapcar (lambda (arg)
+                               (format "%s - %s" (car arg) (caadr arg)))
+                             source)))
+
+  (defun kwarks/every-other (lst)
+    "Return odd elements of LST."
+    (if (null lst) '()
+      (cons (car lst) (kwarks/every-other (cddr lst)))))
+
+  (defun kwarks/http-status-code ()
+    (interactive)
+    (kwarks--khw-read "HTTP status"
+                      (mapcar (lambda (arg)
+                                (list (car arg)
+                                      (list (format "%s, %s" (caadr arg) (cadadr arg)))))
+                              (kwarks/every-other http-status))))
+
+  (defun kwarks/http-header ()
+    (interactive)
+    (kwarks--khw-read "HTTP header" http-headers))
+
+  (defun kwarks/http-method ()
+    "Look up the meaning of HTTP methods"
+    (interactive)
+    (kwarks--khw-read "HTTP method" http-methods))
+
+  (defun kwarks/media-type ()
+    "Look up the template of a media-type"
+    (interactive)
+    (kwarks--khw-read "Media-type" media-types))
+
+  (defun kwarks/http-relation ()
+    "Look up the meaning of HTTP relations"
+    (interactive)
+    (kwarks--khw-read "HTTP relation" http-relations)))
+#+END_SRC
+
+* Rest Client
+#+BEGIN_SRC emacs-lisp
+(use-package restclient
+  :mode ("\\.rest\\'" . restclient-mode)
+  :config
+  (setq restclient-inhibit-cookies t))
+
+;; org-babel support for restclient blocks.
+(use-package ob-restclient
+  :after org
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages '((restclient . t)))))
+
+;; Bridge the company-restclient backend into corfu via cape.
+(use-package company-restclient
+  :after (restclient cape)
+  :config
+  (add-hook 'restclient-mode-hook
+            (lambda ()
+              (add-hook 'completion-at-point-functions
+                        (cape-company-to-capf #'company-restclient) nil t))))
+#+END_SRC
+
+* Http Repl
+#+BEGIN_SRC emacs-lisp
+(use-package httprepl)
+#+END_SRC

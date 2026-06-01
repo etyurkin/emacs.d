@@ -1,0 +1,19 @@
+#+TITLE: java
+#+PROPERTY: header-args :tangle yes
+
+Java editing using the built-in =java-mode= and =eglot=.  Install the Eclipse
+JDT language server (=jdtls=) and =eglot= will start automatically.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/java-setup ()
+  (setq-local c-basic-offset 4
+              tab-width 4
+              indent-tabs-mode nil)
+  (kwarks/eglot-ensure-if "jdtls" "jdt-language-server"))
+
+(add-hook 'java-mode-hook #'kwarks/java-setup)
+(add-hook 'java-ts-mode-hook #'kwarks/java-setup)
+
+(when (and (fboundp 'treesit-ready-p) (treesit-ready-p 'java t))
+  (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode)))
+#+END_SRC

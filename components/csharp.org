@@ -1,0 +1,26 @@
+#+TITLE: csharp
+#+PROPERTY: header-args :tangle yes
+
+C# editing using the built-in =csharp-mode= plus =dotnet= helper commands.
+Completion and navigation use =eglot= when a C# language server (=csharp-ls= or
+OmniSharp's =OmniSharp=) is installed.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/init-csharp-mode ()
+  (setq indent-tabs-mode nil)
+  (setq c-syntactic-indentation t)
+  (c-set-style "ellemtel")
+  (setq c-basic-offset 4)
+  (setq truncate-lines t)
+  (setq tab-width 4)
+  (local-set-key (kbd "C-c C-c") 'recompile)
+  (kwarks/eglot-ensure-if "csharp-ls" "OmniSharp"))
+
+;; csharp-mode is built in since Emacs 29.
+(add-hook 'csharp-mode-hook #'kwarks/init-csharp-mode)
+(add-hook 'csharp-ts-mode-hook #'kwarks/init-csharp-mode)
+
+(use-package dotnet
+  :config
+  (add-hook 'csharp-mode-hook 'dotnet-mode))
+#+END_SRC

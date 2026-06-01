@@ -1,0 +1,23 @@
+#+TITLE: agent-shell
+#+PROPERTY: header-args :tangle yes
+
+A native Emacs =comint= buffer for talking to LLM coding agents (Claude Code,
+Cursor, Gemini CLI, Codex, etc.) via the Agent Client Protocol.
+See https://github.com/xenodium/agent-shell
+
+It depends on =acp= and =shell-maker= (both on MELPA, installed automatically).
+agent-shell is only a client - install the external agent binaries you want to
+use, e.g.:
+
+#+BEGIN_SRC sh :tangle no
+brew install claude-code
+npm install -g @zed-industries/claude-agent-acp
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package agent-shell
+  :commands (agent-shell
+             agent-shell-anthropic-start-agent
+             agent-shell-google-start-agent
+             agent-shell-openai-start-agent))
+#+END_SRC

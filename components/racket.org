@@ -1,0 +1,8 @@
+#+TITLE: racket
+#+PROPERTY: header-args :tangle yes
+
+Racket editing and REPL with =racket-mode=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package racket-mode)
+#+END_SRC

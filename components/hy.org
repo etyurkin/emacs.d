@@ -1,0 +1,13 @@
+#+TITLE: hy
+#+PROPERTY: header-args :tangle yes
+
+Hy is a Lisp embedded in Python.  IDE features rely on jedhy
+(=pip install jedhy=).  Use =M-x run-hy= for a REPL.
+
+#+BEGIN_SRC emacs-lisp
+(use-package hy-mode
+  :config
+  (setq hy-shell--interpreter-args '("--repl-output-fn" "hy.contrib.hy-repr.hy-repr"))
+  :bind (:map hy-mode-map
+              ("C-x C-e" . #'hy-shell-eval-last-sexp)))
+#+END_SRC

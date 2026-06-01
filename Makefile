@@ -1,5 +1,5 @@
 clean:
-	@rm -f init.elc config.el config.elc
+	@rm -f init.elc config.el config.elc core.el components/*.el
 
-compile: init.el config.org clean
-	@emacs -Q --batch -l 'lisp/compile.el'
+compile: clean
+	@emacs -Q --batch -l init.el --eval '(kwarks/tangle-config)'

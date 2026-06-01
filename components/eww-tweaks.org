@@ -1,0 +1,50 @@
+#+TITLE: eww-tweaks
+#+PROPERTY: header-args :tangle yes
+
+Disable eww images and switch to readability mode by default.  Uses =hydra= and
+=focus= from core.
+
+#+BEGIN_SRC emacs-lisp
+(defhydra kwarks/eww-hydra (:color blue :hint nil)
+  "
+_&_ view in external browser
+list _B_ookmarks
+add _b_ookmark
+_g_: reload page
+_R_eadability mode
+_f_ocus mode
+back ur_l_
+_n_ext url
+_p_revious url
+_v_iew source
+"
+  ("&" eww-browse-with-external-browser)
+  ("B" eww-list-bookmarks)
+  ("b" eww-add-bookmark)
+  ("g" eww-reload)
+  ("R" eww-readable)
+  ("f" focus-mode)
+  ("i" endless/toggle-image-display)
+  ("l" eww-back-url)
+  ("n" eww-next-url)
+  ("p" eww-previous-url)
+  ("v" eww-view-source))
+
+(defun kwarks/eww-actions ()
+  (interactive)
+  (kwarks/eww-hydra/body))
+
+(defun kwarks/around-eww-render (eww-render-fn &rest args)
+  (let ((shr-inhibit-images t))
+    (apply eww-render-fn args)))
+
+(defun kwarks/after-eww-render ()
+  "Turn on Readability mode and Focus mode"
+  (unwind-protect
+      (progn
+	(eww-readable)
+	(if (fboundp 'focus-mode) (focus-mode)))))
+
+(advice-add 'eww-render :around #'kwarks/around-eww-render)
+(add-hook 'eww-after-render-hook #'kwarks/after-eww-render)
+#+END_SRC

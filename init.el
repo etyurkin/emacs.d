@@ -1,34 +1,88 @@
-;;; Package --- Summary
+;;; init.el --- Component-based literate config loader -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Emacs init file responsible for either loading a pre-compiled configuration file
-;; or tangling and loading a literate org configuration file.
+;; Reads the component manifest (components.org), tangles core.org plus every
+;; enabled component file under components/ into a single config.el, byte
+;; compiles it and loads the result.  Toggle components by editing the
+;; checkboxes in components.org and restarting Emacs.
 
 ;;; Code:
 
-(defun kwarks/emacs-config-synced-p ()
-  "Returns T if config.el exists and config.org is older that config.el"
-  (let* ((org-file (expand-file-name "config.org" user-emacs-directory))
-         (el-file (expand-file-name "config.el" user-emacs-directory))
-         (org-mod-time (file-attribute-modification-time (file-attributes org-file)))
-         (el-mod-time (file-attribute-modification-time (file-attributes el-file))))
+(defun kwarks/enabled-components ()
+  "Return the list of component names checked off in components.org."
+  (let ((file (expand-file-name "components.org" user-emacs-directory))
+        results)
+    (when (file-exists-p file)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (while (re-search-forward "^[ \t]*-[ \t]+\\[[Xx]\\][ \t]+\\([A-Za-z0-9_-]+\\)" nil t)
+          (push (match-string 1) results))))
+    (nreverse results)))
+
+(defun kwarks/config-source-files ()
+  "Return the ordered list of org files that make up the configuration."
+  (let ((dir user-emacs-directory))
+    (cons (expand-file-name "core.org" dir)
+          (delq nil
+                (mapcar (lambda (name)
+                          (let ((f (expand-file-name
+                                    (format "components/%s.org" name) dir)))
+                            (and (file-exists-p f) f)))
+                        (kwarks/enabled-components))))))
+
+(defun kwarks/config-synced-p ()
+  "Return non-nil when config.el is newer than every input that feeds it."
+  (let* ((dir user-emacs-directory)
+         (el-file (expand-file-name "config.el" dir))
+         (inputs (append (list (expand-file-name "components.org" dir)
+                               (expand-file-name "init.el" dir))
+                         (kwarks/config-source-files))))
     (and (file-exists-p el-file)
-         (time-less-p org-mod-time el-mod-time))))
+         (let ((el-time (file-attribute-modification-time
+                         (file-attributes el-file))))
+           (seq-every-p
+            (lambda (input)
+              (or (not (file-exists-p input))
+                  (time-less-p (file-attribute-modification-time
+                                (file-attributes input))
+                               el-time)))
+            inputs)))))
 
-;; Don't attempt to find/apply special file handlers to files loaded during startup.
+(defun kwarks/tangle-config ()
+  "Tangle core.org and enabled components into a single config.el.
+Each source file is tangled to its own derived .el (because blocks use
+`:tangle yes'), the results are concatenated into config.el and the
+intermediate files are removed."
+  (require 'org)
+  (let* ((dir user-emacs-directory)
+         (out (expand-file-name "config.el" dir))
+         (files (kwarks/config-source-files)))
+    (with-temp-file out
+      (insert ";;; config.el --- generated, do not edit -*- lexical-binding: t; -*-\n")
+      (insert ";; Generated from core.org + components.org. Edit those instead.\n")
+      (dolist (f files)
+        (insert (format "\n;; ==== %s ====\n" (file-name-nondirectory f)))
+        (goto-char (point-max))
+        (dolist (tangled (org-babel-tangle-file f))
+          (insert-file-contents tangled)
+          (goto-char (point-max))
+          (delete-file tangled)))
+      (insert "\n(provide 'config)\n;;; config.el ends here\n"))
+    (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+    (byte-compile-file out)
+    out))
+
+;; Don't attempt to find/apply special file handlers to files loaded at startup.
 (let ((file-name-handler-alist nil))
-  (if (kwarks/emacs-config-synced-p)
-      (load-file (expand-file-name "config.el" user-emacs-directory)))
-
-  (message "compiling config.org...")
-  (org-babel-load-file (expand-file-name "config.org" user-emacs-directory)))
-
-;; load private extensions from lisp/private folder
-(let ((private (expand-file-name "lisp/private" user-emacs-directory)))
-  (if (file-directory-p private)
-      (progn
-        (message "Loading private extensions...")
-        (mapc 'load (file-expand-wildcards (concat private "/*.el"))))))
+  ;; Ensure installed package autoloads are available even when Emacs did not
+  ;; auto-activate them (e.g. batch mode or a future early-init.el).  Idempotent.
+  (when (fboundp 'package-activate-all)
+    (package-activate-all))
+  (unless (kwarks/config-synced-p)
+    (message "Regenerating config.el from enabled components...")
+    (kwarks/tangle-config))
+  (load (expand-file-name "config" user-emacs-directory) nil nil nil))
 
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)

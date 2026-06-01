@@ -1,0 +1,21 @@
+#+TITLE: org-brain
+#+PROPERTY: header-args :tangle yes
+
+[[https://github.com/Kungsgeten/org-brain][org-brain]] implements concept mapping in org-mode.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-brain
+  :init
+  (setq org-brain-path (expand-file-name "org-brain" user-emacs-directory))
+  (unless (file-directory-p org-brain-path)
+    (make-directory org-brain-path t))
+  :config
+  (require 'org-capture)
+  (setq org-id-track-globally t)
+  (setq org-id-locations-file (expand-file-name ".org-id-locations" user-emacs-directory))
+  (push '("b" "Brain" plain (function org-brain-goto-end)
+          "* %i%?" :empty-lines 1)
+        org-capture-templates)
+  (setq org-brain-visualize-default-choices 'all)
+  (setq org-brain-title-max-length 50))
+#+END_SRC

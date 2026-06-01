@@ -1,0 +1,13 @@
+#+TITLE: clojure
+#+PROPERTY: header-args :tangle yes
+
+Clojure editing with =clojure-mode= and the =cider= REPL/IDE.
+
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode)
+
+(use-package cider
+  :after clojure-mode
+  :config
+  (setq cider-repl-display-help-banner nil))
+#+END_SRC

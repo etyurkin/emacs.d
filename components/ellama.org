@@ -1,0 +1,20 @@
+#+TITLE: ellama
+#+PROPERTY: header-args :tangle yes
+
+AI assistant in Emacs - https://github.com/s-kostyaev/ellama
+
+Download and install [[https://ollama.com][Ollama]], then pull a model, e.g.:
+
+#+BEGIN_SRC sh :tangle no
+ollama run zephyr
+ollama run codellama
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package ellama
+  :init
+  (setopt ellama-language "English")
+  (require 'llm-ollama)
+  (setopt ellama-user-nick "Me")
+  (setopt ellama-assistant-nick "AI"))
+#+END_SRC
