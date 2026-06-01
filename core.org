@@ -243,14 +243,14 @@ window on startup.  Bury them once startup finishes, keeping the rest of the
 restored layout intact.
 #+BEGIN_SRC emacs-lisp
 (defun kwarks/hide-startup-noise-windows ()
-  "Hide windows showing diagnostic buffers left over after startup."
+  "Bury diagnostic buffers shown in windows left over after startup.
+Switches each such window to another buffer instead of deleting it, so a
+restored desktop window layout (e.g. a split) is preserved."
   (dolist (name '("*Messages*" "*Warnings*" "*Compile-Log*"))
     (let ((buf (get-buffer name)))
       (when buf
         (dolist (win (get-buffer-window-list buf nil t))
-          (if (> (length (window-list (window-frame win))) 1)
-              (delete-window win)
-            (switch-to-prev-buffer win)))))))
+          (switch-to-prev-buffer win))))))
 
 (add-hook 'emacs-startup-hook #'kwarks/hide-startup-noise-windows 90)
 #+END_SRC
