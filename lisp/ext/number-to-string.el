@@ -5,6 +5,8 @@
 
 ;;; see https://github.com/sbcl/sbcl/blob/e95100470561cfda5a2f8efd70274509d340686a/src/code/target-format.lisp
 
+(require 'cl-lib)
+
 (defvar *cardinal-ones*
   (vector nil "one" "two" "three" "four" "five" "six" "seven" "eight" "nine"))
 

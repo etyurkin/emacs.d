@@ -15,16 +15,16 @@ Macros for platform-specific code
 
 #+BEGIN_SRC emacs-lisp
 (defmacro linux-p ()
-  (eq system-type 'gnu/linux))
+  '(eq system-type 'gnu/linux))
 
 (defmacro osx-p ()
-  (eq system-type 'darwin))
+  '(eq system-type 'darwin))
 
 (defmacro cygwin-p ()
-  (eq system-type 'cygwin))
+  '(eq system-type 'cygwin))
 
 (defmacro ms-windows-p ()
-  (eq system-type 'windows-nt))
+  '(eq system-type 'windows-nt))
 
 (defmacro when-linux (&rest body)
   `(if (linux-p) (progn ,@body)))
@@ -74,18 +74,18 @@ Disable certain byte compiler warnings to cut down on the noise.
 (setq-default tab-width 4
 	      indent-tabs-mode nil)
 
-(fset 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 (setq create-lockfiles nil)
 (put 'upcase-region 'disabled nil)
-
-(global-set-key (kbd "C-e") 'end-of-line)
 #+END_SRC
 
 ** Disable custom settings
-Don't add customised settings to init.el
+Keep =customize= output out of the generated config.  Point =custom-file= at a
+fixed path and deliberately never load it, so settings written by =customize=
+don't leak into startup (and we don't litter =/tmp= with a new file each launch).
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (make-temp-file "emacs-custom"))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 #+END_SRC
 
 ** Fill column
@@ -109,11 +109,6 @@ This is helpful for writeroom-mode, in particular."
  recentf-exclude '("/tmp/" "/ssh:"))
 
 (add-to-list 'recentf-exclude (format "%s/.*" (expand-file-name "elpa" user-emacs-directory)))
-#+END_SRC
-
-** Enable double-buffering
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
 #+END_SRC
 
 ** Midnight mode
@@ -346,13 +341,30 @@ Disable http cookies
 
 * ELisp Extensions
 ** Load elisp extensions from [lisp/ext, lisp/private]
+Scripts under =lisp/ext= are loaded on demand through autoloads so they don't
+cost anything at startup; the file is loaded the first time one of its commands
+is invoked.  Absolute paths are used (rather than adding =lisp/ext= to
+=load-path=) to avoid shadowing similarly named packages.  =lisp/private= is
+still loaded eagerly.
+
 #+BEGIN_SRC emacs-lisp
 (defun load-ext (folder)
   (let ((ext-dir (expand-file-name folder user-emacs-directory)))
     (when (file-exists-p ext-dir)
       (mapc 'load (file-expand-wildcards (concat ext-dir "/*.el"))))))
 
-(load-ext "lisp/ext")
+(defun kwarks/autoload-ext (file &rest commands)
+  "Set up autoloads for COMMANDS defined in lisp/ext/FILE."
+  (let ((path (expand-file-name (concat "lisp/ext/" file) user-emacs-directory)))
+    (dolist (cmd commands)
+      (autoload cmd path nil t))))
+
+(kwarks/autoload-ext "intellij-open-in-emacs" 'intellij-open-in-emacs)
+(kwarks/autoload-ext "number-to-string"
+                     'number-to-english-cardinal 'number-to-english-ordinal)
+(kwarks/autoload-ext "org-passwords" 'kwarks/org-passwords)
+(kwarks/autoload-ext "tree-mode" 'kwarks/tree)
+
 (load-ext "lisp/private")
 #+END_SRC
 
@@ -815,13 +827,6 @@ otherwise.
       use-package-verbose t)
 #+END_SRC
 
-Manually set the load path so we don't pay for =package-initialize= at runtime.
-
-#+BEGIN_SRC emacs-lisp
-(eval-and-compile
-  (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
-#+END_SRC
-
 Initialize =package.el= and bootstrap =use-package=.
 
 #+BEGIN_SRC emacs-lisp
@@ -955,12 +960,12 @@ Ignore line wrappings and highlight entire line for org headers
     (when (member theme-font (font-family-list))
       (set-frame-font theme-font))))
 
-(defadvice load-theme (before theme-dont-propagate activate)
+(defun kwarks/disable-other-themes (&rest _)
+  "Disable already-enabled themes before loading a new one."
   (mapc #'disable-theme custom-enabled-themes))
 
-(defadvice load-theme (after run-after-load-theme-hook activate)
-  "Run `after-load-theme-hook'."
-  (kwarks/set-theme-colors))
+(advice-add 'load-theme :before #'kwarks/disable-other-themes)
+(advice-add 'load-theme :after #'kwarks/set-theme-colors)
 
 (defun kwarks/set-theme-faces ()
   (custom-set-faces
