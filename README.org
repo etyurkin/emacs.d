@@ -1,10 +1,57 @@
 * Personal Emacs config
-This is a personal Emacs configuration.
 
-For 28.1 nativecomp to work on OSX add this to ~/.emacs:
-#+begin_src elisp
-;; see https://github.com/d12frosted/homebrew-emacs-plus/issues/323#issuecomment-805490388
-(setenv "LIBRARY_PATH" "/opt/homebrew/lib/gcc/11:/opt/homebrew/Cellar/libgccjit/11.3.0/lib/gcc/11:/opt/homebrew/lib/gcc/11/gcc/aarch64-apple-darwin21/11")
+A literate, component-based Emacs configuration (Emacs 30+).
 
-(load "~/.emacs.d/init.el")
+** How it works
+On startup =init.el=:
+1. reads the checkbox manifest in =components.org= to find enabled components,
+2. tangles =core.org= plus every enabled =components/<name>.org= into a single
+   generated =config.el=,
+3. byte-compiles and loads it.
+
+=config.el= is regenerated automatically whenever =components.org=, =core.org=,
+=init.el= or any enabled component file changes.  It is a generated artifact and
+is git-ignored - never edit it by hand.
+
+** Layout
+- =init.el= :: the loader (manifest parsing, tangling, byte-compile, load).
+- =components.org= :: the manifest. Toggle =[ ]= / =[X]= to disable/enable a
+  component, then restart Emacs.
+- =core.org= :: always loaded. Bootstrap, GnuPG/encryption, theme, the
+  completion stack (vertico/consult/marginalia/orderless/embark + corfu/cape),
+  editing/UX packages, and all =kwarks/*= helper commands.
+- =components/<name>.org= :: one file per optional feature or language.
+- =lisp/ext/= :: custom elisp scripts, always loaded.
+- =lisp/private/= :: optional private extensions (git-ignored), loaded if present.
+
+** Adding a component
+1. Create =components/foo.org= with a header:
+   #+begin_src org
+   ,#+TITLE: foo
+   ,#+PROPERTY: header-args :tangle yes
+   #+end_src
+2. Add =- [ ] foo= to the =* Components= list in =components.org=.
+3. Flip it to =[X]= and restart.
+
+** Rebuilding manually
+#+begin_src sh
+make compile   # tangle + byte-compile config.el
+make clean     # remove generated artifacts
 #+end_src
+
+** macOS native-comp note
+For native compilation on macOS you may need (in =~/.emacs= or the shell env):
+#+begin_src elisp
+;; see https://github.com/d12frosted/homebrew-emacs-plus/issues/323
+(setenv "LIBRARY_PATH" "/opt/homebrew/lib/gcc/11:/opt/homebrew/Cellar/libgccjit/11.3.0/lib/gcc/11:/opt/homebrew/lib/gcc/11/gcc/aarch64-apple-darwin21/11")
+#+end_src
+
+** Optional external tools
+Some components expect external programs on the PATH:
+- =python= :: a language server (=pylsp=, =pyright= or =jedi-language-server=) for eglot.
+- =lisp= :: =sbcl= for the SLY REPL.
+- =weather= :: =curl=.
+- =jinx= spell checking :: =enchant= + =pkg-config= and a dictionary backend
+  (=brew install enchant pkg-config=; aspell/hunspell come in as deps). The
+  native module compiles on first use.
+- =org-download= :: =pngpaste= (=brew install pngpaste=).

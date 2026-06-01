@@ -1,0 +1,13 @@
+#+TITLE: yaml
+#+PROPERTY: header-args :tangle yes
+
+YAML editing.  Uses the built-in =yaml-ts-mode= when a tree-sitter grammar is
+available, otherwise falls back to the =yaml-mode= package.
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :mode ("\\.ya?ml\\'" . yaml-mode))
+
+(when (and (fboundp 'treesit-ready-p) (treesit-ready-p 'yaml t))
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
+#+END_SRC

@@ -1,0 +1,27 @@
+#+TITLE: scala
+#+PROPERTY: header-args :tangle yes
+
+Scala editing with =scala-mode= and =sbt-mode=.  Completion and navigation use
+=eglot= when the Metals language server (=metals=) is on the PATH.
+
+* sbt
+#+BEGIN_SRC emacs-lisp
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+#+END_SRC
+
+* scala-mode
+#+BEGIN_SRC emacs-lisp
+(use-package scala-mode
+  :interpreter ("scala" . scala-mode)
+  :config
+  (add-hook 'scala-mode-hook
+            (lambda () (kwarks/eglot-ensure-if "metals" "metals-emacs"))))
+#+END_SRC

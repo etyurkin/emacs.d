@@ -1,0 +1,16 @@
+#+TITLE: forth
+#+PROPERTY: header-args :tangle yes
+
+Forth editing and interaction with =forth-mode= (=brew install gforth=).
+
+| C-M-a, C-M-e | beginning / end of colon definition |
+| C-M-h        | mark colon definition               |
+| C-c C-l      | load file                           |
+| C-c C-r      | evaluate region                     |
+| C-c C-k      | kill interactive Forth              |
+
+#+BEGIN_SRC emacs-lisp
+(use-package forth-mode
+  :config
+  (setq forth-executable "gforth"))
+#+END_SRC

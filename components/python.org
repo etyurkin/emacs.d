@@ -1,0 +1,24 @@
+#+TITLE: python
+#+PROPERTY: header-args :tangle yes
+
+Python development using the built-in =python.el= and =eglot= for completion and
+navigation.  Install python via [[https://github.com/pyenv/pyenv/][pyenv]] and a language server of your choice
+(=pylsp=, =pyright= or =jedi-language-server=).  =eglot= only starts when one of
+those is found on the PATH.
+
+#+BEGIN_SRC emacs-lisp
+(setq python-shell-interpreter "python3"
+      python-shell-interpreter-args "-i")
+
+(defun kwarks/python-setup ()
+  (setq-local python-indent-offset 2
+              tab-width 2)
+  (kwarks/eglot-ensure-if "pylsp" "pyright-langserver" "pyright"
+                          "jedi-language-server" "ruff-lsp"))
+
+(add-hook 'python-mode-hook #'kwarks/python-setup)
+(add-hook 'python-ts-mode-hook #'kwarks/python-setup)
+
+(when (and (fboundp 'treesit-ready-p) (treesit-ready-p 'python t))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
+#+END_SRC

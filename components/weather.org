@@ -1,0 +1,33 @@
+#+TITLE: weather
+#+PROPERTY: header-args :tangle yes
+
+Weather in a buffer.  The old =wttrin= package is unmaintained and its API
+broke, so this is a small self-contained wrapper around [[https://wttr.in][wttr.in]] using =curl=
+and the built-in =ansi-color= for rendering.
+
+#+BEGIN_SRC emacs-lisp
+(defvar kwarks/weather-city "Toronto"
+  "Default city for `kwarks/weather'.")
+
+(defun kwarks/weather (&optional city)
+  "Show the weather for CITY (defaults to `kwarks/weather-city')."
+  (interactive
+   (list (if current-prefix-arg
+             (read-string "City: " kwarks/weather-city)
+           kwarks/weather-city)))
+  (let* ((city (or city kwarks/weather-city))
+         (buffer (get-buffer-create (format "*Weather - %s*" city))))
+    (with-current-buffer buffer
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        ;; ?m = metric units, ?lang via Accept-Language header
+        (call-process "curl" nil buffer nil
+                      "-s" "-H" "Accept-Language: en-US"
+                      (format "https://wttr.in/%s?m"
+                              (url-hexify-string city)))
+        (ansi-color-apply-on-region (point-min) (point-max))
+        (goto-char (point-min))
+        (toggle-truncate-lines 1)
+        (special-mode)))
+    (display-buffer buffer)))
+#+END_SRC

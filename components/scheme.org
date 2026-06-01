@@ -1,0 +1,12 @@
+#+TITLE: scheme
+#+PROPERTY: header-args :tangle yes
+
+Scheme editing.  The built-in =scheme-mode= works out of the box (=M-x
+run-scheme=); =geiser= adds a richer REPL-driven workflow.
+
+#+BEGIN_SRC emacs-lisp
+;; microscheme files
+(add-to-list 'auto-mode-alist '("\\.ms\\'" . scheme-mode))
+
+(use-package geiser)
+#+END_SRC
