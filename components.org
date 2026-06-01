@@ -7,6 +7,7 @@ component below. =core.org= is always loaded.
 * Components
 - [X] magit
 - [X] org-wiki
+- [X] denote
 - [X] org-extras
 - [X] lisp
 - [X] python
