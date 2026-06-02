@@ -30,8 +30,4 @@
       use-file-dialog nil
       use-dialog-box nil)
 
-;; Don't resize the frame pixel-by-pixel when setting fonts/themes --
-;; prevents a sequence of resize events on startup.
-(setq frame-inhibit-implied-resize t)
-
 ;;; early-init.el ends here
