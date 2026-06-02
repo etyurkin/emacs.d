@@ -8,15 +8,39 @@ modeline colors, font setup and GUI suppression.
 #+BEGIN_SRC emacs-lisp
 (require 'color)
 
+(defun kwarks/usable-color-p (color)
+  "Non-nil when COLOR is a string Emacs can turn into RGB."
+  (and (stringp color)
+       (not (member color '("unspecified-bg" "unspecified-fg" "unspecified")))
+       (color-name-to-rgb color)
+       color))
+
+(defun kwarks/default-background ()
+  "Return the default background as a usable color string.
+Tries the default face (resolving inheritance) and then the frame's
+`background-color' parameter, because on some Emacs versions (e.g.
+emacs-plus@31) `face-background' returns \"unspecified-bg\" while theme
+colors are being applied.  Falls back to black only as a last resort."
+  (or (kwarks/usable-color-p (face-background 'default nil t))
+      (kwarks/usable-color-p (frame-parameter nil 'background-color))
+      "#000000"))
+
+(defun kwarks/dark-theme-p ()
+  "Return non-nil when the default background is dark.
+Decided from the background's actual luminance rather than the frame's
+`background-mode' parameter, which is not reliably set on all Emacs
+versions (e.g. emacs-plus@31) when theme colors are applied."
+  (let ((rgb (color-name-to-rgb (kwarks/default-background))))
+    ;; RGB components are 0..1; their sum is 0..3, so < 1.5 is dark.
+    (and rgb (< (apply #'+ rgb) 1.5))))
+
 (defmacro kwarks/if-dark-theme (action else-action)
-  `(if (eq (frame-parameter nil 'background-mode) 'dark)
+  `(if (kwarks/dark-theme-p)
        ,action
      ,else-action))
 
 (defun kwarks/color-from-theme (lighter-percentage darker-percentage)
-  (let* ((bg (face-background 'default))
-         (bg-color (if (string= bg "unspecified-bg") "#000000" bg)))
-
+  (let ((bg-color (kwarks/default-background)))
     (kwarks/if-dark-theme
      (color-lighten-name bg-color lighter-percentage)
      (color-darken-name bg-color darker-percentage))))
@@ -98,9 +122,10 @@ Ignore line wrappings and highlight entire line for org headers
 
 (defun kwarks/set-theme-font ()
   "Use JetBrains Mono font when available. The font should be installed from .emacs.d/fonts folder"
-  (let ((theme-font "JetBrains Mono"))
+  (let ((theme-font "JetBrains Mono")
+        (theme-font-size 14))
     (when (member theme-font (font-family-list))
-      (set-frame-font theme-font t))))
+      (set-frame-font (format "%s-%d" theme-font theme-font-size) t))))
 
 (defun kwarks/disable-other-themes (&rest _)
   "Disable already-enabled themes before loading a new one."
@@ -129,6 +154,14 @@ Ignore line wrappings and highlight entire line for org headers
 (use-package doom-themes
   :init
   (setq doom-one-brighter-comments t)
+  ;; Break a face-inheritance cycle that Emacs 30+ flags loudly: Gnus defines
+  ;; `gnus-group-news-low' to inherit `gnus-group-news-low-empty', while
+  ;; doom-themes makes the -empty face inherit the non-empty one -- a loop.
+  ;; Pinning a top-priority user spec for both (before `load-theme') gives a
+  ;; clean, non-cyclic chain so the warning never fires.
+  (custom-set-faces
+   '(gnus-group-news-low ((t (:inherit gnus-group-mail-1))))
+   '(gnus-group-news-low-empty ((t (:inherit gnus-group-mail-1-empty)))))
   (load-theme 'doom-one t))
 #+END_SRC
 
@@ -149,14 +182,14 @@ font when those characters are mapped to pixels, otherwise applying the
 font afterwards re-maps the grid and the frame shrinks.
 Frame geometry itself is left to desktop-restore which already handles it."
   (when (display-graphic-p)
-    (let* ((cache (expand-file-name "theme-cache.el" user-emacs-directory))
+    (let* ((cache (expand-file-name "theme-cache.el" kwarks/cache-directory))
            (frame (selected-frame))
            (bg (face-background 'default frame))
            (fg (face-foreground 'default frame))
            (font (frame-parameter frame 'font))
            (dark-p (eq (frame-parameter frame 'background-mode) 'dark)))
       (with-temp-file cache
-        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; -*-\n")
+        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; lexical-binding: t; -*-\n")
         (when bg (insert (format "(push '(background-color . %S) default-frame-alist)\n" bg)))
         (when fg (insert (format "(push '(foreground-color . %S) default-frame-alist)\n" fg)))
         (when (stringp font)

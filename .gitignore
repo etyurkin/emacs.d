@@ -56,7 +56,7 @@ site-lisp/package/
 /org-todo
 /org-brain
 /config.el
-/theme-cache.el
+/cache/
 /core.el
 /components/*.el
 /.docsets
