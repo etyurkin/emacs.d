@@ -181,13 +181,41 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (add-to-list 'desktop-buffer-mode-handlers
                '(shell-mode . kwarks/desktop-restore-shell)))
 
-;; Frame geometry is restored by desktop-restore-frames below.  It maps the
-;; saved character dimensions accurately because early-init.el already gave
-;; the frame its final font (see theme-cache.el); and frame-inhibit-implied-
-;; resize keeps later font/modeline changes from shrinking it.  No extra
-;; geometry handling is needed.
+;; Make frame sizing pixel-precise; helps when the frame crosses displays
+;; with different backing scale factors (retina vs non-retina).
+(setq frame-resize-pixelwise t)
 
 (desktop-read)
+
+;; Mixed-DPI multi-monitor fix: on macOS the frame is created on the primary
+;; (e.g. laptop/retina) display, desktop restores its size there, and then
+;; macOS moves it to the display it was last on.  That cross-DPI move rescales
+;; the frame and it ends up the wrong size.  Capture the size desktop restored
+;; (which is correct) and re-assert it whenever the frame moves, until things
+;; settle a few seconds into the session.
+(defvar kwarks/target-frame-geometry nil
+  "Frame geometry desktop restored, re-asserted after cross-display moves.")
+
+(when (display-graphic-p)
+  (let ((f (selected-frame)))
+    (setq kwarks/target-frame-geometry
+          (list (cons 'width  (frame-parameter f 'width))
+                (cons 'height (frame-parameter f 'height))
+                (cons 'left   (frame-parameter f 'left))
+                (cons 'top    (frame-parameter f 'top))))))
+
+(defun kwarks/reassert-frame-geometry (&rest _)
+  "Re-apply the target geometry to the selected frame."
+  (when (and kwarks/target-frame-geometry (display-graphic-p)
+             (not (frame-parameter (selected-frame) 'fullscreen)))
+    (modify-frame-parameters (selected-frame) kwarks/target-frame-geometry)))
+
+(add-hook 'move-frame-functions #'kwarks/reassert-frame-geometry)
+;; Stop re-asserting after startup settles so later manual moves/resizes stick.
+(run-with-idle-timer 5 nil
+                     (lambda ()
+                       (remove-hook 'move-frame-functions
+                                    #'kwarks/reassert-frame-geometry)))
 
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
