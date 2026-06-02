@@ -132,27 +132,35 @@ Ignore line wrappings and highlight entire line for org headers
   (load-theme 'doom-one t))
 #+END_SRC
 
-** Theme and geometry cache
-Write the active theme's colors and frame geometry to =theme-cache.el= so
-=early-init.el= can apply them before the frame is created on the next start.
-This eliminates the white flash and the small-window-then-resize dance.
+** Theme cache
+Write the active theme's colors and font to =theme-cache.el= so =early-init.el=
+can apply them to =default-frame-alist= before the frame is created on the next
+start.  This eliminates the white flash and the small-window-then-resize dance
+(the latter is caused by the font being applied after the frame was sized).
 
 #+BEGIN_SRC emacs-lisp
 (defun kwarks/save-theme-cache ()
-  "Write current theme colors to theme-cache.el.
+  "Write current theme colors and font to theme-cache.el.
 These are pushed into `default-frame-alist' by early-init.el before the
-frame exists, so the window starts with the right colors immediately.
-Frame geometry is left to desktop-restore which already handles it."
+frame exists, so the window starts with the right colors AND font.
+Caching the font is what prevents the late resize: desktop restores the
+frame size in character units, so the frame must already use the final
+font when those characters are mapped to pixels, otherwise applying the
+font afterwards re-maps the grid and the frame shrinks.
+Frame geometry itself is left to desktop-restore which already handles it."
   (when (display-graphic-p)
     (let* ((cache (expand-file-name "theme-cache.el" user-emacs-directory))
            (frame (selected-frame))
            (bg (face-background 'default frame))
            (fg (face-foreground 'default frame))
+           (font (frame-parameter frame 'font))
            (dark-p (eq (frame-parameter frame 'background-mode) 'dark)))
       (with-temp-file cache
         (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; -*-\n")
         (when bg (insert (format "(push '(background-color . %S) default-frame-alist)\n" bg)))
         (when fg (insert (format "(push '(foreground-color . %S) default-frame-alist)\n" fg)))
+        (when (stringp font)
+          (insert (format "(push '(font . %S) default-frame-alist)\n" font)))
         (when dark-p
           (insert "(push '(ns-appearance . dark) default-frame-alist)\n"))))))
 
