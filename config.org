@@ -913,15 +913,3 @@ Lower the GC thresholds back down to a sane level.
       gc-cons-percentage 0.1)
 #+END_SRC
 
-** Allow frame resizing
-=early-init.el= inhibits implied frame resizing so font/face/theme changes
-during startup don't shrink the desktop-restored frame.  Re-enable it once
-Emacs is fully idle (after =after-init-hook= and =emacs-startup-hook= have
-both fired -- doom-modeline and other deferred packages initialize there).
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (run-with-idle-timer 1 nil
-              (lambda () (setq frame-inhibit-implied-resize nil)))))
-#+END_SRC
