@@ -188,45 +188,61 @@ otherwise `shell' starts the process in the buffer's stale directory."
 (desktop-read)
 
 ;; macOS frame-shrink fix.  On a multi-monitor setup the macOS window server
-;; resizes our frame about a second into the session (it fires a move/focus
-;; event and rescales the window), shrinking it below the size desktop
-;; restored.  This is an external (window-system) resize, so
+;; moves and resizes our frame about a second into the session, shrinking it
+;; below the size desktop restored.  (It is a race: when startup is fast the
+;; macOS event lands AFTER desktop-restore and wins; when a recompile makes
+;; startup slow, desktop-restore runs last and wins -- which is why a recompiled
+;; start looks correct.)  This is an external (window-system) change, so
 ;; `frame-inhibit-implied-resize' cannot stop it.  Instead we capture the
-;; correct pixel size once startup is complete (before macOS interferes) and
-;; re-assert it whenever the frame size changes, for the first few seconds.
-(defvar kwarks/target-frame-pixels nil
-  "Target (WIDTH . HEIGHT) in pixels, re-asserted while the layout settles.")
+;; correct geometry (size in text pixels + position) once startup is complete,
+;; then re-assert it whenever the frame size or position changes, for the first
+;; few seconds, until the layout settles.
+(defvar kwarks/target-frame-geometry nil
+  "Target (TEXT-WIDTH TEXT-HEIGHT LEFT TOP), re-asserted while settling.")
 (defvar kwarks/stabilizing nil
-  "Non-nil while we are programmatically resizing, to avoid recursion.")
+  "Non-nil while we are programmatically adjusting, to avoid recursion.")
 
-(defun kwarks/stabilize-frame-size (&rest _)
-  "Snap the frame back to `kwarks/target-frame-pixels' if macOS shrank it."
-  (when (and kwarks/target-frame-pixels
+(defun kwarks/frame-geometry-now (frame)
+  "Return FRAME geometry as (TEXT-WIDTH TEXT-HEIGHT LEFT TOP)."
+  (list (frame-text-width frame) (frame-text-height frame)
+        (frame-parameter frame 'left) (frame-parameter frame 'top)))
+
+(defun kwarks/stabilize-frame (&rest _)
+  "Snap the frame back to `kwarks/target-frame-geometry' if macOS changed it."
+  (when (and kwarks/target-frame-geometry
              (not kwarks/stabilizing)
              (display-graphic-p)
              (not (frame-parameter (selected-frame) 'fullscreen)))
     (let* ((f  (selected-frame))
-           (tw (car kwarks/target-frame-pixels))
-           (th (cdr kwarks/target-frame-pixels)))
-      (when (or (> (abs (- (frame-pixel-width f) tw)) 2)
-                (> (abs (- (frame-pixel-height f) th)) 2))
+           (g  (kwarks/frame-geometry-now f))
+           (tw (nth 0 kwarks/target-frame-geometry))
+           (th (nth 1 kwarks/target-frame-geometry))
+           (tl (nth 2 kwarks/target-frame-geometry))
+           (tt (nth 3 kwarks/target-frame-geometry)))
+      (when (or (> (abs (- (nth 0 g) tw)) 2)
+                (> (abs (- (nth 1 g) th)) 2)
+                (not (equal (nth 2 g) tl))
+                (not (equal (nth 3 g) tt)))
         (let ((kwarks/stabilizing t))
-          (set-frame-size f tw th t))))))
+          (modify-frame-parameters
+           f (list (cons 'width  (cons 'text-pixels tw))
+                   (cons 'height (cons 'text-pixels th))
+                   (cons 'left   tl)
+                   (cons 'top    tt))))))))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
             (when (display-graphic-p)
-              (let ((f (selected-frame)))
-                (setq kwarks/target-frame-pixels
-                      (cons (frame-pixel-width f) (frame-pixel-height f))))
-              (add-hook 'window-size-change-functions #'kwarks/stabilize-frame-size)
-              (add-hook 'move-frame-functions #'kwarks/stabilize-frame-size)
-              ;; Let go once things have settled so manual resizing sticks.
+              (setq kwarks/target-frame-geometry
+                    (kwarks/frame-geometry-now (selected-frame)))
+              (add-hook 'window-size-change-functions #'kwarks/stabilize-frame)
+              (add-hook 'move-frame-functions #'kwarks/stabilize-frame)
+              ;; Let go once things have settled so manual moves/resizes stick.
               (run-with-idle-timer
                5 nil
                (lambda ()
-                 (remove-hook 'window-size-change-functions #'kwarks/stabilize-frame-size)
-                 (remove-hook 'move-frame-functions #'kwarks/stabilize-frame-size))))))
+                 (remove-hook 'window-size-change-functions #'kwarks/stabilize-frame)
+                 (remove-hook 'move-frame-functions #'kwarks/stabilize-frame))))))
 
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
