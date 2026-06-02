@@ -183,6 +183,27 @@ otherwise `shell' starts the process in the buffer's stale directory."
 
 (desktop-read)
 
+;; Capture the geometry desktop just restored.  Theme, font and modeline
+;; changes that follow will resize the frame; re-assert the correct
+;; geometry once startup is complete and macOS has settled.
+(defvar kwarks/post-desktop-geometry nil)
+(when (display-graphic-p)
+  (let ((frame (selected-frame)))
+    (setq kwarks/post-desktop-geometry
+          (list (cons 'fullscreen (frame-parameter frame 'fullscreen))
+                (cons 'width  (frame-parameter frame 'width))
+                (cons 'height (frame-parameter frame 'height))
+                (cons 'left   (frame-parameter frame 'left))
+                (cons 'top    (frame-parameter frame 'top))))))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (run-with-idle-timer 0.5 nil
+              (lambda ()
+                (when (and kwarks/post-desktop-geometry (display-graphic-p))
+                  (modify-frame-parameters (selected-frame)
+                                           kwarks/post-desktop-geometry))))))
+
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
   (setq desktop-files-not-to-save
         (eval
