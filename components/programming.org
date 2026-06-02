@@ -1,0 +1,95 @@
+#+TITLE: Programming
+#+PROPERTY: header-args :tangle yes
+
+General programming tools: line numbers, pairing, LSP helper, VCS indicators,
+syntax highlighting and reference libraries.
+
+** Line numbers
+Turn on line numbers for programming modes.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
+#+END_SRC
+
+** electric-pair-mode
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode)
+#+END_SRC
+
+** eglot helper
+Shared by language components.  Starts the built-in LSP client only when a
+matching language server is actually installed, so enabling a component never
+breaks a buffer just because the server is missing.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/eglot-ensure-if (&rest programs)
+  "Run `eglot-ensure' when one of PROGRAMS is found on the PATH."
+  (when (seq-some #'executable-find programs)
+    (require 'eglot)
+    (eglot-ensure)))
+#+END_SRC
+
+** rainbow-delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :init
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC
+
+** diff-hl
+Show VCS change indicators in the fringe (replaces git-gutter).
+
+#+BEGIN_SRC emacs-lisp
+(use-package diff-hl
+  :demand t
+  :hook ((dired-mode . diff-hl-dired-mode)
+         (magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh))
+  :config
+  (global-diff-hl-mode 1)
+  (when (require 'diff-hl-flydiff nil t)
+    (diff-hl-flydiff-mode 1))
+
+  (defhydra hydra-diff-hl (:hint nil)
+    "
+Diff-hl:
+  _j_: next hunk      _s_tage hunk     _q_uit
+  _k_: previous hunk  _r_evert hunk
+  ^ ^                 _p_opup/show hunk
+"
+    ("j" diff-hl-next-hunk)
+    ("k" diff-hl-previous-hunk)
+    ("s" diff-hl-stage-current-hunk)
+    ("r" diff-hl-revert-hunk)
+    ("p" diff-hl-show-hunk)
+    ("q" nil :color blue))
+
+  (defun git-gutter-actions ()
+    "Backwards-compatible entry point to the diff-hl hydra."
+    (interactive)
+    (hydra-diff-hl/body)))
+#+END_SRC
+
+** git-timemachine
+#+BEGIN_SRC emacs-lisp
+(use-package git-timemachine)
+#+END_SRC
+
+** json
+#+BEGIN_SRC emacs-lisp
+(use-package json-mode)
+#+END_SRC
+
+** cypher
+Cypher graph query language major mode.
+
+#+BEGIN_SRC emacs-lisp
+(use-package cypher-mode)
+#+END_SRC
+
+** sicp
+Structure and Interpretation of Computer Programs ebook.
+
+#+BEGIN_SRC emacs-lisp
+(use-package sicp)
+#+END_SRC

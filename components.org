@@ -1,35 +1,49 @@
 #+TITLE: Emacs Components
 
 Toggle a component by flipping =[ ]= (off) to =[X]= (on) and restarting Emacs.
-On the next start =config.el= is regenerated from =core.org= plus every enabled
-component below. =core.org= is always loaded.
+On the next start =config.el= is regenerated from [[file:config.org][config.org]] plus every
+enabled component below.
 
-* Components
-- [X] magit
-- [X] org-wiki
-- [X] denote
-- [X] org-extras
-- [X] lisp
-- [X] python
-- [X] yaml
-- [X] http
-- [X] agent-shell
-- [ ] clojure
-- [ ] scala
-- [ ] java
-- [ ] scheme
-- [ ] racket
-- [ ] dart
-- [ ] php
-- [ ] forth
-- [ ] hy
-- [ ] swift
-- [ ] csharp
-- [ ] ellama
-- [ ] nov
-- [ ] org-brain
-- [ ] weather
-- [ ] eww-tweaks
-- [ ] dired-sidebar
-- [ ] latex
-- [ ] annot
+* Theme and UI
+- [X] [[file:components/theme.org][Theme and visual customization]]
+
+* Completion
+- [X] [[file:components/completion.org][Completion framework (vertico, consult, corfu, ...)]]
+
+* Editing
+- [X] [[file:components/editing.org][Editing and UX enhancements]]
+
+* Programming
+- [X] [[file:components/programming.org][General programming tools]]
+- [X] [[file:components/magit.org][magit]]
+- [X] [[file:components/lisp.org][lisp]]
+- [X] [[file:components/python.org][python]]
+- [X] [[file:components/yaml.org][yaml]]
+- [ ] [[file:components/clojure.org][clojure]]
+- [ ] [[file:components/scala.org][scala]]
+- [ ] [[file:components/java.org][java]]
+- [ ] [[file:components/scheme.org][scheme]]
+- [ ] [[file:components/racket.org][racket]]
+- [ ] [[file:components/dart.org][dart]]
+- [ ] [[file:components/php.org][php]]
+- [ ] [[file:components/forth.org][forth]]
+- [ ] [[file:components/hy.org][hy]]
+- [ ] [[file:components/swift.org][swift]]
+- [ ] [[file:components/csharp.org][csharp]]
+
+* Org Mode
+- [X] [[file:components/org-wiki.org][org-wiki]]
+- [X] [[file:components/denote.org][denote]]
+- [X] [[file:components/org-extras.org][org-extras]]
+- [ ] [[file:components/org-brain.org][org-brain]]
+
+* Tools
+- [X] [[file:components/http.org][http]]
+- [X] [[file:components/agent-shell.org][agent-shell]]
+- [ ] [[file:components/ellama.org][ellama - AI assistant]]
+- [ ] [[file:components/nov.org][nov - EPUB reader]]
+- [ ] [[file:components/weather.org][weather]]
+- [ ] [[file:components/eww-tweaks.org][eww-tweaks]]
+- [ ] [[file:components/dired-sidebar.org][dired-sidebar]]
+- [ ] [[file:components/latex.org][latex]]
+- [ ] [[file:components/annot.org][annot]]

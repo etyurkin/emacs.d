@@ -1,0 +1,156 @@
+#+TITLE: Completion
+#+PROPERTY: header-args :tangle yes
+
+Modern minibuffer and in-buffer completion stack:
+vertico + consult + marginalia + orderless + embark, with corfu + cape for
+in-buffer completion, and the built-in which-key for key hints.
+
+** vertico
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :demand t
+  :init
+  (setq vertico-cycle t
+        vertico-count 10)
+  :config
+  (vertico-mode 1))
+
+;; Persist minibuffer history between restarts (savehist-mode is enabled above).
+(use-package savehist
+  :ensure nil
+  :init
+  (add-to-list 'savehist-additional-variables 'vertico-repeat-history))
+#+END_SRC
+
+** orderless
+Space-separated, order-independent completion matching.
+
+#+BEGIN_SRC emacs-lisp
+(use-package orderless
+  :demand t
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+#+END_SRC
+
+** marginalia
+Rich annotations in the minibuffer.
+
+#+BEGIN_SRC emacs-lisp
+(use-package marginalia
+  :demand t
+  :bind (:map minibuffer-local-map
+              ("M-A" . marginalia-cycle))
+  :config
+  (marginalia-mode 1))
+#+END_SRC
+
+** consult
+Practical search and navigation commands, the spiritual successor to counsel/swiper.
+
+#+BEGIN_SRC emacs-lisp
+(use-package consult
+  :bind (("M-x"     . execute-extended-command)
+         ("C-s"     . consult-line)
+         ("C-x b"   . consult-buffer)
+         ("C-x C-b" . consult-buffer)
+         ("C-x C-r" . consult-recent-file)
+         ("C-c C-r" . consult-recent-file)
+         ("M-y"     . consult-yank-pop)
+         ("M-g g"   . consult-goto-line)
+         ("M-g i"   . consult-imenu)
+         ("M-s r"   . consult-ripgrep)
+         ("M-s f"   . consult-find)
+         ("<help> f" . describe-function)
+         ("<help> v" . describe-variable))
+  :init
+  (setq consult-narrow-key "<")
+  (defun kwarks/kill-buffer ()
+    "Kill a buffer chosen via completion."
+    (interactive)
+    (kill-buffer (read-buffer "Kill buffer: " (current-buffer) t)))
+  (global-set-key (kbd "C-x k") #'kwarks/kill-buffer)
+
+  (defmacro kwarks--with-sudo (&rest body)
+    "Run BODY with root privileges via TRAMP."
+    `(let ((default-directory "/sudo::"))
+       ,@body))
+
+  (defun kwarks/kill-process ()
+    "Kill an OS process selected through completion."
+    (interactive)
+    (let* ((lines (cdr (split-string
+                        (shell-command-to-string "ps -eo pid,user,command") "\n+" t)))
+           (choice (completing-read "Kill process: " lines nil t))
+           (info (split-string (string-trim choice)))
+           (pid (car info))
+           (pid-user (cadr info))
+           (me (string-trim (shell-command-to-string "whoami")))
+           (cmd (format "kill -9 %s" pid)))
+      (if (string= me pid-user)
+          (shell-command-to-string cmd)
+        (kwarks--with-sudo (shell-command cmd))))))
+#+END_SRC
+
+** embark
+Act on the thing at point or the current completion candidate.
+
+#+BEGIN_SRC emacs-lisp
+(use-package embark
+  :bind (("C-." . embark-act)
+         ("M-." . embark-dwim)
+         ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :after (embark consult)
+  :demand t
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+#+END_SRC
+
+** corfu
+In-buffer completion popup (replaces company).
+
+#+BEGIN_SRC emacs-lisp
+(use-package corfu
+  :demand t
+  :bind (:map corfu-map
+              ("M-/" . corfu-next)
+              ("M-C-/" . completion-at-point))
+  :init
+  (setq corfu-cycle t
+        corfu-auto t
+        corfu-auto-prefix 2
+        corfu-auto-delay 0.1
+        corfu-quit-no-match 'separator)
+  :config
+  (global-corfu-mode 1)
+  (when (require 'corfu-popupinfo nil t)
+    (corfu-popupinfo-mode 1)))
+#+END_SRC
+
+** cape
+Completion-at-point extensions feeding corfu.
+
+#+BEGIN_SRC emacs-lisp
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (setq cape-dabbrev-min-length 2))
+#+END_SRC
+
+** which-key
+Built-in since Emacs 30. Shows available keybindings in a popup.
+
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure nil
+  :init
+  (setq which-key-idle-delay 0.5)
+  :config
+  (which-key-mode 1))
+#+END_SRC

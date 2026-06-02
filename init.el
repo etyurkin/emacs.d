@@ -1,7 +1,7 @@
 ;;; init.el --- Component-based literate config loader -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Reads the component manifest (components.org), tangles core.org plus every
+;; Reads the component manifest (components.org), tangles config.org plus every
 ;; enabled component file under components/ into a single config.el, byte
 ;; compiles it and loads the result.  Toggle components by editing the
 ;; checkboxes in components.org and restarting Emacs.
@@ -9,25 +9,27 @@
 ;;; Code:
 
 (defun kwarks/enabled-components ()
-  "Return the list of component names checked off in components.org."
+  "Return the list of component file paths checked off in components.org.
+Each entry is a relative path like \"components/foo.org\"."
   (let ((file (expand-file-name "components.org" user-emacs-directory))
         results)
     (when (file-exists-p file)
       (with-temp-buffer
         (insert-file-contents file)
         (goto-char (point-min))
-        (while (re-search-forward "^[ \t]*-[ \t]+\\[[Xx]\\][ \t]+\\([A-Za-z0-9_-]+\\)" nil t)
+        (while (re-search-forward
+                "^[ \t]*-[ \t]+\\[[Xx]\\][ \t]+\\[\\[file:\\([^]]+\\)\\]\\[[^]]*\\]\\]"
+                nil t)
           (push (match-string 1) results))))
     (nreverse results)))
 
 (defun kwarks/config-source-files ()
   "Return the ordered list of org files that make up the configuration."
   (let ((dir user-emacs-directory))
-    (cons (expand-file-name "core.org" dir)
+    (cons (expand-file-name "config.org" dir)
           (delq nil
-                (mapcar (lambda (name)
-                          (let ((f (expand-file-name
-                                    (format "components/%s.org" name) dir)))
+                (mapcar (lambda (rel)
+                          (let ((f (expand-file-name rel dir)))
                             (and (file-exists-p f) f)))
                         (kwarks/enabled-components))))))
 
@@ -50,7 +52,7 @@
             inputs)))))
 
 (defun kwarks/tangle-config ()
-  "Tangle core.org and enabled components into a single config.el.
+  "Tangle config.org and enabled components into a single config.el.
 Each source file is tangled to its own derived .el (because blocks use
 `:tangle yes'), the results are concatenated into config.el and the
 intermediate files are removed."
@@ -60,7 +62,7 @@ intermediate files are removed."
          (files (kwarks/config-source-files)))
     (with-temp-file out
       (insert ";;; config.el --- generated, do not edit -*- lexical-binding: t; -*-\n")
-      (insert ";; Generated from core.org + components.org. Edit those instead.\n")
+      (insert ";; Generated from config.org + components.org. Edit those instead.\n")
       (dolist (f files)
         (insert (format "\n;; ==== %s ====\n" (file-name-nondirectory f)))
         (goto-char (point-max))
