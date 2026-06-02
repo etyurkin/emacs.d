@@ -99,6 +99,10 @@ This is helpful for writeroom-mode, in particular."
  recentf-exclude '("/tmp/" "/ssh:"))
 
 (add-to-list 'recentf-exclude (format "%s/.*" (expand-file-name "elpa" user-emacs-directory)))
+
+;; Periodically flush the list so a crash doesn't lose recent files (Emacs 31+).
+(when (>= emacs-major-version 31)
+  (setopt recentf-autosave-interval 300))
 #+END_SRC
 
 ** Midnight mode
@@ -388,6 +392,10 @@ block is safe to keep in a config shared across Emacs versions.
 ;; Cycle windows in reverse with C-x O (mirror of C-x o).
 (when (fboundp 'other-window-backward)
   (global-set-key (kbd "C-x O") #'other-window-backward))
+
+;; Highlight Emacs Lisp symbols more accurately via code analysis.
+(when (>= emacs-major-version 31)
+  (setopt elisp-fontify-semantically t))
 #+END_SRC
 
 ** Use xwidget webkit if possible
