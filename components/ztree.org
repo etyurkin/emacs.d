@@ -1,0 +1,10 @@
+#+TITLE: ztree
+#+PROPERTY: header-args :tangle yes
+
+Directory diff tool.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ztree
+  :config
+  (setq ztree-draw-unicode-lines t))
+#+END_SRC

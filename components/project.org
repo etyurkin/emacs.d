@@ -1,0 +1,10 @@
+#+TITLE: project
+#+PROPERTY: header-args :tangle yes
+
+Use the built-in project manager (=C-x p ...=).  It integrates with eglot,
+xref and consult out of the box, so no external package is required.
+
+#+BEGIN_SRC emacs-lisp
+(use-package project
+  :ensure nil)
+#+END_SRC

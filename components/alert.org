@@ -1,0 +1,12 @@
+#+TITLE: alert
+#+PROPERTY: header-args :tangle yes
+
+Desktop notifications from Emacs (uses macOS Notification Center on Darwin).
+
+#+BEGIN_SRC emacs-lisp
+(use-package alert
+  :commands (alert)
+  :init
+  (when-osx
+    (setq alert-default-style 'osx-notifier)))
+#+END_SRC

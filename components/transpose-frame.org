@@ -1,0 +1,8 @@
+#+TITLE: transpose-frame
+#+PROPERTY: header-args :tangle yes
+
+Transpose the window arrangement in a frame.
+
+#+BEGIN_SRC emacs-lisp
+(use-package transpose-frame)
+#+END_SRC

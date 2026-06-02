@@ -1,0 +1,10 @@
+#+TITLE: crux
+#+PROPERTY: header-args :tangle yes
+
+Set C-a to move to the first non-whitespace character on a line, and then to
+toggle between that and the beginning of the line.
+
+#+BEGIN_SRC emacs-lisp
+(use-package crux
+  :bind (("C-a" . crux-move-beginning-of-line)))
+#+END_SRC

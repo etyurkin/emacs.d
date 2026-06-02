@@ -1,0 +1,12 @@
+#+TITLE: switch-window
+#+PROPERTY: header-args :tangle yes
+
+Make "C-x o" prompt for a target window when there are more than 2.
+
+#+BEGIN_SRC emacs-lisp
+(use-package switch-window
+  :config
+  (setq-default switch-window-shortcut-style 'alphabet)
+  (setq-default switch-window-timeout nil)
+  :bind (("C-x o" . switch-window)))
+#+END_SRC

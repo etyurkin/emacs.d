@@ -1,0 +1,8 @@
+#+TITLE: focus
+#+PROPERTY: header-args :tangle yes
+
+Focus provides focus-mode that dims the text of surrounding sections.
+
+#+BEGIN_SRC emacs-lisp
+(use-package focus)
+#+END_SRC
