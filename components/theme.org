@@ -120,13 +120,6 @@ Ignore line wrappings and highlight entire line for org headers
   (kwarks/set-titlebar-style)
   (set-frame-parameter nil 'alpha '(90 . 90)))
 
-(defun kwarks/set-theme-font ()
-  "Use JetBrains Mono font when available. The font should be installed from .emacs.d/fonts folder"
-  (let ((theme-font "JetBrains Mono")
-        (theme-font-size 14))
-    (when (member theme-font (font-family-list))
-      (set-frame-font (format "%s-%d" theme-font theme-font-size) t))))
-
 (defun kwarks/disable-other-themes (&rest _)
   "Disable already-enabled themes before loading a new one."
   (mapc #'disable-theme custom-enabled-themes))
@@ -143,7 +136,6 @@ Ignore line wrappings and highlight entire line for org headers
 
 (defun kwarks/setup-frame (&rest args)
   "Apply titlebar theme for new frames"
-  (kwarks/set-theme-font)
   (kwarks/set-titlebar-style)
   (kwarks/set-theme-colors)
   (kwarks/set-theme-faces))
@@ -211,7 +203,9 @@ Frame geometry itself is left to desktop-restore which already handles it."
  (let ((font-size (if (or (cygwin-p) (ms-windows-p))
                       100 130)))
    (custom-set-faces
-    `(org-level-1             ((t (:box nil :height ,font-size :foreground "#51afef" :background unspecified))))
+    ;; No :height here -- all heading levels keep the default font size so the
+    ;; headings are uniform.  (font-size is still used by the agenda faces.)
+    '(org-level-1             ((t (:box nil :foreground "#51afef" :background unspecified))))
     '(org-level-2             ((t (:foreground "#c678dd" :background unspecified))))
     '(org-level-3             ((t (:foreground "#a9a1e1" :background unspecified))))
     '(org-block               ((t (:background unspecified))))

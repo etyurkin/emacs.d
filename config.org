@@ -362,6 +362,32 @@ restored desktop window layout (e.g. a split) is preserved."
 ** Highlight matching parens
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
+;; Don't match parens that live inside comments or strings (Emacs 31+).
+(setq show-paren-not-in-comments-or-strings t)
+#+END_SRC
+
+** Emacs 31 enhancements
+Opt-in niceties introduced in Emacs 31.  All are no-ops on older versions
+(unknown options stay unused; the keybinding only errors if invoked), so this
+block is safe to keep in a config shared across Emacs versions.
+
+#+BEGIN_SRC emacs-lisp
+;; Collapse the minor-mode lighter soup into a single mode-line button.
+(setq mode-line-collapse-minor-modes t)
+
+;; Show help for the symbol at point via ElDoc in the echo area.
+(setq eldoc-help-at-pt t)
+
+;; C-w with no active region kills the previous word (and M-w copies the line),
+;; instead of erroring.
+(setq kill-region-dwim 'emacs-word)
+
+;; Prefer splitting in the longer direction when Emacs picks a split for us.
+(setq split-window-preferred-direction 'longest)
+
+;; Cycle windows in reverse with C-x O (mirror of C-x o).
+(when (fboundp 'other-window-backward)
+  (global-set-key (kbd "C-x O") #'other-window-backward))
 #+END_SRC
 
 ** Use xwidget webkit if possible
