@@ -5,32 +5,28 @@ A literate, component-based Emacs configuration (Emacs 30+).
 ** How it works
 On startup =init.el=:
 1. reads the checkbox manifest in =components.org= to find enabled components,
-2. tangles =core.org= plus every enabled =components/<name>.org= into a single
+2. tangles =config.org= plus every enabled =components/<name>.org= into a single
    generated =config.el=,
 3. byte-compiles and loads it.
 
-=config.el= is regenerated automatically whenever =components.org=, =core.org=,
+=config.el= is regenerated automatically whenever =components.org=, =config.org=,
 =init.el= or any enabled component file changes.  It is a generated artifact and
 is git-ignored - never edit it by hand.
 
 ** Layout
 - =init.el= :: the loader (manifest parsing, tangling, byte-compile, load).
-- =components.org= :: the manifest. Toggle =[ ]= / =[X]= to disable/enable a
-  component, then restart Emacs.
-- =core.org= :: always loaded. Bootstrap, GnuPG/encryption, theme, the
-  completion stack (vertico/consult/marginalia/orderless/embark + corfu/cape),
-  editing/UX packages, and all =kwarks/*= helper commands.
+- =components.org= :: the manifest, organized by category. Toggle =[ ]= / =[X]=
+  to disable/enable a component, then restart Emacs. Each entry is an org link
+  to the component file -- follow it to open or create the component.
+- =config.org= :: always loaded. Bootstrap, GnuPG/encryption, sessions, and all
+  =kwarks/*= helper commands.
 - =components/<name>.org= :: one file per optional feature or language.
 - =lisp/ext/= :: custom elisp scripts, always loaded.
 - =lisp/private/= :: optional private extensions (git-ignored), loaded if present.
 
 ** Adding a component
-1. Create =components/foo.org= with a header:
-   #+begin_src org
-   ,#+TITLE: foo
-   ,#+PROPERTY: header-args :tangle yes
-   #+end_src
-2. Add =- [ ] foo= to the =* Components= list in =components.org=.
+1. Add =- [ ] [[file:components/foo.org][foo]]= to the appropriate category in =components.org=.
+2. Follow the link -- a starter template is inserted automatically.
 3. Flip it to =[X]= and restart.
 
 ** Rebuilding manually

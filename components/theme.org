@@ -1,0 +1,180 @@
+#+TITLE: Theme
+#+PROPERTY: header-args :tangle yes
+
+Theme and visual customization: doom-themes, frame styling, org-mode faces,
+modeline colors, font setup and GUI suppression.
+
+** Theme helper functions
+#+BEGIN_SRC emacs-lisp
+(require 'color)
+
+(defmacro kwarks/if-dark-theme (action else-action)
+  `(if (eq (frame-parameter nil 'background-mode) 'dark)
+       ,action
+     ,else-action))
+
+(defun kwarks/color-from-theme (lighter-percentage darker-percentage)
+  (let* ((bg (face-background 'default))
+         (bg-color (if (string= bg "unspecified-bg") "#000000" bg)))
+
+    (kwarks/if-dark-theme
+     (color-lighten-name bg-color lighter-percentage)
+     (color-darken-name bg-color darker-percentage))))
+#+END_SRC
+
+** Suppress GUI features
+#+BEGIN_SRC emacs-lisp
+(setq use-file-dialog nil)
+(setq use-dialog-box nil)
+(setq inhibit-startup-screen t)
+(setq inhibit-startup-echo-area-message t)
+#+END_SRC
+
+** Turn off menu, toolbar and scrollbars
+#+BEGIN_SRC emacs-lisp
+(unless-osx
+  (menu-bar-mode -1))
+(tool-bar-mode -1)
+(set-scroll-bar-mode nil)
+#+END_SRC
+
+** Visual bell
+Flash modeline for visual bell
+
+#+BEGIN_SRC emacs-lisp
+(setq visible-bell nil
+      ring-bell-function
+      (lambda ()
+        (let ((fg (face-foreground 'mode-line))
+              (bg (face-background 'mode-line)))
+          (set-face-background 'mode-line "#30363F")
+          (set-face-foreground 'mode-line "#30363F")
+          (run-with-idle-timer 0.1 nil `(lambda ()
+                                          (set-face-background 'mode-line ,bg)
+                                          (set-face-foreground 'mode-line ,fg))))))
+#+END_SRC
+
+** Highlight current line
+Ignore line wrappings and highlight entire line for org headers
+
+#+BEGIN_SRC emacs-lisp
+(defun visual-line-range ()
+  (save-excursion
+    (cons
+     (progn (vertical-motion 0) (point))
+     (progn (vertical-motion 1) (point)))))
+
+(setq hl-line-range-function 'visual-line-range)
+
+(global-hl-line-mode 1)
+#+END_SRC
+
+** visual-line
+#+BEGIN_SRC emacs-lisp
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+(global-visual-line-mode 1)
+#+END_SRC
+
+** Main theme
+#+BEGIN_SRC emacs-lisp
+(defmacro kwarks/with-make-frame (&rest body)
+  `(if (daemonp)
+       (add-hook 'after-make-frame-functions
+                 (lambda (&rest args) (progn ,@body)) t)
+     ,@body))
+
+(defun kwarks/set-cursor-color ()
+  (set-face-background 'cursor (kwarks/color-from-theme 100 100)))
+
+(defun kwarks/set-hl-line-color ()
+  (set-face-background 'hl-line (kwarks/color-from-theme 6 7)))
+
+(defun kwarks/set-region-color ()
+  (set-face-background 'region (color-lighten-name "#2D383E" 10)))
+
+(defun kwarks/set-border-color ()
+  (let ((color (kwarks/color-from-theme 5 10)))
+    (set-face-attribute 'mode-line nil :foreground "gray" :background 'unspecified :box nil :overline color)
+    (set-face-attribute 'mode-line-inactive nil :background 'unspecified :box nil :foreground "gray" :overline color)
+    (set-face-attribute 'vertical-border nil :background 'unspecified :foreground color)))
+
+(defun kwarks/set-titlebar-style ()
+  (set-frame-parameter nil 'ns-transparent-titlebar t)
+  (kwarks/if-dark-theme
+   (set-frame-parameter nil 'ns-appearance 'dark)
+   (set-frame-parameter nil 'ns-appearance nil)))
+
+(defun kwarks/set-theme-colors (&rest args)
+  (kwarks/set-cursor-color)
+  (kwarks/set-hl-line-color)
+  (kwarks/set-region-color)
+  (kwarks/set-border-color)
+  (kwarks/set-titlebar-style)
+  (set-frame-parameter nil 'alpha '(90 . 90)))
+
+(defun kwarks/set-theme-font ()
+  "Use JetBrains Mono font when available. The font should be installed from .emacs.d/fonts folder"
+  (let ((theme-font "JetBrains Mono"))
+    (when (member theme-font (font-family-list))
+      (set-frame-font theme-font))))
+
+(defun kwarks/disable-other-themes (&rest _)
+  "Disable already-enabled themes before loading a new one."
+  (mapc #'disable-theme custom-enabled-themes))
+
+(advice-add 'load-theme :before #'kwarks/disable-other-themes)
+(advice-add 'load-theme :after #'kwarks/set-theme-colors)
+
+(defun kwarks/set-theme-faces ()
+  (custom-set-faces
+   `(cursor                   ((t (:background ,(kwarks/color-from-theme 100 100)))))
+   '(font-lock-comment-face   ((t (:slant italic :background unspecified))))
+   '(trailing-whitespace      ((t (:foreground "gray"     :background "gray"))))
+   '(fringe                   ((t (:foreground "SkyBlue4" :background unspecified))))))
+
+(defun kwarks/setup-frame (&rest args)
+  "Apply titlebar theme for new frames"
+  (kwarks/set-theme-font)
+  (kwarks/set-titlebar-style)
+  (kwarks/set-theme-colors)
+  (kwarks/set-theme-faces))
+
+(kwarks/with-make-frame (kwarks/setup-frame))
+(add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
+
+(use-package doom-themes
+  :init
+  (setq doom-one-brighter-comments t)
+  (load-theme 'doom-one t))
+#+END_SRC
+
+** org-mode visuals
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+(add-to-list 'org-emphasis-alist
+             '("*" (:foreground "red")))
+
+(kwarks/with-make-frame
+ (let ((font-size (if (or (cygwin-p) (ms-windows-p))
+                      100 130)))
+   (custom-set-faces
+    `(org-level-1             ((t (:box nil :height ,font-size :foreground "#51afef" :background unspecified))))
+    '(org-level-2             ((t (:foreground "#c678dd" :background unspecified))))
+    '(org-level-3             ((t (:foreground "#a9a1e1" :background unspecified))))
+    '(org-block               ((t (:background unspecified))))
+    '(org-block-begin-line    ((t (:background unspecified :slant italic))))
+    '(org-block-end-line      ((t (:background unspecified :slant italic))))
+    '(font-lock-comment-face  ((t (:background unspecified))))
+    '(org-ellipsis            ((t (:background unspecified :strike-through nil))))
+    '(org-done                ((t (:strike-through t))))
+    '(org-headline-done       ((t (:strike-through t))))
+    '(org-agenda-done         ((t (:strike-through t))))
+    `(org-agenda-date         ((t (:foreground "gray" :height ,font-size :weight normal))))
+    `(org-agenda-date-weekend ((t (:height ,font-size :weight normal))))
+    `(org-agenda-structure    ((t (:height ,font-size :weight normal))))
+    `(org-agenda-date-today   ((t (:foreground "#a9a1e1" :weight normal :slant italic :height ,font-size)))))))
+
+(custom-set-variables
+ '(org-pretty-entities t)
+ '(org-hide-emphasis-markers t))
+#+END_SRC
