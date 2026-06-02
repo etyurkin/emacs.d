@@ -30,8 +30,9 @@
       use-file-dialog nil
       use-dialog-box nil)
 
-;; Prevent implicit frame resizing during startup (font/face/toolbar changes).
-;; Reset to nil in Post init once everything has loaded.
+;; Never let internal changes (font, menubar, toolbar, modeline) implicitly
+;; resize the frame.  This is what kept shrinking the desktop-restored frame
+;; after startup.  It does not affect manual or programmatic resizing.
 (setq frame-inhibit-implied-resize t)
 
 ;;; early-init.el ends here
