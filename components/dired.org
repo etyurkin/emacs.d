@@ -1,0 +1,9 @@
+#+TITLE: dired
+#+PROPERTY: header-args :tangle yes
+
+Reuse a single dired buffer when navigating directories instead of spawning a
+new buffer per directory.  Built in since Emacs 28, so no extra package needed.
+
+#+BEGIN_SRC emacs-lisp
+(setq dired-kill-when-opening-new-dired-buffer t)
+#+END_SRC

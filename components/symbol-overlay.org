@@ -1,0 +1,16 @@
+#+TITLE: symbol-overlay
+#+PROPERTY: header-args :tangle yes
+
+Highlight and navigate occurrences of the symbol at point.  Maintained
+replacement for the old =highlight-symbol= package.
+
+#+BEGIN_SRC emacs-lisp
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode)
+  :bind (("M-i" . symbol-overlay-put)
+         ("M-n" . symbol-overlay-jump-next)
+         ("M-p" . symbol-overlay-jump-prev)
+         ("M-I" . symbol-overlay-remove-all))
+  :init
+  (diminish 'symbol-overlay-mode))
+#+END_SRC

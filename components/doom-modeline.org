@@ -1,0 +1,26 @@
+#+TITLE: doom-modeline
+#+PROPERTY: header-args :tangle yes
+
+A fancy and fast mode-line inspired by minimalism design.
+
+#+BEGIN_SRC emacs-lisp
+(defun init-doom-modeline ()
+  (require 'doom-modeline)
+
+  (setq doom-modeline-icon nil)
+  (doom-modeline-mode)
+
+  (setq display-time-day-and-date t)
+  (setq display-time-string-forms
+        '((propertize (format-time-string " %a %b %d, %R" now) 'weight 'normal)))
+  (display-time-mode t)
+
+  (doom-modeline-def-modeline 'my-simple-line
+    '(matches buffer-info remote-host parrot)
+    '(buffer-position selection-info minor-modes process vcs input-method buffer-encoding battery misc-info major-mode))
+
+  (doom-modeline-set-modeline 'my-simple-line 'default))
+
+(use-package doom-modeline
+  :hook (after-init . init-doom-modeline))
+#+END_SRC

@@ -1,0 +1,10 @@
+#+TITLE: avy
+#+PROPERTY: header-args :tangle yes
+
+Jump to visible text using a char-based decision tree.
+
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :bind (("C-'" . avy-goto-char-timer)
+         ("M-g w" . avy-goto-word-1)))
+#+END_SRC

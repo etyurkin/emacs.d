@@ -1,0 +1,8 @@
+#+TITLE: multiple-cursors
+#+PROPERTY: header-args :tangle yes
+
+Edit with multiple cursors simultaneously.
+
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors)
+#+END_SRC

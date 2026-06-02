@@ -1,0 +1,10 @@
+#+TITLE: osx-dictionary
+#+PROPERTY: header-args :tangle yes
+
+Look up words in the macOS built-in dictionary.
+
+#+BEGIN_SRC emacs-lisp
+(when-osx
+ (use-package osx-dictionary
+   :bind (("C-c d" . osx-dictionary-search-word-at-point))))
+#+END_SRC

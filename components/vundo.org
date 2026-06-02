@@ -1,0 +1,14 @@
+#+TITLE: vundo
+#+PROPERTY: header-args :tangle yes
+
+Visualize the native Emacs undo history as a tree, on demand.  Replaces
+undo-tree without monkey-patching Emacs' undo system.
+
+#+BEGIN_SRC emacs-lisp
+(use-package vundo
+  :bind (("C-x u" . vundo)
+         ("C-z"   . undo)
+         ("C-S-z" . undo-redo))
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols))
+#+END_SRC

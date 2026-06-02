@@ -1,0 +1,8 @@
+#+TITLE: diminish
+#+PROPERTY: header-args :tangle yes
+
+Hide or abbreviate minor-mode lighters.
+
+#+BEGIN_SRC emacs-lisp
+(use-package diminish :demand t)
+#+END_SRC

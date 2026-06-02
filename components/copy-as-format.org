@@ -1,0 +1,8 @@
+#+TITLE: copy-as-format
+#+PROPERTY: header-args :tangle yes
+
+Copy buffer locations as GitHub/Slack/JIRA/... formatted code.
+
+#+BEGIN_SRC emacs-lisp
+(use-package copy-as-format)
+#+END_SRC

@@ -1,0 +1,14 @@
+#+TITLE: page-break-lines
+#+PROPERTY: header-args :tangle yes
+
+Display form feed characters as tidy horizontal rules.
+
+#+BEGIN_SRC emacs-lisp
+(use-package page-break-lines
+  :config
+  (push 'browse-kill-ring-mode page-break-lines-modes)
+  (push 'special-mode page-break-lines-modes)
+  :init
+  (global-page-break-lines-mode)
+  :diminish page-break-lines-mode)
+#+END_SRC

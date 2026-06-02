@@ -1,0 +1,25 @@
+#+TITLE: jinx
+#+PROPERTY: header-args :tangle yes
+
+Fast spell checking using the Enchant library.  On first activation jinx
+compiles a small native module (=jinx-mod.c=) that links against =enchant-2=,
+so the following must be present at build time:
+- =enchant= and =pkg-config= (=brew install enchant pkg-config=),
+- at least one dictionary backend reachable by Enchant (=aspell= or =hunspell=,
+  both pulled in as Homebrew deps of =enchant=).
+
+Use =M-x jinx-languages= to inspect/select the available dictionaries.
+Activation is guarded below so a missing native library never breaks editing.
+
+#+BEGIN_SRC emacs-lisp
+(use-package jinx
+  :bind (("M-$"   . jinx-correct)
+         ("C-M-$" . jinx-languages))
+  :init
+  (defun kwarks/maybe-jinx ()
+    "Enable jinx-mode if the enchant native module is available."
+    (when (ignore-errors (require 'jinx nil t))
+      (ignore-errors (jinx-mode 1))))
+  (add-hook 'text-mode-hook #'kwarks/maybe-jinx)
+  (add-hook 'org-mode-hook  #'kwarks/maybe-jinx))
+#+END_SRC

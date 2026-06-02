@@ -1,0 +1,16 @@
+#+TITLE: battery
+#+PROPERTY: header-args :tangle yes
+
+Show battery level in the mode line when a battery is present (built-in).
+
+#+BEGIN_SRC emacs-lisp
+(defun has-battery ()
+  (require 'battery)
+  (if battery-status-function
+      (let ((b-status (cdr (assoc '66 (funcall battery-status-function)))))
+	(not (string= b-status "N/A")))))
+
+(when (has-battery)
+  (setq battery-mode-line-format " [%b%p%%]")
+  (display-battery-mode 1))
+#+END_SRC
