@@ -16,6 +16,23 @@ Turn on line numbers for programming modes.
 (electric-pair-mode)
 #+END_SRC
 
+** Tree-sitter (Emacs 31)
+Emacs 31 can auto-remap supported major modes to their tree-sitter variants and
+fetch missing grammars on demand, replacing manual =*-ts-mode= wiring and
+third-party helpers.  Guarded so it only runs on Emacs 31+ with a working
+tree-sitter library.
+
+#+BEGIN_SRC emacs-lisp
+(when (and (>= emacs-major-version 31)
+           (fboundp 'treesit-available-p)
+           (treesit-available-p))
+  (require 'treesit)
+  ;; `setopt' so the :set logic updates `major-mode-remap-alist'.
+  (setopt treesit-enabled-modes t
+          ;; Prompt before downloading a grammar the first time it's needed.
+          treesit-auto-install-grammar 'ask))
+#+END_SRC
+
 ** eglot helper
 Shared by language components.  Starts the built-in LSP client only when a
 matching language server is actually installed, so enabling a component never

@@ -63,6 +63,9 @@
 ;; Never let internal changes (font, menubar, toolbar, modeline) implicitly
 ;; resize the frame.  This is what kept shrinking the desktop-restored frame
 ;; after startup.  It does not affect manual or programmatic resizing.
-(setq frame-inhibit-implied-resize t)
+;; Emacs 31 adds the value `force', which also inhibits implied resizing while
+;; the frame is being CREATED (t only covers post-creation); fall back to t on
+;; older versions.
+(setq frame-inhibit-implied-resize (if (>= emacs-major-version 31) 'force t))
 
 ;;; early-init.el ends here
