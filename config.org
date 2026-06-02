@@ -48,16 +48,6 @@ Macros for platform-specific code
   `(if (ms-windows-p) nil ,@body))
 #+END_SRC
 
-** Garbage collection
-We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
-We'll lower this value significantly after initialization has completed.
-
-#+BEGIN_SRC emacs-lisp
-(eval-and-compile
-  (setq gc-cons-threshold 402653184
-        gc-cons-percentage 0.6))
-#+END_SRC
-
 ** Byte compile warnings
 Disable certain byte compiler warnings to cut down on the noise.
 
@@ -909,8 +899,7 @@ performance reasons, then bootstrap =use-package=.
 (eval-and-compile
   (setq load-prefer-newer t
         package-user-dir "~/.emacs.d/elpa"
-        package--init-file-ensured t
-        package-enable-at-startup nil)
+        package--init-file-ensured t)
 
   (unless (file-directory-p package-user-dir)
     (make-directory package-user-dir t)))
