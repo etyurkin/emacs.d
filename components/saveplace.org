@@ -1,0 +1,13 @@
+#+TITLE: saveplace
+#+PROPERTY: header-args :tangle yes
+
+Remember the last visited position in each file and restore it on re-open.
+
+#+BEGIN_SRC emacs-lisp
+(require 'saveplace)
+(setq save-place-file (expand-file-name "places" user-emacs-directory))
+
+(if (fboundp #'save-place-mode)
+    (save-place-mode 1)
+  (setq-default save-place t))
+#+END_SRC

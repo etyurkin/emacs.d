@@ -1,0 +1,12 @@
+#+TITLE: dumb-jump
+#+PROPERTY: header-args :tangle yes
+
+Jump to definition using heuristics and ripgrep, via the xref backend.
+
+#+BEGIN_SRC emacs-lisp
+(use-package dumb-jump
+  :init
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  :config
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+#+END_SRC

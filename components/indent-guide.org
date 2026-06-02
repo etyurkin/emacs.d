@@ -1,0 +1,13 @@
+#+TITLE: indent-guide
+#+PROPERTY: header-args :tangle yes
+
+Show vertical indentation guides in code buffers.
+
+#+BEGIN_SRC emacs-lisp
+(use-package indent-guide
+  :config
+  (setq indent-guide-char "┊")
+  (setq indent-guide-delay 0.1)
+  :init
+  (diminish 'indent-guide-mode))
+#+END_SRC

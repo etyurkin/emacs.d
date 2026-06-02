@@ -1,0 +1,9 @@
+#+TITLE: shell-completion
+#+PROPERTY: header-args :tangle yes
+
+Programmable shell completion for git and common Unix commands.
+
+#+BEGIN_SRC emacs-lisp
+(use-package pcmpl-git :after pcomplete)
+(use-package pcmpl-args :after pcomplete)
+#+END_SRC

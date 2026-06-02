@@ -1,0 +1,12 @@
+#+TITLE: scratch
+#+PROPERTY: header-args :tangle yes
+
+Extra scratch buffers and an immortal =*scratch*= that cannot be killed.
+
+#+BEGIN_SRC emacs-lisp
+(use-package scratch)
+(use-package immortal-scratch
+  :demand t
+  :config
+  (immortal-scratch-mode))
+#+END_SRC

@@ -1,0 +1,12 @@
+#+TITLE: reverse-im
+#+PROPERTY: header-args :tangle yes
+
+Make keybindings usable while a non-default system keyboard layout is active.
+
+#+BEGIN_SRC emacs-lisp
+(use-package reverse-im
+  :demand t
+  :config
+  (add-to-list 'reverse-im-modifiers 'super)
+  (reverse-im-activate "russian-computer"))
+#+END_SRC
