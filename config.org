@@ -181,23 +181,7 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (add-to-list 'desktop-buffer-mode-handlers
                '(shell-mode . kwarks/desktop-restore-shell)))
 
-;; Frame geometry is cached in theme-cache.el (written on exit by the theme
-;; component).  early-init.el loads the cache, which sets colors into
-;; default-frame-alist and geometry into kwarks/cached-frame-geometry.
-;; We apply geometry here AFTER desktop-read so macOS has placed the frame
-;; on the correct display first (important for multi-monitor setups).
-(defvar kwarks/cached-frame-geometry nil
-  "Frame geometry loaded from theme-cache.el, applied after startup.")
-
-(defun kwarks/restore-cached-geometry ()
-  "Re-apply cached frame geometry to the selected frame."
-  (when (and kwarks/cached-frame-geometry (display-graphic-p))
-    (modify-frame-parameters (selected-frame) kwarks/cached-frame-geometry)))
-
 (desktop-read)
-
-(add-hook 'emacs-startup-hook
-          (lambda () (run-with-idle-timer 0.3 nil #'kwarks/restore-cached-geometry)))
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
   (setq desktop-files-not-to-save
