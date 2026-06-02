@@ -10,4 +10,8 @@ Remember the last visited position in each file and restore it on re-open.
 (if (fboundp #'save-place-mode)
     (save-place-mode 1)
   (setq-default save-place t))
+
+;; Periodically flush positions so a crash doesn't lose them (Emacs 31+).
+(when (>= emacs-major-version 31)
+  (setopt save-place-autosave-interval 300))
 #+END_SRC
