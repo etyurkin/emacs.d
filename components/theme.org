@@ -139,7 +139,10 @@ This eliminates the white flash and the small-window-then-resize dance.
 
 #+BEGIN_SRC emacs-lisp
 (defun kwarks/save-theme-cache ()
-  "Write current theme colors and frame geometry to theme-cache.el."
+  "Write current theme colors and frame geometry to theme-cache.el.
+Colors go into `default-frame-alist' (read by early-init.el before the frame
+exists).  Geometry is stored in `kwarks/cached-frame-geometry' and applied
+after startup once macOS has placed the frame on the correct display."
   (when (display-graphic-p)
     (let* ((cache (expand-file-name "theme-cache.el" user-emacs-directory))
            (frame (selected-frame))
@@ -152,18 +155,20 @@ This eliminates the white flash and the small-window-then-resize dance.
            (l  (frame-parameter frame 'left))
            (tp (frame-parameter frame 'top)))
       (with-temp-file cache
-        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; -*-\n")
+        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; -*-\n\n")
+        (insert ";; Colors (applied to default-frame-alist before the frame is created)\n")
         (when bg (insert (format "(push '(background-color . %S) default-frame-alist)\n" bg)))
         (when fg (insert (format "(push '(foreground-color . %S) default-frame-alist)\n" fg)))
         (when dark-p
           (insert "(push '(ns-appearance . dark) default-frame-alist)\n"))
-        (when fs (insert (format "(push '(fullscreen . %S) default-frame-alist)\n" fs)))
-        (when w  (insert (format "(push '(width . %S) default-frame-alist)\n" w)))
-        (when h  (insert (format "(push '(height . %S) default-frame-alist)\n" h)))
-        (when (and l (integerp l))
-          (insert (format "(push '(left . %S) default-frame-alist)\n" l)))
-        (when (and tp (integerp tp))
-          (insert (format "(push '(top . %S) default-frame-alist)\n" tp)))))))
+        (insert "\n;; Frame geometry (applied after startup by config.org)\n")
+        (insert (format "(setq kwarks/cached-frame-geometry\n      '%S)\n"
+                        (delq nil
+                              (list (when fs (cons 'fullscreen fs))
+                                    (when w  (cons 'width w))
+                                    (when h  (cons 'height h))
+                                    (when (and l (integerp l)) (cons 'left l))
+                                    (when (and tp (integerp tp)) (cons 'top tp))))))))))
 
 (advice-add 'load-theme :after (lambda (&rest _) (kwarks/save-theme-cache)))
 (add-hook 'kill-emacs-hook #'kwarks/save-theme-cache)
