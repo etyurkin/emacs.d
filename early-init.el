@@ -30,4 +30,8 @@
       use-file-dialog nil
       use-dialog-box nil)
 
+;; Prevent implicit frame resizing during startup (font/face/toolbar changes).
+;; Reset to nil in Post init once everything has loaded.
+(setq frame-inhibit-implied-resize t)
+
 ;;; early-init.el ends here
