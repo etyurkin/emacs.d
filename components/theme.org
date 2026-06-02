@@ -22,22 +22,6 @@ modeline colors, font setup and GUI suppression.
      (color-darken-name bg-color darker-percentage))))
 #+END_SRC
 
-** Suppress GUI features
-#+BEGIN_SRC emacs-lisp
-(setq use-file-dialog nil)
-(setq use-dialog-box nil)
-(setq inhibit-startup-screen t)
-(setq inhibit-startup-echo-area-message t)
-#+END_SRC
-
-** Turn off menu, toolbar and scrollbars
-#+BEGIN_SRC emacs-lisp
-(unless-osx
-  (menu-bar-mode -1))
-(tool-bar-mode -1)
-(set-scroll-bar-mode nil)
-#+END_SRC
-
 ** Visual bell
 Flash modeline for visual bell
 
