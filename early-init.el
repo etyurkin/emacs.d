@@ -7,21 +7,22 @@
 ;; Prevent package.el from auto-initializing; init.el handles this.
 (setq package-enable-at-startup nil)
 
-;; Suppress GUI chrome and set initial colors before the frame is drawn --
-;; avoids the white flash and toolbar flicker on startup.
-;; Background/foreground match doom-one so the frame starts dark immediately;
-;; the real theme refines these once it loads.
+;; Suppress GUI chrome before the frame is drawn.
 (setq default-frame-alist
       '((tool-bar-lines . 0)
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
-        (ns-transparent-titlebar . t)
-        (ns-appearance . dark)
-        (background-color . "#282c34")
-        (foreground-color . "#bbc2cf")))
+        (ns-transparent-titlebar . t)))
 
 (unless (eq system-type 'darwin)
   (push '(menu-bar-lines . 0) default-frame-alist))
+
+;; Read cached theme colors saved by the previous session so the frame
+;; starts with the right background immediately instead of flashing white.
+;; The cache is written by `kwarks/save-theme-colors' (see theme component).
+(let ((cache (expand-file-name "theme-cache.el" user-emacs-directory)))
+  (when (file-exists-p cache)
+    (load cache nil t t)))
 
 ;; Suppress startup clutter.
 (setq inhibit-startup-screen t
