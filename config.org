@@ -181,45 +181,11 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (add-to-list 'desktop-buffer-mode-handlers
                '(shell-mode . kwarks/desktop-restore-shell)))
 
-;; Desktop's frameset restores frame geometry in character units, so the
-;; restored frame ends up a few pixels off once the final font/modeline are
-;; applied.  Capture the exact PIXEL geometry at save time (font-independent)
-;; and re-assert it after startup.  Persisted via `desktop-globals-to-save'.
-(defvar kwarks/frame-geometry nil
-  "Saved pixel geometry of the main frame, restored on the next startup.")
-
-(defun kwarks/save-frame-geometry (&rest _)
-  "Capture the selected frame's pixel size and position."
-  (when (display-graphic-p)
-    (let ((frame (selected-frame)))
-      (setq kwarks/frame-geometry
-            (list (cons 'fullscreen   (frame-parameter frame 'fullscreen))
-                  (cons 'left         (frame-parameter frame 'left))
-                  (cons 'top          (frame-parameter frame 'top))
-                  (cons 'pixel-width  (frame-text-width frame))
-                  (cons 'pixel-height (frame-text-height frame)))))))
-
-(defun kwarks/restore-frame-geometry ()
-  "Re-apply the saved pixel geometry to the selected frame."
-  (when (and kwarks/frame-geometry (display-graphic-p))
-    (let* ((g  kwarks/frame-geometry)
-           (fs (cdr (assq 'fullscreen g)))
-           (frame (selected-frame)))
-      (if fs
-          (set-frame-parameter frame 'fullscreen fs)
-        (modify-frame-parameters
-         frame
-         (list (cons 'fullscreen nil)
-               (cons 'left   (cdr (assq 'left g)))
-               (cons 'top    (cdr (assq 'top g)))
-               (cons 'width  (cons 'text-pixels (cdr (assq 'pixel-width g))))
-               (cons 'height (cons 'text-pixels (cdr (assq 'pixel-height g))))))))))
-
-;; Capture right before the desktop is written (covers exit and auto-save).
-(advice-add 'desktop-save :before #'kwarks/save-frame-geometry)
-;; Re-assert after startup once the font/theme/modeline have settled.
-(add-hook 'emacs-startup-hook
-          (lambda () (run-with-idle-timer 0.3 nil #'kwarks/restore-frame-geometry)))
+;; Frame geometry is restored by desktop-restore-frames below.  It maps the
+;; saved character dimensions accurately because early-init.el already gave
+;; the frame its final font (see theme-cache.el); and frame-inhibit-implied-
+;; resize keeps later font/modeline changes from shrinking it.  No extra
+;; geometry handling is needed.
 
 (desktop-read)
 
@@ -250,8 +216,7 @@ otherwise `shell' starts the process in the buffer's stale directory."
                        line-end))))))
 
 (setq desktop-globals-to-save
-      (append '(kwarks/frame-geometry
-                (comint-input-ring        . 50)
+      (append '((comint-input-ring        . 50)
                 (compile-history          . 30)
                 desktop-missing-file-warning
                 (dired-regexp-history     . 20)
