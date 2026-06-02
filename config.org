@@ -183,25 +183,6 @@ otherwise `shell' starts the process in the buffer's stale directory."
 
 (desktop-read)
 
-;; Capture the frame size desktop just restored.  Theme, font and modeline
-;; changes that follow will resize the frame; re-assert the correct size
-;; once startup is complete.  Position is left to macOS (it already placed
-;; the frame on the right display).
-(defvar kwarks/post-desktop-size nil)
-(when (display-graphic-p)
-  (let ((frame (selected-frame)))
-    (setq kwarks/post-desktop-size
-          (list (cons 'fullscreen (frame-parameter frame 'fullscreen))
-                (cons 'width  (frame-parameter frame 'width))
-                (cons 'height (frame-parameter frame 'height))))))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (run-with-idle-timer 0.5 nil
-              (lambda ()
-                (when (and kwarks/post-desktop-size (display-graphic-p))
-                  (modify-frame-parameters (selected-frame)
-                                           kwarks/post-desktop-size))))))
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
   (setq desktop-files-not-to-save
@@ -930,4 +911,12 @@ Lower the GC thresholds back down to a sane level.
 #+BEGIN_SRC emacs-lisp
 (setq gc-cons-threshold 16777216
       gc-cons-percentage 0.1)
+#+END_SRC
+
+** Allow frame resizing
+=early-init.el= inhibits implied frame resizing so font/face/theme changes
+during startup don't shrink the desktop-restored frame.  Re-enable it now.
+
+#+BEGIN_SRC emacs-lisp
+(setq frame-inhibit-implied-resize nil)
 #+END_SRC
