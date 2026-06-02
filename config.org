@@ -181,68 +181,46 @@ otherwise `shell' starts the process in the buffer's stale directory."
   (add-to-list 'desktop-buffer-mode-handlers
                '(shell-mode . kwarks/desktop-restore-shell)))
 
-;; Make frame sizing pixel-precise; needed for the stabilizer below to assert
-;; an exact pixel size on a HiDPI display.
-(setq frame-resize-pixelwise t)
+;; Don't let the desktop frameset restore frame geometry.  On macOS multi-
+;; monitor/mixed-DPI setups, desktop's post-creation `set-frame-position'
+;; restore drifts the frame a little on every save->restore cycle (bug#65840,
+;; open since Emacs 29, unfixed in 30.x), so the size/position ends up wrong and
+;; alternates between launches.  We instead save geometry to frame-geometry.el
+;; on exit and apply it at frame-creation time via `default-frame-alist' in
+;; early-init.el, which is deterministic.  Filtering these out of the frameset
+;; means desktop still restores buffers and window splits, just not geometry.
+(require 'frameset)
+(dolist (param '(left top width height
+                      frameset--text-pixel-width frameset--text-pixel-height))
+  (setf (alist-get param frameset-filter-alist) :never))
 
 (desktop-read)
 
-;; macOS frame-shrink fix.  On a multi-monitor setup the macOS window server
-;; moves and resizes our frame about a second into the session, shrinking it
-;; below the size desktop restored.  (It is a race: when startup is fast the
-;; macOS event lands AFTER desktop-restore and wins; when a recompile makes
-;; startup slow, desktop-restore runs last and wins -- which is why a recompiled
-;; start looks correct.)  This is an external (window-system) change, so
-;; `frame-inhibit-implied-resize' cannot stop it.  Instead we capture the
-;; correct geometry (size in text pixels + position) once startup is complete,
-;; then re-assert it whenever the frame size or position changes, for the first
-;; few seconds, until the layout settles.
-(defvar kwarks/target-frame-geometry nil
-  "Target (TEXT-WIDTH TEXT-HEIGHT LEFT TOP), re-asserted while settling.")
-(defvar kwarks/stabilizing nil
-  "Non-nil while we are programmatically adjusting, to avoid recursion.")
+;; Persist the frame's actual geometry on exit so early-init.el can recreate it
+;; next launch.  Reading it at exit captures exactly where the frame sits on
+;; screen (correct, since nothing is resizing then), and writing it as
+;; `default-frame-alist' pushes avoids desktop's drifting restore path entirely.
+(defun kwarks/save-frame-geometry ()
+  "Write the selected frame's size and position to frame-geometry.el."
+  (when (display-graphic-p)
+    (let* ((f      (selected-frame))
+           (cache  (expand-file-name "frame-geometry.el" kwarks/cache-directory))
+           (width  (frame-text-width f))
+           (height (frame-text-height f))
+           (left   (frame-parameter f 'left))
+           (top    (frame-parameter f 'top))
+           (full   (frame-parameter f 'fullscreen)))
+      ;; Skip when fullscreen/maximized -- saving those pixel bounds would pin
+      ;; a weird size on the next, possibly different, display.
+      (unless full
+        (with-temp-file cache
+          (insert ";;; frame-geometry.el --- auto-generated, do not edit -*- no-byte-compile: t; lexical-binding: t; -*-\n")
+          (insert (format "(push '(width . (text-pixels . %d)) default-frame-alist)\n" width))
+          (insert (format "(push '(height . (text-pixels . %d)) default-frame-alist)\n" height))
+          (insert (format "(push '(left . %S) default-frame-alist)\n" left))
+          (insert (format "(push '(top . %S) default-frame-alist)\n" top)))))))
 
-(defun kwarks/frame-geometry-now (frame)
-  "Return FRAME geometry as (TEXT-WIDTH TEXT-HEIGHT LEFT TOP)."
-  (list (frame-text-width frame) (frame-text-height frame)
-        (frame-parameter frame 'left) (frame-parameter frame 'top)))
-
-(defun kwarks/stabilize-frame (&rest _)
-  "Snap the frame back to `kwarks/target-frame-geometry' if macOS changed it."
-  (when (and kwarks/target-frame-geometry
-             (not kwarks/stabilizing)
-             (display-graphic-p)
-             (not (frame-parameter (selected-frame) 'fullscreen)))
-    (let* ((f  (selected-frame))
-           (g  (kwarks/frame-geometry-now f))
-           (tw (nth 0 kwarks/target-frame-geometry))
-           (th (nth 1 kwarks/target-frame-geometry))
-           (tl (nth 2 kwarks/target-frame-geometry))
-           (tt (nth 3 kwarks/target-frame-geometry)))
-      (when (or (> (abs (- (nth 0 g) tw)) 2)
-                (> (abs (- (nth 1 g) th)) 2)
-                (not (equal (nth 2 g) tl))
-                (not (equal (nth 3 g) tt)))
-        (let ((kwarks/stabilizing t))
-          (modify-frame-parameters
-           f (list (cons 'width  (cons 'text-pixels tw))
-                   (cons 'height (cons 'text-pixels th))
-                   (cons 'left   tl)
-                   (cons 'top    tt))))))))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (when (display-graphic-p)
-              (setq kwarks/target-frame-geometry
-                    (kwarks/frame-geometry-now (selected-frame)))
-              (add-hook 'window-size-change-functions #'kwarks/stabilize-frame)
-              (add-hook 'move-frame-functions #'kwarks/stabilize-frame)
-              ;; Let go once things have settled so manual moves/resizes stick.
-              (run-with-idle-timer
-               5 nil
-               (lambda ()
-                 (remove-hook 'window-size-change-functions #'kwarks/stabilize-frame)
-                 (remove-hook 'move-frame-functions #'kwarks/stabilize-frame))))))
+(add-hook 'kill-emacs-hook #'kwarks/save-frame-geometry)
 
 
 (let ((default (eval (car (get 'desktop-files-not-to-save 'standard-value)))))
@@ -863,6 +841,10 @@ buffer."
 path does not reliably fire here, so save the desktop explicitly first."
   (interactive)
   (save-some-buffers)
+  ;; Save geometry explicitly for the same reason the desktop is saved here:
+  ;; the kill-emacs-hook does not reliably fire on this path.
+  (when (fboundp 'kwarks/save-frame-geometry)
+    (kwarks/save-frame-geometry))
   (when (and (bound-and-true-p desktop-save-mode)
              desktop-dirname)
     (desktop-save-in-desktop-dir))
