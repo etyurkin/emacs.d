@@ -1,0 +1,27 @@
+#!/bin/sh
+# commit-msg — remove injected git trailers (keeps a single-line subject clean).
+#
+# Install (once per clone), from repo root:
+#   cp githooks/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+# Or set a persistent hooks path (writes local git config):
+#   git config core.hooksPath githooks
+#
+# Extend the awk patterns if new unwanted trailers appear in `git log`.
+
+msg=${1:?}
+test -f "$msg" || exit 0
+
+tmp=$(mktemp "${TMPDIR:-/tmp}/commit-msg-strip.XXXXXX") || exit 1
+trap 'rm -f "$tmp"' EXIT INT HUP
+
+awk '
+  /^Co-authored-by:/ || /^Signed-off-by:/ { next }
+  { lines[++n] = $0 }
+  END {
+    while (n > 0 && lines[n] == "") n--
+    for (i = 1; i <= n; i++) print lines[i]
+  }
+' "$msg" >"$tmp"
+mv "$tmp" "$msg"
+trap - EXIT INT HUP
+exit 0
