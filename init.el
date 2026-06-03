@@ -82,6 +82,12 @@ intermediate files are removed."
   ;; auto-activate them (e.g. batch mode or a future early-init.el).  Idempotent.
   (when (fboundp 'package-activate-all)
     (package-activate-all))
+  ;; `compat.el' uses `eval-when-compile' to pull in `compat-31'.  If compat was
+  ;; byte-compiled on Emacs 31, that require is omitted at runtime on Emacs 30,
+  ;; so `set-local' (from compat-31, used by Vertico/Corfu) is never defined.
+  (when (and (< emacs-major-version 31) (not (fboundp 'set-local)))
+    (require 'compat nil t)
+    (require 'compat-31 nil t))
   (unless (kwarks/config-synced-p)
     (message "Regenerating config.el from enabled components...")
     (kwarks/tangle-config))

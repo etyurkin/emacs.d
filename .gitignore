@@ -64,3 +64,4 @@ site-lisp/package/
 /annot/
 *.dylib
 /lisp/private
+/agent/
