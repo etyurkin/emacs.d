@@ -103,6 +103,13 @@ This is helpful for writeroom-mode, in particular."
 ;; Periodically flush the list so a crash doesn't lose recent files (Emacs 31+).
 (when (>= emacs-major-version 31)
   (setopt recentf-autosave-interval 300))
+
+;; Same idea on Emacs 30: built-in `recentf-autosave-interval' is 31+ only.
+(when (< emacs-major-version 31)
+  (run-with-timer 300 300
+                  (lambda ()
+                    (when (and (fboundp 'recentf-save-list) (bound-and-true-p recentf-mode))
+                      (recentf-save-list)))))
 #+END_SRC
 
 ** Midnight mode
@@ -943,6 +950,12 @@ See https://truongtx.me/2014/08/23/setup-emacs-as-an-sql-database-client
 We set =load-path= ourselves and avoid calling =(package-initialize)= for
 performance reasons, then bootstrap =use-package=.
 
+=init.el= enables =package-quickstart= before =package-activate-all= so a
+pre-built =package-quickstart.elc= can replace per-package activation when it
+exists.  Run =M-x package-quickstart-refresh= once after pulling this change (or
+install/remove any package) to generate that file; until then startup uses the
+usual activation path.  The quickstart files are gitignored.
+
 #+BEGIN_SRC emacs-lisp
 (eval-and-compile
   (setq load-prefer-newer t
@@ -958,13 +971,19 @@ otherwise.
 
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-defer t
-      use-package-verbose t)
+      use-package-verbose nil)
 #+END_SRC
 
 Initialize =package.el= and bootstrap =use-package=.
 
+Use =eval-and-compile= (not =eval-when-compile=) so archives and the
+=use-package= install run at **runtime** when =config.elc= is loaded, not only
+when =config.el= is byte-compiled.  Otherwise after a fresh =elpa/= (or first
+machine) =package-archives= never gets MELPA/GNU and =:ensure= cannot install
+anything.
+
 #+BEGIN_SRC emacs-lisp
-(eval-when-compile
+(eval-and-compile
   (require 'package)
 
   (unless (assoc-default "melpa" package-archives)
@@ -977,6 +996,73 @@ Initialize =package.el= and bootstrap =use-package=.
     (package-install 'use-package))
   (require 'use-package)
   (setq use-package-always-ensure t))
+#+END_SRC
+
+The duplicate =setq use-package-always-ensure= below still documents the case
+where someone loads untangled =config.el= without the block above; it is
+harmless when redundant.
+
+We also derive =package-selected-packages= from every top-level =(use-package …)=
+in the tangled config (same rule as =:ensure=: omit =:ensure nil=, honor
+=:ensure PKG=, otherwise follow =use-package-always-ensure=).  That list is
+what =M-x package-autoremove= uses so unused ELPA packages can be removed without
+treating the set as empty.
+
+#+BEGIN_SRC emacs-lisp
+(setq use-package-always-ensure t)
+
+(defun kwarks/package--use-package-ensure-name (form)
+  "If FORM is a `(use-package ...)' that should come from ELPA, return its package symbol."
+  (when (and (consp form) (eq (car form) 'use-package)
+             (symbolp (cadr form)))
+    (let* ((feat (cadr form))
+           (tail (cddr form)))
+      (while (and tail (not (keywordp (car tail))))
+        (setq tail (cdr tail)))
+      (let* ((always (if (boundp 'use-package-always-ensure)
+                         use-package-always-ensure
+                       t))
+             (has (plist-member tail :ensure))
+             (ensure (plist-get tail :ensure)))
+        (when (if has (not (null ensure)) always)
+          (cond ((or (not has) (eq ensure t)) feat)
+                ((symbolp ensure) ensure)
+                ((stringp ensure) (intern ensure))
+                (t feat)))))))
+
+(defun kwarks/package-sync-selected-from-config (&optional file)
+  "Set `package-selected-packages' from `(use-package ...)' forms in tangled config.
+FILE defaults to =config.el= under `user-emacs-directory'.  Safe to call after
+editing org and re-tangling; also run once at startup."
+  (interactive (list (read-file-name "Config file: " user-emacs-directory
+                                     "config.el" t)))
+  (setq file (expand-file-name (or file (locate-user-emacs-file "config.el"))))
+  (unless (file-readable-p file)
+    (user-error "Cannot read %s" file))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (let (found)
+      (while (not (eobp))
+        (forward-comment (buffer-size))
+        (skip-chars-forward " \t\n\r\f")
+        (unless (eobp)
+          (let ((form (condition-case err
+                          (read (current-buffer))
+                        (end-of-file nil)
+                        (error
+                         (message "kwarks/package-sync-selected: skipped sexp (%S)" err)
+                         nil))))
+            (when-let ((pkg (kwarks/package--use-package-ensure-name form)))
+              (push pkg found)))))
+      (setq package-selected-packages
+            (sort (delete-dups (nreverse found))
+                  (lambda (a b) (string-lessp (symbol-name a) (symbol-name b)))))))
+  (when (called-interactively-p 'interactive)
+    (message "package-selected-packages: %d packages from %s"
+             (length package-selected-packages) file)))
+
+(kwarks/package-sync-selected-from-config)
 #+END_SRC
 
 * Post init
@@ -994,5 +1080,42 @@ Lower the GC thresholds back down to a sane level.
 #+BEGIN_SRC emacs-lisp
 (setq gc-cons-threshold 16777216
       gc-cons-percentage 0.1)
+#+END_SRC
+
+** Long-line safety (=so-long=)
+Mitigate pathological files (minified JS, huge one-line logs) freezing font-lock.
+
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'global-so-long-mode)
+  (global-so-long-mode 1))
+#+END_SRC
+
+** Process output buffer (Eglot / LSP)
+Larger chunks from language servers reduce chatter and stalls.
+
+#+BEGIN_SRC emacs-lisp
+(setq read-process-output-max (* 1024 1024))
+#+END_SRC
+
+** Repeat keys
+Use built-in repeat maps for commands that expose them (e.g. many Consult bindings).
+
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'repeat-mode)
+  (repeat-mode 1))
+#+END_SRC
+
+** Context menus (GUI)
+Right-click context menu in graphical sessions.
+
+#+BEGIN_SRC emacs-lisp
+(when (and (fboundp 'context-menu-mode) (display-graphic-p))
+  (context-menu-mode 1))
+#+END_SRC
+
+** Pixel-precise scrolling (macOS GUI)
+#+BEGIN_SRC emacs-lisp
+(when (and (osx-p) (display-graphic-p) (fboundp 'pixel-scroll-precision-mode))
+  (pixel-scroll-precision-mode 1))
 #+END_SRC
 
