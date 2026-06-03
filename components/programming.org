@@ -17,10 +17,15 @@ Turn on line numbers for programming modes.
 #+END_SRC
 
 ** Tree-sitter (Emacs 31)
-Emacs 31 can auto-remap supported major modes to their tree-sitter variants and
-fetch missing grammars on demand, replacing manual =*-ts-mode= wiring and
-third-party helpers.  Guarded so it only runs on Emacs 31+ with a working
-tree-sitter library.
+Emacs 31 can auto-remap supported major modes to their tree-sitter variants when
+grammars are installed, replacing manual =*-ts-mode= wiring and third-party
+helpers.  Guarded so it only runs on Emacs 31+ with a working tree-sitter
+library.  Grammars are never auto-downloaded from Emacs.  The command
+=treesit-install-language-grammar= installs **one** grammar per run.  For
+several at once with the same minibuffer filtering as =M-x=, use
+=kwarks/treesit-install-languages= (comma-separated symbols, TAB completes each
+element).  For English / Russian / Spanish spell-checking see [[file:jinx.org][jinx.org]]
+(=jinx-languages=).
 
 #+BEGIN_SRC emacs-lisp
 (when (and (>= emacs-major-version 31)
@@ -29,8 +34,147 @@ tree-sitter library.
   (require 'treesit)
   ;; `setopt' so the :set logic updates `major-mode-remap-alist'.
   (setopt treesit-enabled-modes t
-          ;; Prompt before downloading a grammar the first time it's needed.
-          treesit-auto-install-grammar 'ask))
+          ;; Never auto-download grammars from Emacs (install via OS or `treesit-install-language-grammar').
+          treesit-auto-install-grammar 'never))
+#+END_SRC
+
+** Tree-sitter grammar batch install
+=treesit-install-language-grammar= only reads **one** language per invocation.
+This command uses =completing-read-multiple= (from =crm.el=): type several names
+separated by commas; completion and filtering apply to **each** element, so
+Vertico behaves like familiar =M-x= completion.  It only requires a Tree-sitter
+capable Emacs (=treesit-available-p=), not necessarily Emacs 31.  Requires Git
+and a C/C++ toolchain on =exec-path=.
+
+Emacs 30 leaves =treesit-language-source-alist= nil by default; this command
+merges =kwarks/treesit-default-grammar-recipes= for common languages only when
+a language has no recipe yet (your own =setq=/Customize entries win).  For any
+other grammar, add a recipe to =treesit-language-source-alist= first (see Info
+node =(elisp) Parser-based Font Lock= and =treesit-install-language-grammar=).
+Languages whose grammar already loads (=treesit-language-available-p=) are
+omitted from completion so you only pick what still needs installing.  While
+typing comma-separated names, languages already chosen in earlier segments are
+hidden from the candidate list for the current segment.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/treesit--grammar-loadable-p (lang)
+  "Return non-nil if Tree-sitter can already load the grammar for LANG."
+  (and (fboundp 'treesit-language-available-p)
+       (car (treesit-language-available-p lang t))))
+(defconst kwarks/treesit-default-grammar-recipes
+  '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+    (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+    (c-sharp . ("https://github.com/tree-sitter/tree-sitter-c-sharp"))
+    (clojure . ("https://github.com/sogaiu/tree-sitter-clojure"))
+    (cmake . ("https://github.com/tree-sitter-grammars/tree-sitter-cmake"))
+    (commonlisp . ("https://github.com/theHamsta/tree-sitter-commonlisp"))
+    (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+    (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+    (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
+    (elisp . ("https://github.com/Wilfred/tree-sitter-elisp"))
+    (elixir . ("https://github.com/elixir-lang/tree-sitter-elixir"))
+    (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+    (haskell . ("https://github.com/tree-sitter/tree-sitter-haskell"))
+    (heex . ("https://github.com/phoenixframework/tree-sitter-heex"))
+    (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+    (java . ("https://github.com/tree-sitter/tree-sitter-java"))
+    (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+    (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+    (julia . ("https://github.com/tree-sitter/tree-sitter-julia"))
+    (lua . ("https://github.com/tree-sitter-grammars/tree-sitter-lua"))
+    (markdown . ("https://github.com/ikatyang/tree-sitter-markdown"))
+    (perl . ("https://github.com/tree-sitter-perl/tree-sitter-perl"))
+    (php . ("https://github.com/tree-sitter/tree-sitter-php"))
+    (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+    (r . ("https://github.com/r-lib/tree-sitter-r"))
+    (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
+    (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+    (scala . ("https://github.com/tree-sitter/tree-sitter-scala"))
+    (swift . ("https://github.com/tree-sitter/tree-sitter-swift"))
+    (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))
+    (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx"))
+    (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript"))
+    (yaml . ("https://github.com/tree-sitter-grammars/tree-sitter-yaml"))
+    (zig . ("https://github.com/tree-sitter-grammars/tree-sitter-zig")))
+  "Built-in grammar URLs merged into `treesit-language-source-alist' when missing.
+Only languages without an existing recipe are added.")
+
+(defun kwarks/treesit--upgrade-obsolete-recipe-urls ()
+  "Fix defunct grammar URLs that were never under github.com/tree-sitter/.
+Safe to run repeatedly; only replaces known-bad URL strings."
+  (let ((old->new
+         '(("https://github.com/tree-sitter/tree-sitter-yaml" . "https://github.com/tree-sitter-grammars/tree-sitter-yaml")
+           ("https://github.com/tree-sitter/tree-sitter-yaml.git" . "https://github.com/tree-sitter-grammars/tree-sitter-yaml")
+           ("https://github.com/tree-sitter/tree-sitter-lua" . "https://github.com/tree-sitter-grammars/tree-sitter-lua")
+           ("https://github.com/tree-sitter/tree-sitter-lua.git" . "https://github.com/tree-sitter-grammars/tree-sitter-lua")
+           ("https://github.com/tree-sitter/tree-sitter-r" . "https://github.com/r-lib/tree-sitter-r")
+           ("https://github.com/tree-sitter/tree-sitter-r.git" . "https://github.com/r-lib/tree-sitter-r"))))
+    (dolist (cell treesit-language-source-alist)
+      (let* ((recipe (cdr cell))
+             (url (car-safe recipe)))
+        (when (stringp url)
+          (when-let ((new (cdr (assoc url old->new #'string=))))
+            (setcar recipe new)))))))
+
+(defun kwarks/treesit--merge-default-grammar-recipes ()
+  "Add `kwarks/treesit-default-grammar-recipes' entries missing from the alist.
+Emacs 30 ships `treesit-language-source-alist' as nil; major modes do not
+populate it globally, so batch install needs a baseline list."
+  (kwarks/treesit--upgrade-obsolete-recipe-urls)
+  (dolist (cell kwarks/treesit-default-grammar-recipes)
+    (let ((lang (car cell)))
+      (unless (assq lang treesit-language-source-alist)
+        (push (cons lang (cdr cell)) treesit-language-source-alist)))))
+
+(defun kwarks/treesit--crm-completion-table (candidates)
+  "Return a programmed completion table for string CANDIDATES.
+For `completing-read-multiple', drops names that appear in earlier
+comma-separated fields (text before the current field per `crm--current-element')."
+  (lambda (string pred action)
+    (let* ((already (when (and (minibufferp) (fboundp 'crm--current-element))
+                      (let* ((bounds (crm--current-element))
+                             (prefix (buffer-substring-no-properties (minibuffer-prompt-end)
+                                                                       (car bounds))))
+                        (mapcar #'string-trim
+                                (split-string prefix crm-separator t)))))
+           (table (seq-remove (lambda (name) (member name already)) candidates)))
+      (complete-with-action action table string pred))))
+
+(defun kwarks/treesit-install-languages ()
+  "Install several Tree-sitter grammars via `completing-read-multiple'.
+Each name must exist in `treesit-language-source-alist' after defaults merge.
+Languages that already load (`treesit-language-available-p') are not offered.
+While entering comma-separated names, languages already picked in earlier
+fields are omitted from completion for the current field."
+  (interactive)
+  (unless (and (fboundp 'treesit-available-p)
+               (treesit-available-p))
+    (user-error
+     "Tree-sitter is not available in this session (need Emacs built with libtree-sitter; check `treesit-available-p')"))
+  (require 'treesit)
+  (kwarks/treesit--merge-default-grammar-recipes)
+  (require 'crm)
+  (let* ((recipe-langs (mapcar #'car treesit-language-source-alist))
+         (pending (delq nil (mapcar (lambda (lang)
+                                      (unless (kwarks/treesit--grammar-loadable-p lang)
+                                        lang))
+                                    recipe-langs)))
+         (names (sort (mapcar #'symbol-name pending) #'string<)))
+    (unless names
+      (user-error "No grammars left to install (every recipe language already loads, or no recipes)"))
+    (let ((picked (completing-read-multiple
+                   (format "%d/%d Tree-sitter languages (comma-separated, TAB completes each): "
+                           (length names) (length recipe-langs))
+                   (kwarks/treesit--crm-completion-table names)
+                   nil t)))
+      (dolist (s picked)
+        (let ((lang (intern s)))
+          (unless (memq lang pending)
+            (error "Unknown or already-installed language `%s'" lang))
+          (message "Installing Tree-sitter grammar `%s'..." lang)
+          (condition-case err
+              (treesit-install-language-grammar lang)
+            (error (message "`%s' failed: %S" lang err))))))))
 #+END_SRC
 
 ** eglot helper
