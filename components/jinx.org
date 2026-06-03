@@ -9,6 +9,10 @@ so the following must be present at build time:
   both pulled in as Homebrew deps of =enchant=).
 
 Use =M-x jinx-languages= to inspect/select the available dictionaries.
+If a locale from =jinx-languages= is missing, install its hunspell/aspell
+dictionary for your OS (Homebrew has per-language hunspell formulae in some
+cases).
+
 Activation is guarded below so a missing native library never breaks editing.
 
 #+BEGIN_SRC emacs-lisp
@@ -16,6 +20,10 @@ Activation is guarded below so a missing native library never breaks editing.
   :bind (("M-$"   . jinx-correct)
          ("C-M-$" . jinx-languages))
   :init
+  ;; Enchant dictionary tags (space-separated).  Install backends with Homebrew
+  ;; if needed, e.g. `brew install enchant hunspell` plus hunspell dictionaries
+  ;; for each locale; use `M-x jinx-languages' to see what Enchant actually offers.
+  (setq-default jinx-languages "en_US ru_RU es_ES")
   (defun kwarks/maybe-jinx ()
     "Enable jinx-mode if the enchant native module is available."
     (when (ignore-errors (require 'jinx nil t))

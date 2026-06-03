@@ -57,6 +57,8 @@ site-lisp/package/
 /org-brain
 /config.el
 /cache/
+/package-quickstart.el
+/package-quickstart.elc
 /core.el
 /components/*.el
 /.docsets
