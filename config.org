@@ -198,7 +198,10 @@ otherwise `shell' starts the process in the buffer's stale directory."
                       frameset--text-pixel-width frameset--text-pixel-height))
   (setf (alist-get param frameset-filter-alist) :never))
 
-(desktop-read)
+;; Honor EMACS_NO_DESKTOP for troubleshooting: without this, the variable has
+;; no effect because `desktop-read' is unconditional (see Sessions block).
+(unless (getenv "EMACS_NO_DESKTOP")
+  (desktop-read))
 
 ;; Persist the frame's actual geometry on exit so early-init.el can recreate it
 ;; next launch.  Reading it at exit captures exactly where the frame sits on
@@ -271,7 +274,10 @@ otherwise `shell' starts the process in the buffer's stale directory."
                 (read-expression-history  . 60)
                 (regexp-history           . 60)
                 (regexp-search-ring       . 20)
-                register-alist
+                ;; Omit `register-alist': markers serialize as many
+                ;; `desktop-delay-hook' forms and can balloon the desktop file
+                ;; (duplicate window-state registers, accidental paste into a
+                ;; char register, etc.), which makes restore slow or wedged.
                 (search-ring              . 20)
                 (shell-command-history    . 50)
                 tags-file-name

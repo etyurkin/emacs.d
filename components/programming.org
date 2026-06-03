@@ -59,6 +59,12 @@ Show VCS change indicators in the fringe (replaces git-gutter).
 #+BEGIN_SRC emacs-lisp
 (use-package diff-hl
   :demand t
+  :init
+  ;; `define-globalized-minor-mode' binds this only after :autoload-end in
+  ;; diff-hl.el; hooks or mode-line work (e.g. Marginalia during `C-x b') can run
+  ;; `global-diff-hl-mode-enable-in-buffer' first and signal void-variable after
+  ;; switching Emacs versions or with a narrow autoload load.
+  (defvar global-diff-hl-mode-buffers nil)
   :hook ((dired-mode . diff-hl-dired-mode)
          (magit-pre-refresh . diff-hl-magit-pre-refresh)
          (magit-post-refresh . diff-hl-magit-post-refresh))
