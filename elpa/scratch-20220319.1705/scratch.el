@@ -1,9 +1,8 @@
 ;;; scratch.el --- Mode-specific scratch buffers
 
 ;; Author: Ian Eure <ian.eure@gmail.com>
-;; Version: 1.4
 ;; Package-Version: 20220319.1705
-;; Package-Commit: f000648c9663833a76a8de9b1e78c99a9d698e48
+;; Package-Revision: f000648c9663
 ;; Package-Requires: ((emacs "25.1"))
 ;; URL: https://github.com/ieure/scratch-el
 ;; Keywords: convenience, tools, files
