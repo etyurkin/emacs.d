@@ -1,0 +1,35 @@
+#+TITLE: org-modern
+#+PROPERTY: header-args :tangle yes
+
+Prettier Org faces (blocks, tags, priorities, foldable headline markers).
+Pairs with Consult: allow =global-org-modern-mode= during previews so
+=consult-line= and friends do not strip the styling.
+
+Fringe metrics are synced once on =window-setup-hook= after the first GUI frame
+exists (so block fringe lines match the current font).
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-modern
+  :after (org consult)
+  :init
+  (with-eval-after-load 'consult
+    (add-to-list 'consult-preview-allowed-hooks 'global-org-modern-mode))
+  :config
+  ;; Explicit default: fold indicators on headlines (Customize may have saved nil).
+  (setq org-modern-star 'fold)
+  (global-org-modern-mode 1)
+  ;; Doom-ish headline colours (theme.org leaves headline faces to org-modern).
+  (custom-set-faces
+   '(org-level-1 ((t (:foreground "#51afef" :background unspecified))))
+   '(org-level-2 ((t (:foreground "#c678dd" :background unspecified))))
+   '(org-level-3 ((t (:foreground "#a9a1e1" :background unspecified)))))
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (when (and (display-graphic-p)
+                         (fboundp 'org-modern--update-bitmaps)
+                         (fboundp 'org-modern--update-faces))
+                (ignore-errors
+                  (org-modern--update-bitmaps)
+                  (org-modern--update-faces))))
+            t))
+#+END_SRC

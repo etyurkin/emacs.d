@@ -1,0 +1,12 @@
+#+TITLE: apheleia
+#+PROPERTY: header-args :tangle yes
+
+Async format-on-save via external formatters (per major mode).  Turn off with
+=M-x apheleia-global-mode= or customize =apheleia-mode-alist= if a buffer should
+stay unformatted.
+
+#+BEGIN_SRC emacs-lisp
+(use-package apheleia
+  :config
+  (apheleia-global-mode 1))
+#+END_SRC

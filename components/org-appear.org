@@ -1,0 +1,11 @@
+#+TITLE: org-appear
+#+PROPERTY: header-args :tangle yes
+
+Show link markup, emphasis, entities, and LaTeX fragments only while the point
+is on them — less visual noise in long Org files.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-appear
+  :after org
+  :hook (org-mode . org-appear-mode))
+#+END_SRC

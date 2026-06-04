@@ -1,0 +1,16 @@
+#+TITLE: casual
+#+PROPERTY: header-args :tangle yes
+
+Transient menus for built-in modes (from the consolidated =casual= package).
+=Magit= is listed in =:after= so a recent =transient= is on the load path before
+Casual (Casual wants Transient 0.9+).  Dired main menu on =M-o= so =C-o= stays
+bound to =dired-display-file=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package casual
+  :after (dired magit)
+  :config
+  (require 'casual-dired nil t)
+  (when (fboundp 'casual-dired-tmenu)
+    (keymap-set dired-mode-map "M-o" #'casual-dired-tmenu)))
+#+END_SRC

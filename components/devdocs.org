@@ -1,0 +1,14 @@
+#+TITLE: devdocs
+#+PROPERTY: header-args :tangle yes
+
+Browse offline DevDocs mirrors inside Emacs.  First run =M-x devdocs-install=
+to download a doc set, then =M-x devdocs-lookup= (or =C-c M-d= below).  Data
+lives under =~/.emacs.d/devdocs/= by default.
+
+Requires Emacs built with libxml2.
+
+#+BEGIN_SRC emacs-lisp
+(use-package devdocs
+  :defer t
+  :bind ("C-c M-d" . devdocs-lookup))
+#+END_SRC
