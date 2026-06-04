@@ -1,0 +1,2 @@
+;; Generated package description from casual.el  -*- mode: lisp-data; no-byte-compile: t; lexical-binding:t -*-
+(define-package "casual" "2.16.1" "Transient user interfaces for various modes" '((emacs "30.1") (transient "0.9.0") (csv-mode "1.27")) :commit "72fc24345934888528e823195d90cf0a60b948c9" :authors '(("Charles Choi" . "kickingvegas@gmail.com")) :maintainer '("Charles Choi" . "kickingvegas@gmail.com") :keywords '("tools" "wp") :url "https://github.com/kickingvegas/casual")

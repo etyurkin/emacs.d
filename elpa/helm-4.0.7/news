@@ -1,0 +1,208 @@
+1 NEWS
+══════
+
+1.1 Version 4.0.7
+─────────────────
+
+1.1.1 Improve helm-dwim-target-directory
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  You can use now M-n to cycle in default directories bound to each
+  window.
+
+
+1.1.2 Add tldr action to helm-man
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  See <https://github.com/tealdeer-rs/tealdeer> and
+  <https://github.com/tldr-pages/tldr> Don't forget to feed the cache if
+  not already done:
+
+  tldr –update
+
+
+1.1.3 file-name-history in HFF is now inconditionally using recentf
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  The user vars `helm-ff-file-name-history-use-recentf` and
+  `helm-files-save-history-extra-sources` have been removed.
+
+
+1.1.4 Improve splitting helm-window
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  We can now split in both directions with two different commands (C-r
+  and C-t).
+
+
+1.1.5 helm-packages is now showing new packages
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.2 Version 4.0.6
+─────────────────
+
+1.2.1 Mostly bugfixes
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.2.2 Change default value of helm-ff-candidate-number-limit
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.2.3 Show new packages in a separate source in helm-packages
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.2.4 New browse url command (brave)
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3 Version 4.0.5
+─────────────────
+
+1.3.1 Enable persistent actions in symbol-help categories
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Thats mean that C-h f/v/x/o etc… have now persistent action to display
+  help.
+
+
+1.3.2 helm-action at nth only available when helm-display-line-numbers-mode is enabled.
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Before the keys were available even when line relative numbers were
+  not enabled.
+
+
+1.3.3 Change behavior of helm-buffer-toggle-diff
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  When buffer has changes not saved to file do "diff file buffer".  When
+  file has changes done externally and buffer is not up to date do "diff
+  buffer file".
+
+
+1.3.4 New action in helm-packages to clone packages
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3.5 Diacritics can now be ignored in helm-find-files
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  and read-file-name with the variable
+  `helm-find-files-ignore-diacritics`.
+
+
+1.3.6 Allow using a function as diacritics slot value
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3.7 Now project history use adaptive match
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  That's mean that the recentest projects popup on top.
+
+
+1.3.8 helm-mm-matching-method is no more a user var
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3.9 Fix bugs and inconsistencies in helm-multi-match.el
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3.10 Add a specialized match fn for files
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Once the first pattern is matched on the whole candidate, the
+  subsequent patterns match only in basename whereas they were matching
+  again the whole candidate previously.  e.g. `/home/you/github/repo/
+  foo git' previously was matching most of the files in directory
+  instead of matching only e.g. `foogit.el', now only the files matching
+  `foo git' are displayed.
+
+
+1.3.11 Change color of toggle-debug-on-error/quit in helm-M-x
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  when the commands are activated.
+
+
+1.3.12 Differenciate minor and major mode in helm-M-x
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.3.13 Change behavior of helm-delete-minibuffer-contents-from-pos
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Now the prefix arg specify only whether we preselect the candidate or
+  not. That's means you can now narrow down your candidates to "foo",
+  and then do C-u C-k on "foo" to retrieve the whole list of candidate
+  with the preselection on the last occurence of "foo".
+
+
+1.4 Version 4.0.4
+─────────────────
+
+1.4.1 Rewrite the helm async process filter
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.4.2 We can now mark the <n> next candidates with a numeric prefix arg
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Same for previous.
+
+
+1.4.3 Change default prefix binding to reach nth candidates
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Now you can reach next nth candidate with C-<n> and previous nth
+  candidate with M-<n>, it is easier to remember.  Note that this defeat
+  the ability to specify prefix arg with C-<n> or M-<n>.
+
+
+1.4.4 helm-completions-detailed is now enabled by default
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.5 Version 4.0.3
+─────────────────
+
+1.5.1 New drag-and-drop support for helm-find-files (only Emacs-29+)
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Use now dnd.el for the new drag-and-drop function.  This allows
+  drag-and-drop in external applications in addition to emacs dired
+  frames and windows. See helm-find-files documentation.
+
+
+1.5.2 Remove old drag-and-drop support for helm-find-files
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+
+1.5.3 Add a new completion metadata category command-help
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Handle helm-M-x prefix arg integration in this category.  That's mean
+  you can have helm-M-x prefix arg feature in M-X.
+
+
+1.5.4 Allow filtering sources in current session
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  It is bound to C-M-e in helm-map.
+
+
+1.5.5 Change `helm-current-directory-alist` default value
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  Now C-x C-f from a Gnus buffer brings to News directory.
+
+
+1.5.6 Exclude commands related to specific modes in helm-M-x
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+  This is available only in Emacs with an interactive version supporting
+  MODES argument.  It is configurable with …  …
