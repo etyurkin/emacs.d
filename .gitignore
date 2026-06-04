@@ -46,6 +46,8 @@ site-lisp/package/
 /ditaa*.jar
 /ido.last
 /recentf
+/projects
+/projects.eld
 /viper
 /projectile-bookmarks.eld
 /elpa-mirror
