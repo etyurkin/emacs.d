@@ -1,0 +1,11 @@
+#+TITLE: git-link
+#+PROPERTY: header-args :tangle yes
+
+Copy a GitHub/GitLab/etc. URL for the current line or commit to the kill ring
+(=M-x git-link=, =M-x git-link-commit=).  Complements =browse-at-remote= (open
+in browser vs copy URL).
+
+#+BEGIN_SRC emacs-lisp
+(use-package git-link
+  :commands (git-link git-link-commit))
+#+END_SRC

@@ -194,6 +194,10 @@ Frame geometry itself is left to desktop-restore which already handles it."
 #+END_SRC
 
 ** org-mode visuals
+Headline / block / ellipsis faces are left to =doom-one= plus [[file:org-modern.org][org-modern]].
+Overriding them here with =custom-set-faces= was winning after =org-modern= loaded,
+which made buffers look “un-modernized” and wrong versus the theme.
+
 #+BEGIN_SRC emacs-lisp
 (require 'org)
 (add-to-list 'org-emphasis-alist
@@ -203,16 +207,7 @@ Frame geometry itself is left to desktop-restore which already handles it."
  (let ((font-size (if (or (cygwin-p) (ms-windows-p))
                       100 130)))
    (custom-set-faces
-    ;; No :height here -- all heading levels keep the default font size so the
-    ;; headings are uniform.  (font-size is still used by the agenda faces.)
-    '(org-level-1             ((t (:box nil :foreground "#51afef" :background unspecified))))
-    '(org-level-2             ((t (:foreground "#c678dd" :background unspecified))))
-    '(org-level-3             ((t (:foreground "#a9a1e1" :background unspecified))))
-    '(org-block               ((t (:background unspecified))))
-    '(org-block-begin-line    ((t (:background unspecified :slant italic))))
-    '(org-block-end-line      ((t (:background unspecified :slant italic))))
-    '(font-lock-comment-face  ((t (:background unspecified))))
-    '(org-ellipsis            ((t (:background unspecified :strike-through nil))))
+    ;; Agenda-only tweaks (org-modern does not replace these layouts).
     '(org-done                ((t (:strike-through t))))
     '(org-headline-done       ((t (:strike-through t))))
     '(org-agenda-done         ((t (:strike-through t))))

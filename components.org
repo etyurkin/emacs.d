@@ -43,6 +43,10 @@ enabled component below.
 * Programming
 - [X] [[file:components/programming.org][General programming tools]]
 - [X] [[file:components/magit.org][magit]]
+- [X] [[file:components/browse-at-remote.org][browse-at-remote]]
+- [X] [[file:components/git-link.org][git-link]]
+- [X] [[file:components/apheleia.org][apheleia — format on save]]
+- [X] [[file:components/casual.org][casual — transient menus for dired]]
 - [X] [[file:components/lisp.org][lisp]]
 - [X] [[file:components/python.org][python]]
 - [X] [[file:components/yaml.org][yaml]]
@@ -62,11 +66,14 @@ enabled component below.
 - [X] [[file:components/org-wiki.org][org-wiki]]
 - [X] [[file:components/denote.org][denote]]
 - [X] [[file:components/org-extras.org][org-extras]]
+- [X] [[file:components/org-modern.org][org-modern]]
+- [X] [[file:components/org-appear.org][org-appear]]
 - [ ] [[file:components/org-brain.org][org-brain]]
 
 * Tools
 - [X] [[file:components/http.org][http]]
 - [X] [[file:components/agent-shell.org][agent-shell]]
+- [X] [[file:components/devdocs.org][devdocs — offline API docs]]
 - [ ] [[file:components/ellama.org][ellama - AI assistant]]
 - [ ] [[file:components/nov.org][nov - EPUB reader]]
 - [ ] [[file:components/weather.org][weather]]

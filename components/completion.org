@@ -10,7 +10,15 @@ in-buffer completion, and the built-in which-key for key hints.
 (use-package vertico
   :demand t
   :init
-  (setq vertico-cycle t
+  ;; If max height is 0 or nil, the minibuffer never grows and Vertico looks
+  ;; like "no popup" for M-x / consult-buffer.
+  (setq resize-mini-windows 'grow-only
+        max-mini-window-height
+        (let ((h max-mini-window-height))
+          (cond ((null h) 0.33)
+                ((and (numberp h) (<= h 0)) 0.33)
+                (t h)))
+        vertico-cycle t
         vertico-count 10)
   :config
   (vertico-mode 1))
@@ -51,6 +59,7 @@ Practical search and navigation commands, the spiritual successor to counsel/swi
 
 #+BEGIN_SRC emacs-lisp
 (use-package consult
+  :demand t
   :bind (("M-x"     . execute-extended-command)
          ("C-s"     . consult-line)
          ("C-x b"   . consult-buffer)
@@ -90,7 +99,18 @@ Practical search and navigation commands, the spiritual successor to counsel/swi
            (cmd (format "kill -9 %s" pid)))
       (if (string= me pid-user)
           (shell-command-to-string cmd)
-        (kwarks--with-sudo (shell-command cmd))))))
+        (kwarks--with-sudo (shell-command cmd)))))
+  :config
+  ;; :bind can fail to take effect when Consult is not linked yet during macro
+  ;; expansion; bind after load.  Built-in `switch-to-buffer' uses the prompt
+  ;; "Switch to buffer (default …)"; `consult-buffer' uses "Switch to: ".
+  (define-key ctl-x-map "b" #'consult-buffer)
+  (define-key ctl-x-map "\C-b" #'consult-buffer)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (define-key ctl-x-map "b" #'consult-buffer)
+              (define-key ctl-x-map "\C-b" #'consult-buffer))
+            100))
 #+END_SRC
 
 ** embark

@@ -1,0 +1,10 @@
+#+TITLE: browse-at-remote
+#+PROPERTY: header-args :tangle yes
+
+Open the current file/line on GitHub, GitLab, or other remotes in a browser
+(=M-x browse-at-remote=).  Uses the same remote URL logic as the hosting site.
+
+#+BEGIN_SRC emacs-lisp
+(use-package browse-at-remote
+  :commands (browse-at-remote browse-at-remote-kill))
+#+END_SRC
