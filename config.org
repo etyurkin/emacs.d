@@ -163,7 +163,11 @@ reuses the same dabbrev machinery.
       ;; frame size/position is reset when a monitor sits above/left of main).
       desktop-restore-forces-onscreen nil)
 
-(desktop-save-mode 1)
+;; `desktop-save-mode' loads `desktop.el', which adds `desktop-read' to
+;; `after-init-hook'.  Do not call `desktop-read' again later in this file:
+;; that runs desktop twice and you get "Not reloading the desktop; already loaded".
+(unless (getenv "EMACS_NO_DESKTOP")
+  (desktop-save-mode 1))
 
 ;; Desktop does not restore live process buffers (like *shell*) by default.
 ;; Teach it to remember a shell buffer's directory and restart the shell there,
@@ -175,9 +179,19 @@ reuses the same dabbrev machinery.
 (defun kwarks/desktop-restore-shell (_file-name buffer-name dir)
   "Restart a shell named BUFFER-NAME in its saved directory DIR.
 Desktop pre-creates the buffer, so set its `default-directory' explicitly;
-otherwise `shell' starts the process in the buffer's stale directory."
+otherwise `shell' starts the process in the buffer's stale directory.
+
+If BUFFER-NAME is already taken by a file-visiting buffer (e.g. both a window
+named =ebay.org= and a shell slot reusing that name), `get-buffer-create' would
+return that buffer and `(shell buf)' would replace Org with comint — leaving
+two confusing =ebay.org= entries.  In that case allocate a fresh *shell*… name
+instead."
   (let* ((dir (or dir default-directory))
-         (buf (get-buffer-create buffer-name)))
+         (placeholder (and buffer-name (get-buffer buffer-name)))
+         (buf (if (and placeholder buffer-file-name)
+                  ;; Never hijack a file buffer (e.g. ebay.org) for shell.
+                  (generate-new-buffer (generate-new-buffer-name "*shell*"))
+                (get-buffer-create (or buffer-name "*shell*")))))
     (with-current-buffer buf
       (setq default-directory dir))
     (let ((default-directory dir))
@@ -205,10 +219,50 @@ otherwise `shell' starts the process in the buffer's stale directory."
                       frameset--text-pixel-width frameset--text-pixel-height))
   (setf (alist-get param frameset-filter-alist) :never))
 
-;; Honor EMACS_NO_DESKTOP for troubleshooting: without this, the variable has
-;; no effect because `desktop-read' is unconditional (see Sessions block).
-(unless (getenv "EMACS_NO_DESKTOP")
-  (desktop-read))
+;; Elpaca can `pop-to-buffer' on *elpaca-log* during `elpaca-wait' before
+;; `emacs-startup-hook'; desktop can leave *Messages* in a window.  Repoint
+;; those windows without `switch-to-buffer' + `other-buffer' (that duplicates
+;; an already-visible buffer, e.g. *shell*, across splits).  Cleanup runs only
+;; from `emacs-startup-hook' so it does not run on `after-desktop-read-hook' and
+;; undo the layout `desktop-read' just built (see `desktop-save-mode' above).
+(defun kwarks/first-buffer-not-displayed-on-frame (frame exclude)
+  "Return a live buffer not shown in any window on FRAME, other than EXCLUDE.
+Skips internal buffers (name starts with a space).  Falls back to *scratch*."
+  (or (catch 'found
+        (dolist (b (buffer-list))
+          (let ((n (buffer-name b)))
+            (when (and (buffer-live-p b)
+                       (not (eq b exclude))
+                       n
+                       (not (string-prefix-p " " n))
+                       (not (get-buffer-window-list b nil frame)))
+              (throw 'found b)))))
+      (get-buffer "*scratch*")
+      (get-buffer-create "*scratch*")))
+
+(defun kwarks/hide-startup-noise-windows ()
+  "Clear noisy buffers from windows without duplicating an already-visible buffer.
+`switch-to-buffer' + `other-buffer' duplicated buffers (e.g. *shell*) across splits.
+`set-window-buffer' to the first off-frame buffer avoided that, but when every
+real buffer was already visible the fallback was *scratch*, which produced an
+unwanted third pane.  If the frame has more than one window and this one is
+deletable, remove the split instead of parking *scratch* there."
+  (dolist (name '("*Messages*" "*Warnings*" "*Compile-Log*"
+                  "*elpaca-log*" "*elpaca-bootstrap*"))
+    (let ((buf (get-buffer name)))
+      (when (and buf (buffer-live-p buf))
+        (dolist (win (copy-sequence (get-buffer-window-list buf nil t)))
+          (let* ((frm (window-frame win))
+                 (nw (length (window-list frm nil))))
+            (if (and (> nw 1) (window-deletable-p win))
+                (delete-window win)
+              (let ((rep (kwarks/first-buffer-not-displayed-on-frame frm buf)))
+                (when (buffer-live-p rep)
+                  (set-window-buffer win rep))))))
+        (unless (get-buffer-window-list buf nil t)
+          (bury-buffer buf))))))
+
+(add-hook 'emacs-startup-hook #'kwarks/hide-startup-noise-windows t)
 
 ;; Persist the frame's actual geometry on exit so early-init.el can recreate it
 ;; next launch.  Reading it at exit captures exactly where the frame sits on
@@ -292,24 +346,6 @@ otherwise `shell' starts the process in the buffer's stale directory."
 
 (setq-default history-length 1000)
 (savehist-mode t)
-#+END_SRC
-
-Desktop restores the window layout from the previous session, which can leave
-diagnostic buffers (=*Messages*=, =*Warnings*=, =*Compile-Log*=) occupying a
-window on startup.  Bury them once startup finishes, keeping the rest of the
-restored layout intact.
-#+BEGIN_SRC emacs-lisp
-(defun kwarks/hide-startup-noise-windows ()
-  "Bury diagnostic buffers shown in windows left over after startup.
-Switches each such window to another buffer instead of deleting it, so a
-restored desktop window layout (e.g. a split) is preserved."
-  (dolist (name '("*Messages*" "*Warnings*" "*Compile-Log*"))
-    (let ((buf (get-buffer name)))
-      (when buf
-        (dolist (win (get-buffer-window-list buf nil t))
-          (switch-to-prev-buffer win))))))
-
-(add-hook 'emacs-startup-hook #'kwarks/hide-startup-noise-windows 90)
 #+END_SRC
 
 ** Calendar
@@ -947,122 +983,38 @@ See https://truongtx.me/2014/08/23/setup-emacs-as-an-sql-database-client
 #+END_SRC
 
 * Package Management
-We set =load-path= ourselves and avoid calling =(package-initialize)= for
-performance reasons, then bootstrap =use-package=.
+Third-party packages are installed by [[https://github.com/progfolio/elpaca][Elpaca]] from =init.el= (not =package.el=).
+With =elpaca-use-package-mode=, =use-package= =:ensure t= pulls from GNU ELPA,
+NonGNU ELPA, MELPA, or a recipe plist such as =:ensure (:host github :repo
+\"user/repo\")=.  Builds live under =~/.emacs.d/elpaca/=; use =M-x elpaca-manager=,
+=elpaca-fetch= / =elpaca-merge= for updates.  See the Elpaca manual for =:files=
+(e.g. excluding =.git= from linked trees) and lock files.
 
-=init.el= enables =package-quickstart= before =package-activate-all= so a
-pre-built =package-quickstart.elc= can replace per-package activation when it
-exists.  Run =M-x package-quickstart-refresh= once after pulling this change (or
-install/remove any package) to generate that file; until then startup uses the
-usual activation path.  The quickstart files are gitignored.
+#+BEGIN_SRC emacs-lisp
+(when (and (< emacs-major-version 31) (not (fboundp 'set-local)))
+  (use-package compat :ensure t :demand t))
+#+END_SRC
+
+Tell =use-package= to prefer newer =.el= over stale =.elc=, defer packages by
+default, and treat =:ensure= as “install via Elpaca” unless set to =nil=.
+
+Because =init.el= byte-compiles the tangled =config.el=, plain =setq= of
+=use-package-always-ensure= does not run during compilation: macro expansion
+then sees the default (=nil=), so =elpaca-use-package= never wraps =use-package=
+with =(elpaca …)= and the resulting =config.elc= only =require=s packages that
+were never installed.  =eval-and-compile= applies the same settings when
+compiling and when loading.
+
+#+BEGIN_SRC emacs-lisp
+(setq load-prefer-newer t)
+#+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 (eval-and-compile
-  (setq load-prefer-newer t
-        package-user-dir "~/.emacs.d/elpa"
-        package--init-file-ensured t)
-
-  (unless (file-directory-p package-user-dir)
-    (make-directory package-user-dir t)))
-#+END_SRC
-
-Tell =use-package= to always defer loading packages unless explicitly told
-otherwise.
-
-#+BEGIN_SRC emacs-lisp
-(setq use-package-always-defer t
-      use-package-verbose nil)
-#+END_SRC
-
-Initialize =package.el= and bootstrap =use-package=.
-
-Use =eval-and-compile= (not =eval-when-compile=) so archives and the
-=use-package= install run at **runtime** when =config.elc= is loaded, not only
-when =config.el= is byte-compiled.  Otherwise after a fresh =elpa/= (or first
-machine) =package-archives= never gets MELPA/GNU and =:ensure= cannot install
-anything.
-
-#+BEGIN_SRC emacs-lisp
-(eval-and-compile
-  (require 'package)
-
-  (unless (assoc-default "melpa" package-archives)
-    (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-    (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
-
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
   (require 'use-package)
-  (setq use-package-always-ensure t))
-#+END_SRC
-
-The duplicate =setq use-package-always-ensure= below still documents the case
-where someone loads untangled =config.el= without the block above; it is
-harmless when redundant.
-
-We also derive =package-selected-packages= from every top-level =(use-package …)=
-in the tangled config (same rule as =:ensure=: omit =:ensure nil=, honor
-=:ensure PKG=, otherwise follow =use-package-always-ensure=).  That list is
-what =M-x package-autoremove= uses so unused ELPA packages can be removed without
-treating the set as empty.
-
-#+BEGIN_SRC emacs-lisp
-(setq use-package-always-ensure t)
-
-(defun kwarks/package--use-package-ensure-name (form)
-  "If FORM is a `(use-package ...)' that should come from ELPA, return its package symbol."
-  (when (and (consp form) (eq (car form) 'use-package)
-             (symbolp (cadr form)))
-    (let* ((feat (cadr form))
-           (tail (cddr form)))
-      (while (and tail (not (keywordp (car tail))))
-        (setq tail (cdr tail)))
-      (let* ((always (if (boundp 'use-package-always-ensure)
-                         use-package-always-ensure
-                       t))
-             (has (plist-member tail :ensure))
-             (ensure (plist-get tail :ensure)))
-        (when (if has (not (null ensure)) always)
-          (cond ((or (not has) (eq ensure t)) feat)
-                ((symbolp ensure) ensure)
-                ((stringp ensure) (intern ensure))
-                (t feat)))))))
-
-(defun kwarks/package-sync-selected-from-config (&optional file)
-  "Set `package-selected-packages' from `(use-package ...)' forms in tangled config.
-FILE defaults to =config.el= under `user-emacs-directory'.  Safe to call after
-editing org and re-tangling; also run once at startup."
-  (interactive (list (read-file-name "Config file: " user-emacs-directory
-                                     "config.el" t)))
-  (setq file (expand-file-name (or file (locate-user-emacs-file "config.el"))))
-  (unless (file-readable-p file)
-    (user-error "Cannot read %s" file))
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
-    (let (found)
-      (while (not (eobp))
-        (forward-comment (buffer-size))
-        (skip-chars-forward " \t\n\r\f")
-        (unless (eobp)
-          (let ((form (condition-case err
-                          (read (current-buffer))
-                        (end-of-file nil)
-                        (error
-                         (message "kwarks/package-sync-selected: skipped sexp (%S)" err)
-                         nil))))
-            (when-let ((pkg (kwarks/package--use-package-ensure-name form)))
-              (push pkg found)))))
-      (setq package-selected-packages
-            (sort (delete-dups (nreverse found))
-                  (lambda (a b) (string-lessp (symbol-name a) (symbol-name b)))))))
-  (when (called-interactively-p 'interactive)
-    (message "package-selected-packages: %d packages from %s"
-             (length package-selected-packages) file)))
-
-(kwarks/package-sync-selected-from-config)
+  (setq use-package-always-defer t
+        use-package-verbose nil
+        use-package-always-ensure t))
 #+END_SRC
 
 * Post init

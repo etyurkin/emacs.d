@@ -1,0 +1,181 @@
+                         ━━━━━━━━━━━━━━━━━━━━━
+                          JINX.EL - CHANGELOG
+                         ━━━━━━━━━━━━━━━━━━━━━
+
+
+1 Version 2.8 (2026-05-19)
+══════════════════════════
+
+  • Add support for minor modes to `jinx-include-*' and `jinx-exclude-*'
+    variables.
+  • Require Compat 31.
+
+
+2 Version 2.7 (2026-03-09)
+══════════════════════════
+
+  • Improve mouse menu.
+
+
+3 Version 2.6 (2026-01-17)
+══════════════════════════
+
+  • Use `when-let*' instead of `when-let'.
+  • `jinx-next/previous': Make argument optional.
+
+
+4 Version 2.5 (2025-11-29)
+══════════════════════════
+
+  • Actions can be triggered via digit keys now.
+  • Drop legacy `annotation-function'.
+
+
+5 Version 2.4 (2025-10-13)
+══════════════════════════
+
+  • `jinx-exclude-properties': New variable to exclude propertized text
+    from checking. Exclude `read-only' text by default.
+  • Use `eager-display' for the default completion UI.
+  • Require Emacs 29.
+
+
+6 Version 2.3 (2025-07-28)
+══════════════════════════
+
+  • `jinx-correct-all': Show message if `ONLY-CHECK' is non-nil.
+
+
+7 Version 2.2 (2025-05-26)
+══════════════════════════
+
+  • Stop using `enchant_dict_get_extra_word_characters'. Instead rely on
+    the `jinx--syntax-table' for tokenization.
+
+
+8 Version 2.1 (2025-04-04)
+══════════════════════════
+
+  • `jinx-correct': For capitalized words, offer lower case variants to
+    save in personal dictionary and file local variables.
+  • Add `help-echo' to the Jinx overlays.
+
+
+9 Version 2.0 (2025-03-11)
+══════════════════════════
+
+  • Add `jinx-dir-local-words' saved in `.dir-locals.el'. Words can be
+    added to the `.dir-locals.el' with the `/' key in the `jinx-correct'
+    dialog. The `.dir-locals.el' file of the current or a parent
+    directory is used. If it does not exist it is created in the project
+    root or the current directory.
+
+
+10 Version 1.12 (2025-01-28)
+════════════════════════════
+
+  • Improve performance in large folded Org buffers.
+  • Support `lisp-data-mode'.
+  • Retain dictionaries in weak hash table for sharing.
+
+
+11 Version 1.11 (2024-12-22)
+════════════════════════════
+
+  • Require Emacs 28.1.
+  • Remove special `org-fold' code. Set `org-fold-core-style' to
+    `overlays' if unfolding in Org files does not work for you.
+  • `jinx-languages': Group dictionaries by dictionary provider.
+
+
+12 Version 1.10 (2024-07-23)
+════════════════════════════
+
+  • Bump Compat dependency to Compat 30.
+  • Add include and linkpaths from FreeBSD for compilation.
+  • Add `jinx--syntax-overrides' to override syntax table.
+
+
+13 Version 1.9 (2024-06-29)
+═══════════════════════════
+
+  • Bugfix: In some rare scenarios, Jinx could hang when checking
+    pending regions.
+  • `jinx-correct-all': Add `ONLY-CHECK' prefix argument.
+
+
+14 Version 1.8 (2024-06-19)
+═══════════════════════════
+
+  • Bugfix in `jinx-correct': Fix `wrong-type-argument' error if no
+    Enchant dictionaries are found.
+
+
+15 Version 1.7 (2024-05-15)
+═══════════════════════════
+
+  • `jinx--word-valid-p': Do not error on invalid characters.
+  • `jinx-save-languages': New custom variable.
+
+
+16 Version 1.6 (2024-04-12)
+═══════════════════════════
+
+  • Bugfix (again): Ensure that directory local variables work correctly
+    with Jinx. It is possible to turn Jinx on or off via dir-locals, and
+    also configure the language and local words.
+
+
+17 Version 1.5 (2024-04-04)
+═══════════════════════════
+
+  • Bugfix: Ensure that `jinx-next' unfolds hidden misspellings.
+  • Bugfix: Ensure that directory local variable enabling `jinx-mode'
+    works.
+
+
+18 Version 1.4 (2024-03-10)
+═══════════════════════════
+
+  • Bugfix: Ensure that `jinx-correct' saves words without text
+    properties in the file-local variable `jinx-local-words'.
+  • Bugfix: Ensure that `eval' local variable enabling `jinx-mode'
+    works.
+  • `jinx-correct': If a region is marked, call `jinx-correct-all' and
+    restrict corrections to the marked region.
+  • `jinx-exclude-faces', `jinx-include-faces', `jinx-exclude-regexps':
+    Support mode aliases.
+
+
+19 Version 1.3 (2024-02-23)
+═══════════════════════════
+
+  • Fix interaction bug with the newest version of AUCTeX, where the
+    major mode got changed unexpectedly.
+
+
+20 Version 1.2 (2024-01-22)
+═══════════════════════════
+
+  • Fix deadlock on MacOS during Jinx startup.
+  • Timer optimizations.
+
+
+21 Version 1.1 (2023-12-27)
+═══════════════════════════
+
+  • Add mouse context menu to correct misspellings. The menu is
+    triggered by a right click on a misspelling.
+
+
+22 Version 1.0 (2023-12-01)
+═══════════════════════════
+
+  • Allow capitalized form of a word if non-capitalized word is stored
+    in the session word list.
+  • Replace `jinx-excluded-modes' with `global-jinx-modes', the Emacs 28
+    convention for globalized minor modes.
+  • `jinx-correct': Offer session words as suggestions.
+  • Add `jinx-correct-nearest', `jinx-correct-all' and
+    `jinx-correct-word' commands. The
+  …  …

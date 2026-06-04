@@ -5,6 +5,10 @@ The magical git client.  Loaded lazily through its common entry points.
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
+  ;; Default `magit-define-global-key-bindings' adds an `after-init-hook' that
+  ;; `require's magit before Elpaca may have finished linking it on a cold
+  ;; bootstrap — use our explicit :bind below instead.
+  :init (setq magit-define-global-key-bindings nil)
   :commands (magit-status magit-blame magit-log-buffer-file magit-log-all)
   :bind (("C-x g" . magit-status)))
 #+END_SRC

@@ -209,10 +209,13 @@ Show VCS change indicators in the fringe (replaces git-gutter).
   ;; `global-diff-hl-mode-enable-in-buffer' first and signal void-variable after
   ;; switching Emacs versions or with a narrow autoload load.
   (defvar global-diff-hl-mode-buffers nil)
-  :hook ((dired-mode . diff-hl-dired-mode)
-         (magit-pre-refresh . diff-hl-magit-pre-refresh)
-         (magit-post-refresh . diff-hl-magit-post-refresh))
+  ;; programming.org is tangled before magit.org; :hook on magit-* would pull in
+  ;; magit before Elpaca has installed it on a cold bootstrap.
+  :hook (dired-mode . diff-hl-dired-mode)
   :config
+  (with-eval-after-load 'magit
+    (add-hook 'magit-pre-refresh 'diff-hl-magit-pre-refresh)
+    (add-hook 'magit-post-refresh 'diff-hl-magit-post-refresh))
   (global-diff-hl-mode 1)
   (when (require 'diff-hl-flydiff nil t)
     (diff-hl-flydiff-mode 1))
