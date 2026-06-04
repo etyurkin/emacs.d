@@ -1,20 +1,16 @@
 #+TITLE: annot
 #+PROPERTY: header-args :tangle yes
 
-A global annotator/highlighter.  Installed from source via =package-vc-install=;
-the elisp lives in the repo's =src/= directory.
+A global annotator/highlighter.  Installed from GitHub via Elpaca; elisp lives
+under =src/= in the upstream repository (=:files=).
 
 | C-x C-a | Add annotation / highlight region (annot-edit/add) |
 | C-x C-r | Remove annotation at point (annot-remove)          |
 | C-x C-i | Insert image at point (annot-add-image)            |
 
 #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'annot)
-  (ignore-errors
-    (package-vc-install '(annot :url "https://github.com/ghoshi/annot" :lisp-dir "src"))))
-
 (use-package annot
-  :ensure nil
+  :ensure (:host github :repo "ghoshi/annot" :depth 1 :files ("src/*.el"))
   :demand t
   :init
   (setq annot-directory (expand-file-name "annot" user-emacs-directory))

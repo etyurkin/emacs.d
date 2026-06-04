@@ -3,10 +3,61 @@
 ;;; Commentary:
 ;; Reads the component manifest (components.org), tangles config.org plus every
 ;; enabled component file under components/ into a single config.el, byte
-;; compiles it and loads the result.  Toggle components by editing the
-;; checkboxes in components.org and restarting Emacs.
+;; compiles it and loads the result.  Third-party packages are installed by
+;; Elpaca (see installer below), not package.el.
 
 ;;; Code:
+
+;; Elpaca installer — must run before any other Elpaca macro (see
+;; https://github.com/progfolio/elpaca).
+(defvar elpaca-installer-version 0.12)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca-activate)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; Uncomment if your OS cannot create symlinks (see Elpaca README):
+;; (elpaca-no-symlink-mode)
+
+(elpaca elpaca-use-package
+  ;; Route `use-package' :ensure through Elpaca.
+  (elpaca-use-package-mode))
+;; Install `elpaca-use-package' before tangling/byte-compiling `config.el' so
+;; `use-package' expands :ensure via Elpaca (see Elpaca wiki / Migrating).
+(elpaca-wait)
 
 (defun kwarks/enabled-components ()
   "Return the list of component file paths checked off in components.org.
@@ -34,7 +85,11 @@ Each entry is a relative path like \"components/foo.org\"."
                         (kwarks/enabled-components))))))
 
 (defun kwarks/config-synced-p ()
-  "Return non-nil when config.el is newer than every input that feeds it."
+  "Return non-nil only when config.el is up to date with all tangling inputs.
+If config.org, init.el, components.org, or any enabled component .org is newer
+than config.el, return nil so we tangle again.  After load,
+`kwarks/byte-compile-config-if-needed' rebuilds config.elc whenever config.el
+is newer than config.elc."
   (let* ((dir user-emacs-directory)
          (el-file (expand-file-name "config.el" dir))
          (inputs (append (list (expand-file-name "components.org" dir)
@@ -76,22 +131,40 @@ intermediate files are removed."
     (byte-compile-file out)
     out))
 
+(defun kwarks/byte-compile-config-if-needed ()
+  "Ensure config.elc matches config.el when the latter is newer.
+Stale bytecode otherwise wins on `load' and you keep old definitions even
+after regenerating `config.el' (e.g. tangle without compile, or compile error)."
+  (let ((el (expand-file-name "config.el" user-emacs-directory))
+        (elc (expand-file-name "config.elc" user-emacs-directory)))
+    (when (and (file-exists-p el)
+               (or (not (file-exists-p elc))
+                   (file-newer-than-file-p el elc)))
+      (when (file-exists-p elc)
+        (message "config.el newer than config.elc; re-byte-compiling..."))
+      (setq byte-compile-warnings
+            '(not free-vars unresolved noruntime lexical make-local
+                  obsolete docstrings lambda interactive-only))
+      (byte-compile-file el))))
+
 ;; Don't attempt to find/apply special file handlers to files loaded at startup.
 (let ((file-name-handler-alist nil))
-  ;; Ensure installed package autoloads are available even when Emacs did not
-  ;; auto-activate them (e.g. batch mode or a future early-init.el).  Idempotent.
-  (when (fboundp 'package-activate-all)
-    (package-activate-all))
-  ;; `compat.el' uses `eval-when-compile' to pull in `compat-31'.  If compat was
-  ;; byte-compiled on Emacs 31, that require is omitted at runtime on Emacs 30,
-  ;; so `set-local' (from compat-31, used by Vertico/Corfu) is never defined.
-  (when (and (< emacs-major-version 31) (not (fboundp 'set-local)))
-    (require 'compat nil t)
-    (require 'compat-31 nil t))
+  ;; Tangle when config.org (or init.el / any component org) is newer than config.el;
+  ;; `kwarks/byte-compile-config-if-needed' then refreshes config.elc if needed.
   (unless (kwarks/config-synced-p)
     (message "Regenerating config.el from enabled components...")
     (kwarks/tangle-config))
+  (kwarks/byte-compile-config-if-needed)
   (load (expand-file-name "config" user-emacs-directory) nil nil nil))
+
+;; Process every order queued while loading `config.el(c)' so packages exist
+;; before their `use-package' :init blocks run (Elpaca is async by default).
+(elpaca-wait)
 
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)
+
+;; Local Variables:
+;; no-byte-compile: t
+;; no-native-compile: t
+;; End:
