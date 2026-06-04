@@ -69,3 +69,6 @@ site-lisp/package/
 *.dylib
 /lisp/private
 /agent/
+
+# GNU / NonGNU ELPA detached signatures (per-package tarballs and archive indexes).
+*.signed
