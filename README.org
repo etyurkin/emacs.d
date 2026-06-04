@@ -1,25 +1,25 @@
 * Personal Emacs config
 
-A literate, component-based Emacs configuration (Emacs 30+).
+Literate, component-based Emacs (30+).
 
 ** How it works
-On startup =init.el=:
-1. reads the checkbox manifest in =components.org= to find enabled components,
-2. tangles =config.org= plus every enabled =components/<name>.org= into a single
-   generated =config.el=,
-3. byte-compiles and loads it.
+=init.el= bootstraps [[https://github.com/progfolio/elpaca][Elpaca]], installs =elpaca-use-package=, waits so
+=use-package= =:ensure= expands correctly, then:
+1. reads the checkbox manifest in =components.org=,
+2. tangles =config.org= plus enabled =components/*.org= into =config.el=,
+3. byte-compiles and loads it (another Elpaca wait drains installs queued while loading).
 
-=config.el= is regenerated automatically whenever =components.org=, =config.org=,
-=init.el= or any enabled component file changes.  It is a generated artifact and
-is git-ignored - never edit it by hand.
+=package.el= is off at startup (=early-init.el=).  Supplemental packages may also live under =elpa/=.
+
+=config.el= is regenerated when =components.org=, =config.org=, =init.el=, or an enabled component changes; it is git-ignored—edit the =.org= sources only.
 
 ** Layout
-- =init.el= :: the loader (manifest parsing, tangling, byte-compile, load).
+- =early-init.el= :: pre-frame: GC, disable =package.el= startup, theme/frame cache.
+- =init.el= :: Elpaca bootstrap, tangle/byte-compile, load =config=.
 - =components.org= :: the manifest, organized by category. Toggle =[ ]= / =[X]=
   to disable/enable a component, then restart Emacs. Each entry is an org link
   to the component file -- follow it to open or create the component.
-- =config.org= :: always loaded. Bootstrap, GnuPG/encryption, sessions, and all
-  =kwarks/*= helper commands.
+- =config.org= :: always tangled: core settings, sessions/desktop, GnuPG, =kwarks/*= helpers.
 - =components/<name>.org= :: one file per optional feature or language.
 - =lisp/ext/= :: custom elisp scripts, always loaded.
 - =lisp/private/= :: optional private extensions (git-ignored), loaded if present.
@@ -35,12 +35,8 @@ make compile   # tangle + byte-compile config.el
 make clean     # remove generated artifacts
 #+end_src
 
-** macOS native-comp note
-For native compilation on macOS you may need (in =~/.emacs= or the shell env):
-#+begin_src elisp
-;; see https://github.com/d12frosted/homebrew-emacs-plus/issues/323
-(setenv "LIBRARY_PATH" "/opt/homebrew/lib/gcc/11:/opt/homebrew/Cellar/libgccjit/11.3.0/lib/gcc/11:/opt/homebrew/lib/gcc/11/gcc/aarch64-apple-darwin21/11")
-#+end_src
+** macOS native-comp
+If native-comp fails to find libgccjit, set =LIBRARY_PATH= (see [[https://github.com/d12frosted/homebrew-emacs-plus/issues/323][homebrew-emacs-plus#323]]).
 
 ** Optional external tools
 Some components expect external programs on the PATH:
