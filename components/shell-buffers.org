@@ -1,0 +1,90 @@
+#+TITLE: shell-buffers
+#+PROPERTY: header-args :tangle yes
+
+Fresh =M-x shell= buffer per interactive invocation (name from =default-directory=,
+with =<2>= … when needed).  Buffer name tracks =cd= via a deferred rename (not
+inside comint filters).  Use =M-x kwarks/shell-new= for the same without going
+through advice.
+
+**Note:** The =shell= around-advice has caused init/minibuffer issues for some
+setups; disable this component (or remove the =advice-add= line) to isolate.
+
+#+BEGIN_SRC emacs-lisp
+(require 'shell)
+
+(defun kwarks--shell-new-buffer-name ()
+  "Return a unique buffer name from `default-directory' (home-abbrev, no trailing slash)."
+  (let ((compact (abbreviate-file-name
+                  (directory-file-name (expand-file-name default-directory)))))
+    (generate-new-buffer-name (format "*shell %s*" compact))))
+
+(defun kwarks--shell-interactive-new-buffer (orig-fn &rest args)
+  "Around advice: interactive `shell' with no BUFFER uses a fresh buffer."
+  (if (and (called-interactively-p 'any) (null (car args)))
+      (apply orig-fn
+             (cons (generate-new-buffer (kwarks--shell-new-buffer-name))
+                   (cdr args)))
+    (apply orig-fn args)))
+
+(defun kwarks/shell-new ()
+  "Start `shell' in a fresh buffer named from `default-directory'."
+  (interactive)
+  (shell (generate-new-buffer (kwarks--shell-new-buffer-name))))
+
+(with-eval-after-load 'shell
+  (dolist (sym '(kwarks--shell-interactive-new
+                 kwarks--shell-interactive-new-buffer
+                 kwarks--shell-advice-always-new
+                 kwarks--shell-around))
+    (ignore-errors (advice-remove 'shell sym)))
+  (advice-add 'shell :around #'kwarks--shell-interactive-new-buffer))
+
+(defun kwarks--shell-dir-key-track ()
+  "Canonical directory key for tracking `default-directory' in this buffer."
+  (condition-case nil
+      (file-truename (expand-file-name default-directory))
+    (error (expand-file-name default-directory))))
+
+(defun kwarks--shell-rename-buffer-from-cwd ()
+  "Rename this shell buffer from `default-directory' (this buffer only).
+Uses `rename-buffer' UNIQUE arg so names stay unique if another buffer already
+uses the same compact path."
+  (when (and (eq major-mode 'shell-mode) (buffer-live-p (current-buffer)))
+    (let* ((compact (abbreviate-file-name
+                    (directory-file-name (expand-file-name default-directory))))
+           (base (format "*shell %s*" compact)))
+      (rename-buffer base t))))
+
+(defun kwarks--shell-flush-deferred-rename (buf)
+  "Run deferred rename for BUF outside comint output filters."
+  (when (buffer-live-p buf)
+    (with-current-buffer buf
+      (setq-local kwarks--shell-rename-pending nil)
+      (condition-case err
+          (kwarks--shell-rename-buffer-from-cwd)
+        (error (message "kwarks--shell-rename-buffer-from-cwd: %S" err))))))
+
+(defun kwarks--shell-after-output-maybe-track-cwd (_output)
+  "If this shell's `default-directory' changed, schedule a deferred rename."
+  (when (and (eq major-mode 'shell-mode)
+             (buffer-live-p (current-buffer))
+             (let ((p (get-buffer-process (current-buffer))))
+               (or (null p) (eq (process-status p) 'run))))
+    (let ((key (kwarks--shell-dir-key-track)))
+      (unless (equal key kwarks--shell-last-dir-key)
+        (setq-local kwarks--shell-last-dir-key key)
+        (unless kwarks--shell-rename-pending
+          (setq-local kwarks--shell-rename-pending t)
+          (run-at-time 0 nil #'kwarks--shell-flush-deferred-rename (current-buffer)))))))
+
+(defun kwarks--shell-setup-cwd-buffer-name ()
+  "Keep this shell buffer's name aligned with `default-directory' after \\[cd]."
+  (setq-local kwarks--shell-last-dir-key (kwarks--shell-dir-key-track))
+  (setq-local kwarks--shell-rename-pending nil)
+  (add-hook 'comint-output-filter-functions #'kwarks--shell-after-output-maybe-track-cwd t t)
+  (condition-case err
+      (kwarks--shell-rename-buffer-from-cwd)
+    (error (message "kwarks--shell-setup-cwd-buffer-name: %S" err))))
+
+(add-hook 'shell-mode-hook #'kwarks--shell-setup-cwd-buffer-name)
+#+END_SRC

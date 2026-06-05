@@ -5,6 +5,10 @@
 ;; enabled component file under components/ into a single config.el, byte
 ;; compiles it and loads the result.  Third-party packages are installed by
 ;; Elpaca (see installer below), not package.el.
+;;
+;; If Emacs misbehaves after config edits, stale generated files may be the
+;; cause — run `make clean' and restart; out-of-sync sources also drop
+;; `config.el'/`config.elc' before retangle on startup.
 
 ;;; Code:
 
@@ -131,20 +135,46 @@ intermediate files are removed."
     (byte-compile-file out)
     out))
 
+(defun kwarks/delete-stale-config-native-compile ()
+  "Remove `config-*.eln' under `eln-cache/' so startup cannot load outdated Natcomp."
+  (let ((cache (expand-file-name "eln-cache" user-emacs-directory)))
+    (when (file-directory-p cache)
+      (dolist (subdir (directory-files cache t "^[0-9]" t))
+        (when (file-directory-p subdir)
+          (dolist (eln (directory-files subdir t "^config-.*\\.eln\\'" t))
+            (message "Removing stale native-compiled %s" (file-name-nondirectory eln))
+            (delete-file eln)))))))
+
+(defun kwarks/delete-config-el-and-elc ()
+  "Delete generated `config.el' and `config.elc' if they exist."
+  (let ((el (expand-file-name "config.el" user-emacs-directory))
+        (elc (expand-file-name "config.elc" user-emacs-directory)))
+    (when (file-exists-p el)
+      (message "Deleting %s" el)
+      (delete-file el))
+    (when (file-exists-p elc)
+      (message "Deleting %s" elc)
+      (delete-file elc))))
+
 (defun kwarks/byte-compile-config-if-needed ()
   "Ensure config.elc matches config.el when the latter is newer.
 Stale bytecode otherwise wins on `load' and you keep old definitions even
-after regenerating `config.el' (e.g. tangle without compile, or compile error)."
+after regenerating `config.el' (e.g. tangle without compile, or compile error).
+Before recompiling, remove any existing `config.elc' so a failed compile cannot
+leave stale bytecode, and remove matching `config-*.eln' in `eln-cache/' so
+native code cannot mask fixes in `config.el'."
   (let ((el (expand-file-name "config.el" user-emacs-directory))
         (elc (expand-file-name "config.elc" user-emacs-directory)))
     (when (and (file-exists-p el)
                (or (not (file-exists-p elc))
                    (file-newer-than-file-p el elc)))
       (when (file-exists-p elc)
-        (message "config.el newer than config.elc; re-byte-compiling..."))
+        (message "config.el newer than config.elc; removing stale config.elc...")
+        (delete-file elc))
       (setq byte-compile-warnings
             '(not free-vars unresolved noruntime lexical make-local
                   obsolete docstrings lambda interactive-only))
+      (kwarks/delete-stale-config-native-compile)
       (byte-compile-file el))))
 
 ;; Don't attempt to find/apply special file handlers to files loaded at startup.
@@ -153,6 +183,7 @@ after regenerating `config.el' (e.g. tangle without compile, or compile error)."
   ;; `kwarks/byte-compile-config-if-needed' then refreshes config.elc if needed.
   (unless (kwarks/config-synced-p)
     (message "Regenerating config.el from enabled components...")
+    (kwarks/delete-config-el-and-elc)
     (kwarks/tangle-config))
   (kwarks/byte-compile-config-if-needed)
   (load (expand-file-name "config" user-emacs-directory) nil nil nil))

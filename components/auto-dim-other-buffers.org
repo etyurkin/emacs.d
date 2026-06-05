@@ -13,20 +13,24 @@ Make the non-current buffer less prominent.
 
 (defun kwarks/set-auto-dim-other-buffers-background (&rest args)
   "Make the inactive (dimmed) buffer background darker than the active one."
-  (let* ((bg (face-background 'default))
-         (bg (if (or (null bg) (string= bg "unspecified-bg")) "#000000" bg)))
-    (set-face-background
-     'auto-dim-other-buffers-face
-     (color-darken-name bg (kwarks/if-dark-theme
-                            kwarks/auto-dim-darken-dark
-                            kwarks/auto-dim-darken-light)))))
+  (condition-case err
+      (when (facep 'auto-dim-other-buffers-face)
+        (let* ((bg (face-background 'default))
+               (bg (if (or (null bg) (string= bg "unspecified-bg")) "#000000" bg)))
+          (set-face-background
+           'auto-dim-other-buffers-face
+           (color-darken-name bg (kwarks/if-dark-theme
+                                  kwarks/auto-dim-darken-dark
+                                  kwarks/auto-dim-darken-light)))))
+    (error (message "kwarks/set-auto-dim-other-buffers-background: %S" err))))
 
 (use-package auto-dim-other-buffers
+  :after doom-themes
   :config
   (setq auto-dim-other-buffers-dim-on-focus-out nil)
+  (auto-dim-other-buffers-mode t)
   (kwarks/set-auto-dim-other-buffers-background)
-  :init
-  (auto-dim-other-buffers-mode t))
+  (advice-remove 'load-theme #'kwarks/set-auto-dim-other-buffers-background)
+  (advice-add 'load-theme :after #'kwarks/set-auto-dim-other-buffers-background))
 
-(advice-add 'load-theme :after 'kwarks/set-auto-dim-other-buffers-background)
 #+END_SRC

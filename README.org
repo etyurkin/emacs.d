@@ -13,6 +13,12 @@ Literate, component-based Emacs (30+).
 
 =config.el= is regenerated when =components.org=, =config.org=, =init.el=, or an enabled component changes; it is git-ignored—edit the =.org= sources only.
 
+If things look wrong (e.g. =M-x= or theme) after tangling or experiments, Emacs
+may still be loading stale =config.el= / =config.elc= / natcomp =config-*.eln=.
+Remove them with =make clean= (or delete those files by hand), then restart.
+On the next start, changed =.org= sources also remove stale =config.el= /
+=config.elc= before retangling.
+
 ** Layout
 - =early-init.el= :: pre-frame: GC, disable =package.el= startup, theme/frame cache.
 - =init.el= :: Elpaca bootstrap, tangle/byte-compile, load =config=.
