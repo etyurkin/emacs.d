@@ -31,6 +31,7 @@ enabled component below.
 - [X] [[file:components/battery.org][battery]]
 - [X] [[file:components/jinx.org][jinx]]
 - [X] [[file:components/shell-completion.org][shell-completion]]
+- [X] [[file:components/shell-buffers.org][shell-buffers — fresh M-x shell, cwd in buffer name]]
 - [X] [[file:components/multiple-cursors.org][multiple-cursors]]
 - [X] [[file:components/scratch.org][scratch]]
 - [ ] [[file:components/focus.org][focus]]

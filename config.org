@@ -83,7 +83,7 @@ don't leak into startup (and we don't litter =/tmp= with a new file each launch)
 (defun sanityinc/maybe-adjust-visual-fill-column ()
   "Readjust visual fill column when the global font size is modified.
 This is helpful for writeroom-mode, in particular."
-  (if visual-fill-column-mode
+  (if (and (boundp 'visual-fill-column-mode) visual-fill-column-mode)
       (add-hook 'after-setting-font-hook 'visual-fill-column--adjust-window nil t)
     (remove-hook 'after-setting-font-hook 'visual-fill-column--adjust-window t)))
 
@@ -593,10 +593,28 @@ it will restore the window configuration to prior to full-framing."
 
 ** Execute shell command in an active shell session
 #+BEGIN_SRC emacs-lisp
+(defun kwarks--shell-first-live-process-buffer ()
+  "First shell-mode buffer with a live subprocess (any name)."
+  (catch 'found
+    (dolist (b (buffer-list))
+      (when (and (buffer-live-p b)
+                 (eq (buffer-local-value 'major-mode b) 'shell-mode)
+                 (let ((p (get-buffer-process b)))
+                   (and p (eq (process-status p) 'run))))
+        (throw 'found b)))
+    nil))
+
 (defun run-shell-command (cmd)
-  (let ((shell-process (get-buffer-process "*shell*")))
-    (cond ((not (null shell-process))
-           (process-send-string "shell" (concat cmd "\n"))))))
+  "Send CMD to the first live `shell-mode' buffer, or legacy =*shell*= if present."
+  (let* ((buf (or (let ((b (get-buffer "*shell*")))
+                    (and b (buffer-live-p b)
+                         (eq (buffer-local-value 'major-mode b) 'shell-mode)
+                         (get-buffer-process b)
+                         b))
+                  (kwarks--shell-first-live-process-buffer)))
+         (proc (and buf (get-buffer-process buf))))
+    (when proc
+      (process-send-string proc (concat cmd "\n")))))
 #+END_SRC
 
 ** Proxy functions

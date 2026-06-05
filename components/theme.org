@@ -154,7 +154,9 @@ Ignore line wrappings and highlight entire line for org headers
   (custom-set-faces
    '(gnus-group-news-low ((t (:inherit gnus-group-mail-1))))
    '(gnus-group-news-low-empty ((t (:inherit gnus-group-mail-1-empty)))))
-  (load-theme 'doom-one t))
+  (condition-case err
+      (load-theme 'doom-one t)
+    (error (message "load-theme doom-one failed: %S" err))))
 #+END_SRC
 
 ** Theme cache
