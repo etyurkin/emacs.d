@@ -37,10 +37,14 @@
 
 ;; Read cached theme colors saved by the previous session so the frame
 ;; starts with the right background immediately instead of flashing white.
-;; The cache is written by `kwarks/save-theme-colors' (see theme component).
+;; The cache is written by `kwarks/save-theme-cache' (see theme component).
 (let ((cache (expand-file-name "theme-cache.el" kwarks/cache-directory)))
   (when (file-exists-p cache)
-    (load cache nil t t)))
+    (condition-case err
+        (load cache nil t t)
+      (error
+       (message "kwarks: ignoring invalid theme-cache.el (%S)" err)
+       (ignore-errors (delete-file cache))))))
 
 ;; Read cached frame geometry (size + position) saved by the previous session
 ;; and push it into `default-frame-alist' so the FIRST frame is created at the

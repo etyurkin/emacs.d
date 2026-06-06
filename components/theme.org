@@ -83,6 +83,141 @@ Ignore line wrappings and highlight entire line for org headers
 (global-visual-line-mode 1)
 #+END_SRC
 
+** Theme cache
+Write the active theme's colors and font to =theme-cache.el= so =early-init.el=
+can apply them to =default-frame-alist= before the frame is created on the next
+start.  This eliminates the white flash and the small-window-then-resize dance
+(the latter is caused by the font being applied after the frame was sized).
+We persist on =after-setting-font-hook= and =kill-emacs-query-functions=.
+This block is tangled *before* =load-theme 'doom-one= so the =load-theme= :after
+advice is already installed when the theme first loads (otherwise the first
+load would skip cache refresh and font reapply).
+=load-theme= must not rewrite the cached font from the current frame: the
+theme resets the default face (e.g. Doom back to 14pt), which would clobber a
+user size (12) saved for =early-init=.  After theme we only refresh colors and
+=ns-appearance=, and keep the font line already on disk.  We also reapply that
+font to the =default= face after init (and on new frames): =default-frame-alist=
+alone is not enough once the theme has set :height on =default=.
+
+#+BEGIN_SRC emacs-lisp
+(defun kwarks/save-theme-cache--persistable-font (font)
+  "Return a font string safe to store in theme-cache.el, or nil.
+Normalize font objects (e.g. NS) to a string via `font-xlfd-name' / `font-get'."
+  (let ((s (cond ((null font) nil)
+                 ((stringp font) (and (not (string-empty-p font)) font))
+                 ((fontp font)
+                  (or (and (fboundp 'font-xlfd-from-font) (font-xlfd-from-font font))
+                      (and (fboundp 'font-xlfd-name) (font-xlfd-name font))
+                      (ignore-errors (font-get font :name))))
+                 (t nil))))
+    (when (and (stringp s) (not (string-empty-p s)))
+      (let ((spec (ignore-errors (font-spec :name s))))
+        (cond ((and spec (fboundp 'find-font) (find-font spec)) s)
+              ((string-prefix-p "-" s) s)
+              (t nil))))))
+
+(defun kwarks/save-theme-cache--default-font-for-save ()
+  "Font string to persist: actual glyph font, then :font attribute, then frame.
+The Options / font panel often updates what you see without updating the frame
+`font' parameter, so `face-font' is checked before `face-attribute'."
+  (let ((f (or (condition-case nil (face-font 'default nil 'default) (error nil))
+               (condition-case nil (face-attribute 'default :font) (error nil)))))
+    (when (memq f '(unspecified nil)) (setq f nil))
+    (kwarks/save-theme-cache--persistable-font
+     (or f (frame-parameter (selected-frame) 'font)))))
+
+(defun kwarks--theme-cache-read-persisted-font ()
+  "Return the `font' value from theme-cache.el, or nil if missing/unreadable."
+  (catch 'kwarks--theme-cache-font
+    (let ((file (expand-file-name "theme-cache.el" kwarks/cache-directory)))
+      (when (file-exists-p file)
+        (ignore-errors
+          (with-temp-buffer
+            (insert-file-contents file)
+            (goto-char (point-min))
+            (while (not (eobp))
+              (let ((form (read (current-buffer))))
+                (when (eq (car-safe form) 'push)
+                  (let ((cell (nth 1 form)))
+                    (while (eq (car-safe cell) 'quote)
+                      (setq cell (cadr cell)))
+                    (when (and (consp cell) (eq (car cell) 'font))
+                      (throw 'kwarks--theme-cache-font (cdr cell)))))))))))))
+
+(defun kwarks/reapply-theme-cache-font ()
+  "Re-set `default' face from theme-cache.el after the theme overrides it.
+`early-init' only affects frame parameters; `load-theme' still applies face
+specs (Doom uses a fixed default height unless we set :font again here)."
+  (when (display-graphic-p)
+    (when-let* ((font (kwarks--theme-cache-read-persisted-font)))
+      (condition-case err
+          (progn
+            (set-face-attribute 'default nil :font font)
+            (dolist (fr (frame-list))
+              (when (and (frame-live-p fr) (frame-parameter fr 'display))
+                (with-selected-frame fr
+                  (set-face-attribute 'default nil :font font)))))
+        (error (message "kwarks: reapply cached font: %S" err))))))
+
+(defun kwarks/save-theme-cache (&optional after-theme)
+  "Write current theme colors and font to theme-cache.el.
+These are pushed into `default-frame-alist' by early-init.el before the
+frame exists, so the window starts with the right colors AND font.
+Caching the font is what prevents the late resize: desktop restores the
+frame size in character units, so the frame must already use the final
+font when those characters are mapped to pixels, otherwise applying the
+font afterwards re-maps the grid and the frame shrinks.
+Frame geometry itself is left to desktop-restore which already handles it.
+
+When AFTER-THEME is non-nil (from `load-theme' :after advice), refresh only
+colors and `ns-appearance' from the frame; keep the font already stored in
+theme-cache.el so a theme's default face does not overwrite the user's
+Options / font-panel size."
+  (when (display-graphic-p)
+    (let* ((cache (expand-file-name "theme-cache.el" kwarks/cache-directory))
+           (frame (selected-frame))
+           (bg (face-background 'default frame))
+           (fg (face-foreground 'default frame))
+           (font (if after-theme
+                     (or (kwarks--theme-cache-read-persisted-font)
+                         (kwarks/save-theme-cache--default-font-for-save))
+                   (or (kwarks/save-theme-cache--default-font-for-save)
+                       (kwarks--theme-cache-read-persisted-font))))
+           (dark-p (eq (frame-parameter frame 'background-mode) 'dark)))
+      (with-temp-file cache
+        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; lexical-binding: t; -*-\n")
+        (when (and bg (not (member bg '("unspecified-bg" "unspecified-fg"))))
+          (insert (format "(push '(background-color . %S) default-frame-alist)\n" bg)))
+        (when (and fg (not (member fg '("unspecified-bg" "unspecified-fg"))))
+          (insert (format "(push '(foreground-color . %S) default-frame-alist)\n" fg)))
+        (when font
+          (insert (format "(push '(font . %S) default-frame-alist)\n" font)))
+        (when dark-p
+          (insert "(push '(ns-appearance . dark) default-frame-alist)\n"))))))
+
+(defun kwarks/save-theme-cache--on-quit-query ()
+  "Write theme-cache before exit; return t so quitting is not blocked."
+  (when (display-graphic-p)
+    (ignore-errors (kwarks/save-theme-cache)))
+  t)
+
+(defun kwarks/save-theme-cache--after-font-change ()
+  "Persist theme cache after Options / font panel changes the default font."
+  (when (display-graphic-p)
+    (ignore-errors (kwarks/save-theme-cache))))
+
+(defun kwarks/save-theme-cache-after-theme (&rest _)
+  "Refresh cached theme colors; reapply cached font so Doom does not win."
+  (when (display-graphic-p)
+    (ignore-errors (kwarks/save-theme-cache 'after-theme))
+    (kwarks/reapply-theme-cache-font)))
+
+(advice-add 'load-theme :after #'kwarks/save-theme-cache-after-theme)
+(add-hook 'after-init-hook #'kwarks/reapply-theme-cache-font t)
+(add-hook 'kill-emacs-query-functions #'kwarks/save-theme-cache--on-quit-query)
+(add-hook 'after-setting-font-hook #'kwarks/save-theme-cache--after-font-change)
+#+END_SRC
+
 ** Main theme
 #+BEGIN_SRC emacs-lisp
 (defmacro kwarks/with-make-frame (&rest body)
@@ -138,7 +273,9 @@ Ignore line wrappings and highlight entire line for org headers
   "Apply titlebar theme for new frames"
   (kwarks/set-titlebar-style)
   (kwarks/set-theme-colors)
-  (kwarks/set-theme-faces))
+  (kwarks/set-theme-faces)
+  (when after-init-time
+    (kwarks/reapply-theme-cache-font)))
 
 (kwarks/with-make-frame (kwarks/setup-frame))
 (add-hook 'after-make-frame-functions 'kwarks/setup-frame t)
@@ -159,41 +296,6 @@ Ignore line wrappings and highlight entire line for org headers
     (error (message "load-theme doom-one failed: %S" err))))
 #+END_SRC
 
-** Theme cache
-Write the active theme's colors and font to =theme-cache.el= so =early-init.el=
-can apply them to =default-frame-alist= before the frame is created on the next
-start.  This eliminates the white flash and the small-window-then-resize dance
-(the latter is caused by the font being applied after the frame was sized).
-
-#+BEGIN_SRC emacs-lisp
-(defun kwarks/save-theme-cache ()
-  "Write current theme colors and font to theme-cache.el.
-These are pushed into `default-frame-alist' by early-init.el before the
-frame exists, so the window starts with the right colors AND font.
-Caching the font is what prevents the late resize: desktop restores the
-frame size in character units, so the frame must already use the final
-font when those characters are mapped to pixels, otherwise applying the
-font afterwards re-maps the grid and the frame shrinks.
-Frame geometry itself is left to desktop-restore which already handles it."
-  (when (display-graphic-p)
-    (let* ((cache (expand-file-name "theme-cache.el" kwarks/cache-directory))
-           (frame (selected-frame))
-           (bg (face-background 'default frame))
-           (fg (face-foreground 'default frame))
-           (font (frame-parameter frame 'font))
-           (dark-p (eq (frame-parameter frame 'background-mode) 'dark)))
-      (with-temp-file cache
-        (insert ";;; theme-cache.el --- auto-generated, do not edit -*- no-byte-compile: t; lexical-binding: t; -*-\n")
-        (when bg (insert (format "(push '(background-color . %S) default-frame-alist)\n" bg)))
-        (when fg (insert (format "(push '(foreground-color . %S) default-frame-alist)\n" fg)))
-        (when (stringp font)
-          (insert (format "(push '(font . %S) default-frame-alist)\n" font)))
-        (when dark-p
-          (insert "(push '(ns-appearance . dark) default-frame-alist)\n"))))))
-
-(advice-add 'load-theme :after (lambda (&rest _) (kwarks/save-theme-cache)))
-(add-hook 'kill-emacs-hook #'kwarks/save-theme-cache)
-#+END_SRC
 
 ** org-mode visuals
 Headline / block / ellipsis faces are left to =doom-one= plus [[file:org-modern.org][org-modern]].
