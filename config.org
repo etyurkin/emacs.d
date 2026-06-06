@@ -1035,6 +1035,17 @@ compiling and when loading.
         use-package-always-ensure t))
 #+END_SRC
 
+Emacs bundles =transient= 0.7.x, but recent =Magit= (needs >= 0.13) and =Casual=
+(needs >= 0.9) require a newer release.  =transient= is a built-in, so it sits in
+=elpaca-ignored-dependencies= and Elpaca will not pull the newer version as an
+implicit dependency of Magit -- the build then fails against the stale bundled
+copy.  Declare it explicitly and eagerly so the up-to-date build shadows the
+bundled one on =load-path= before Magit/Casual load.
+
+#+BEGIN_SRC emacs-lisp
+(use-package transient :ensure t :demand t)
+#+END_SRC
+
 * Post init
 ** Start server
 #+BEGIN_SRC emacs-lisp
