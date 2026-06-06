@@ -120,7 +120,13 @@ intermediate files are removed."
          (out (expand-file-name "config.el" dir))
          (files (kwarks/config-source-files)))
     (with-temp-file out
-      (insert ";;; config.el --- generated, do not edit -*- lexical-binding: t; -*-\n")
+      ;; `no-native-compile' is critical: async native compilation re-expands
+      ;; `use-package' in an isolated subprocess that lacks
+      ;; `elpaca-use-package-mode', producing a config-*.eln that `require's
+      ;; packages directly instead of queuing Elpaca orders.  Emacs then prefers
+      ;; that broken .eln over the (correct) in-session byte-compiled .elc, so
+      ;; nothing installs and theme/completion silently fail to load.
+      (insert ";;; config.el --- generated, do not edit -*- lexical-binding: t; no-native-compile: t; -*-\n")
       (insert ";; Generated from config.org + components.org. Edit those instead.\n")
       (dolist (f files)
         (insert (format "\n;; ==== %s ====\n" (file-name-nondirectory f)))

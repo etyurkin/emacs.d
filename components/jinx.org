@@ -13,7 +13,11 @@ If a locale from =jinx-languages= is missing, install its hunspell/aspell
 dictionary for your OS (Homebrew has per-language hunspell formulae in some
 cases).
 
-Activation is guarded below so a missing native library never breaks editing.
+Activation is guarded below so a missing native library never breaks editing:
+=kwarks/maybe-jinx= enables =jinx-mode= only when Enchant is actually usable
+(the module is already compiled, or =pkg-config= can locate =enchant-2= so the
+module can be built).  Otherwise it prints a one-time, actionable hint instead
+of letting Jinx fail with a raw C compiler error.
 
 #+BEGIN_SRC emacs-lisp
 (use-package jinx
@@ -24,10 +28,52 @@ Activation is guarded below so a missing native library never breaks editing.
   ;; if needed, e.g. `brew install enchant hunspell` plus hunspell dictionaries
   ;; for each locale; use `M-x jinx-languages' to see what Enchant actually offers.
   (setq-default jinx-languages "en_US ru_RU es_ES")
+
+  (defun kwarks/jinx-module-built-p ()
+    "Non-nil when Jinx's native module is already compiled on disk."
+    (when-let* ((lib (locate-library "jinx"))
+                (dir (file-name-directory lib)))
+      (seq-some (lambda (ext)
+                  (file-exists-p (expand-file-name (concat "jinx-mod" ext) dir)))
+                '(".dylib" ".so" ".dll"))))
+
+  (defun kwarks/jinx-enchant-available-p ()
+    "Non-nil when Enchant headers/libs can be located to build the module.
+Requires `pkg-config' on `exec-path' (imported by exec-path-from-shell) and an
+installed `enchant-2'."
+    (when-let* ((pkg-config (executable-find "pkg-config")))
+      (eq 0 (call-process pkg-config nil nil nil "--exists" "enchant-2"))))
+
+  ;; Cache the verdict for the session: avoids a `pkg-config' subprocess on
+  ;; every text/org buffer.  Installing Enchant later needs an Emacs restart,
+  ;; which is exactly what the hint below tells the user to do.
+  (defvar kwarks/jinx-available 'unknown
+    "Cached availability of Jinx's Enchant backend: t, nil, or `unknown'.")
+
+  (defun kwarks/jinx-available-p ()
+    (when (eq kwarks/jinx-available 'unknown)
+      (setq kwarks/jinx-available
+            (and (or (kwarks/jinx-module-built-p)
+                     (kwarks/jinx-enchant-available-p))
+                 t)))
+    kwarks/jinx-available)
+
+  (defvar kwarks/jinx-warned nil
+    "Non-nil once the missing-Enchant hint has been shown this session.")
+
   (defun kwarks/maybe-jinx ()
-    "Enable jinx-mode if the enchant native module is available."
-    (when (ignore-errors (require 'jinx nil t))
-      (ignore-errors (jinx-mode 1))))
+    "Enable `jinx-mode' when Enchant is available; otherwise hint once."
+    (if (kwarks/jinx-available-p)
+        (when (ignore-errors (require 'jinx nil t))
+          (ignore-errors (jinx-mode 1)))
+      (unless kwarks/jinx-warned
+        (setq kwarks/jinx-warned t)
+        (message "%s"
+                 (concat "Jinx spell-checking disabled: Enchant not found. "
+                         (if (osx-p)
+                             "Install it with `brew install enchant pkg-config'"
+                           "Install libenchant-2 (and pkg-config) via your package manager")
+                         ", then restart Emacs.")))))
   (add-hook 'text-mode-hook #'kwarks/maybe-jinx)
   (add-hook 'org-mode-hook  #'kwarks/maybe-jinx))
 #+END_SRC
