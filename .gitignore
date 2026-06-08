@@ -72,3 +72,4 @@ site-lisp/package/
 
 # GNU / NonGNU ELPA detached signatures (per-package tarballs and archive indexes).
 *.signed
+/.agent-shell/
