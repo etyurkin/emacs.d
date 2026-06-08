@@ -74,6 +74,7 @@ enabled component below.
 * Tools
 - [X] [[file:components/http.org][http]]
 - [X] [[file:components/agent-shell.org][agent-shell]]
+- [X] [[file:components/epilot.org][epilot — Emacs-native ACP chat]]
 - [X] [[file:components/devdocs.org][devdocs — offline API docs]]
 - [ ] [[file:components/ellama.org][ellama - AI assistant]]
 - [ ] [[file:components/nov.org][nov - EPUB reader]]

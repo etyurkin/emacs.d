@@ -1,0 +1,22 @@
+#+TITLE: epilot
+#+PROPERTY: header-args :tangle yes
+
+A thin Emacs-native ACP chat assistant for Emacs internals, elisp, and org-mode
+operations.  Provider-agnostic via ACP; MVP uses Cursor (`cursor-agent-acp`).
+
+Install the external agent:
+
+#+BEGIN_SRC sh :tangle no
+npm install -g @blowmage/cursor-agent-acp
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package acp
+  :ensure t
+  :demand t)
+
+(use-package epilot
+  :load-path "~/dev/epilot"
+  :commands (epilot epilot-cursor-start epilot-mode epilot-set-model)
+  :custom (epilot-default-provider 'cursor))
+#+END_SRC
