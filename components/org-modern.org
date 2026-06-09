@@ -23,6 +23,8 @@ exists (so block fringe lines match the current font).
    '(org-level-1 ((t (:foreground "#51afef" :background unspecified))))
    '(org-level-2 ((t (:foreground "#c678dd" :background unspecified))))
    '(org-level-3 ((t (:foreground "#a9a1e1" :background unspecified)))))
+  ;; Pipe tables need monospace; doom's variable-pitch org-default misaligns | columns.
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
   (add-hook 'window-setup-hook
             (lambda ()
               (when (and (display-graphic-p)
