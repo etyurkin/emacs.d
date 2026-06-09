@@ -1,13 +1,22 @@
 #+TITLE: clojure
 #+PROPERTY: header-args :tangle yes
 
-Clojure editing with =clojure-mode= and the =cider= REPL/IDE.
+Clojure editing with =clojure-mode= and =cider= (Clojure Interactive Development
+Environment).  =cider= talks to running processes over nREPL — use =M-x cider-jack-in=
+to start a server from the project, or =M-x cider-connect= / =M-x cider-connect-clj=
+to attach to an existing nREPL (host/port or =.nrepl-port= file).
 
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode)
+(use-package clojure-mode
+  :mode ("\\.\\(clj\\|cljc\\|cljs\\|edn\\)\\'"))
 
 (use-package cider
   :after clojure-mode
+  :commands (cider-jack-in
+             cider-jack-in-clj
+             cider-connect
+             cider-connect-clj
+             cider-quit)
   :config
   (setq cider-repl-display-help-banner nil))
 #+END_SRC

@@ -51,7 +51,7 @@ enabled component below.
 - [X] [[file:components/lisp.org][lisp]]
 - [X] [[file:components/python.org][python]]
 - [X] [[file:components/yaml.org][yaml]]
-- [ ] [[file:components/clojure.org][clojure]]
+- [X] [[file:components/clojure.org][clojure]]
 - [ ] [[file:components/scala.org][scala]]
 - [ ] [[file:components/java.org][java]]
 - [ ] [[file:components/scheme.org][scheme]]
