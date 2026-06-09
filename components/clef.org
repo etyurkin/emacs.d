@@ -14,7 +14,7 @@ available for SBCL; it is disabled inside Clef buffers only.
     (define-key clef-mode-map (kbd "C-x C-e") #'cider-eval-last-sexp)
     (define-key clef-mode-map (kbd "C-c C-e") #'cider-eval-last-sexp)
     (define-key clef-mode-map (kbd "C-c C-r") #'cider-eval-region)
-    (define-key clef-mode-map (kbd "C-c C-k") #'cider-load-buffer)
+    (define-key clef-mode-map (kbd "C-c C-k") #'clef-load-buffer)
     (define-key clef-mode-map (kbd "C-c C-z") #'cider-switch-to-repl-buffer)
     (define-key clef-mode-map (kbd "C-c C-v") #'clef-connect)))
 #+END_SRC
