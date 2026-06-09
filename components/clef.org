@@ -1,0 +1,20 @@
+#+TITLE: clef
+#+PROPERTY: header-args :tangle yes
+
+Clef (.clef) live coding via nREPL.  Requires =clef-mode= in =lisp/ext/clef-mode.el=
+(autoloaded from =config.org=) and =cider= (clojure component).  SLY remains
+available for SBCL; it is disabled inside Clef buffers only.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'clef-mode
+  (add-hook 'clef-mode-hook #'enable-paredit-mode)
+  (add-hook 'clef-mode-hook #'aggressive-indent-mode)
+  (with-eval-after-load 'cider
+    (define-key clef-mode-map (kbd "C-c C-c") #'cider-eval-defun-at-point)
+    (define-key clef-mode-map (kbd "C-x C-e") #'cider-eval-last-sexp)
+    (define-key clef-mode-map (kbd "C-c C-e") #'cider-eval-last-sexp)
+    (define-key clef-mode-map (kbd "C-c C-r") #'cider-eval-region)
+    (define-key clef-mode-map (kbd "C-c C-k") #'cider-load-buffer)
+    (define-key clef-mode-map (kbd "C-c C-z") #'cider-switch-to-repl-buffer)
+    (define-key clef-mode-map (kbd "C-c C-v") #'clef-connect)))
+#+END_SRC

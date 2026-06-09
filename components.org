@@ -52,6 +52,7 @@ enabled component below.
 - [X] [[file:components/python.org][python]]
 - [X] [[file:components/yaml.org][yaml]]
 - [X] [[file:components/clojure.org][clojure]]
+- [X] [[file:components/clef.org][clef — Clef .clef files, nREPL via CIDER]]
 - [ ] [[file:components/scala.org][scala]]
 - [ ] [[file:components/java.org][java]]
 - [ ] [[file:components/scheme.org][scheme]]

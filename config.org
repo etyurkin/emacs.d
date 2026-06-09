@@ -547,6 +547,9 @@ still loaded eagerly.
                      'number-to-english-cardinal 'number-to-english-ordinal)
 (kwarks/autoload-ext "org-passwords" 'kwarks/org-passwords)
 (kwarks/autoload-ext "tree-mode" 'kwarks/tree)
+(kwarks/autoload-ext "clef-mode" 'clef-mode 'clef-connect)
+
+(add-to-list 'auto-mode-alist '("\\.clef\\'" . clef-mode))
 
 (load-ext "lisp/private")
 #+END_SRC
