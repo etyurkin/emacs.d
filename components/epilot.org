@@ -2,21 +2,18 @@
 #+PROPERTY: header-args :tangle yes
 
 A thin Emacs-native ACP chat assistant for Emacs internals, elisp, and org-mode
-operations.  Provider-agnostic via ACP; supports Cursor (default: =@blowmage/cursor-agent-acp=
-as =cursor-agent-acp=) and Claude (=@agentclientprotocol/claude-agent-acp= as =claude-agent-acp=).
-See [[https://github.com/etyurkin/epilot/blob/main/README.org][README.org]] in the repo for the *ACP Registry alignment* table (registry =id=s,
-canonical installs, and =epilot-*-acp-command= defaults).
+operations.  Provider-agnostic via ACP; supports Cursor (default: native
+=cursor-agent acp= from the Cursor CLI) and Claude (=@agentclientprotocol/claude-agent-acp=
+as =claude-agent-acp=).  See [[https://github.com/etyurkin/epilot/blob/main/README.org][README.org]] in the repo for the *ACP Registry alignment*
+table (registry =id=s, canonical installs, and =epilot-*-acp-command= defaults).
 
 Installed from GitHub via Elpaca (=:ensure= recipe).
 
 Set the =EPILOT_AGENT= environment variable to =claude= or =cursor= to pick the
 default provider when Emacs starts (defaults to =cursor= when unset).
 
-Install external agent(s) you use:
-
-#+BEGIN_SRC sh :tangle no
-npm install -g @blowmage/cursor-agent-acp
-#+END_SRC
+Install external agent(s) you use.  Cursor: install the Cursor CLI from
+https://cursor.com/cli (provides =cursor-agent acp=).  Claude:
 
 #+BEGIN_SRC sh :tangle no
 npm install -g @agentclientprotocol/claude-agent-acp
