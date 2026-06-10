@@ -25,6 +25,9 @@ exists (so block fringe lines match the current font).
    '(org-level-3 ((t (:foreground "#a9a1e1" :background unspecified)))))
   ;; Pipe tables need monospace; doom's variable-pitch org-default misaligns | columns.
   (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  ;; Italic text inside #+begin_quote blocks (e.g. epilot Reasoning).
+  (setq org-fontify-quote-and-verse-blocks t)
+  (set-face-attribute 'org-quote nil :slant 'italic)
   (add-hook 'window-setup-hook
             (lambda ()
               (when (and (display-graphic-p)
