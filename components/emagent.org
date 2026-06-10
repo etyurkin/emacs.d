@@ -1,15 +1,15 @@
-#+TITLE: epilot
+#+TITLE: emagent
 #+PROPERTY: header-args :tangle yes
 
 A thin Emacs-native ACP chat assistant for Emacs internals, elisp, and org-mode
 operations.  Provider-agnostic via ACP; supports Cursor (default: native
 =cursor-agent acp= from the Cursor CLI) and Claude (=@agentclientprotocol/claude-agent-acp=
-as =claude-agent-acp=).  See [[https://github.com/etyurkin/epilot/blob/main/README.org][README.org]] in the repo for the *ACP Registry alignment*
-table (registry =id=s, canonical installs, and =epilot-*-acp-command= defaults).
+as =claude-agent-acp=).  See [[https://github.com/etyurkin/emagent/blob/main/README.org][README.org]] in the repo for the *ACP Registry alignment*
+table (registry =id=s, canonical installs, and =emagent-*-acp-command= defaults).
 
 Installed from GitHub via Elpaca (=:ensure= recipe).
 
-Set the =EPILOT_AGENT= environment variable to =claude= or =cursor= to pick the
+Set the =EMAGENT_AGENT= environment variable to =claude= or =cursor= to pick the
 default provider when Emacs starts (defaults to =cursor= when unset).
 
 Install external agent(s) you use.  Cursor: install the Cursor CLI from
@@ -24,10 +24,10 @@ npm install -g @agentclientprotocol/claude-agent-acp
   :ensure t
   :demand t)
 
-(use-package epilot
-  :ensure (:host github :repo "etyurkin/epilot" :depth 1)
-  :commands (epilot epilot-cursor-start epilot-claude-start epilot-mode epilot-set-model)
-  :custom (epilot-default-provider (if (equal (getenv "EPILOT_AGENT") "claude")
+(use-package emagent
+  :ensure (:host github :repo "etyurkin/emagent" :depth 1)
+  :commands (emagent emagent-cursor-start emagent-claude-start emagent-mode emagent-set-model)
+  :custom (emagent-default-provider (if (equal (getenv "EMAGENT_AGENT") "claude")
                                        'claude
                                      'cursor)))
 #+END_SRC
