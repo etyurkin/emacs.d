@@ -537,10 +537,13 @@ still loaded eagerly.
       (mapc 'load (file-expand-wildcards (concat ext-dir "/*.el"))))))
 
 (defun kwarks/autoload-ext (file &rest commands)
-  "Set up autoloads for COMMANDS defined in lisp/ext/FILE."
+  "Set up autoloads for COMMANDS defined in lisp/ext/FILE.
+The first COMMAND autoloads for `require' as well as interactive use."
   (let ((path (expand-file-name (concat "lisp/ext/" file) user-emacs-directory)))
-    (dolist (cmd commands)
-      (autoload cmd path nil t))))
+    (when commands
+      (autoload (car commands) path nil nil)
+      (dolist (cmd (cdr commands))
+        (autoload cmd path nil t)))))
 
 (kwarks/autoload-ext "intellij-open-in-emacs" 'intellij-open-in-emacs)
 (kwarks/autoload-ext "number-to-string"

@@ -33,39 +33,95 @@
 (defvar clef-mode-map (make-sparse-keymap)
   "Keymap for `clef-mode'.")
 
-(define-key clef-mode-map (kbd "C-c C-c") #'cider-eval-defun-at-point)
-(define-key clef-mode-map (kbd "C-x C-e") #'cider-eval-last-sexp)
-(define-key clef-mode-map (kbd "C-c C-e") #'cider-eval-last-sexp)
-(define-key clef-mode-map (kbd "C-c C-r") #'cider-eval-region)
-(define-key clef-mode-map (kbd "C-c C-k") #'clef-load-buffer)
-(define-key clef-mode-map (kbd "C-c C-z") #'cider-switch-to-repl-buffer)
-(define-key clef-mode-map (kbd "C-c C-v") #'clef-connect)
-
 (defconst clef-font-lock-keywords--shebang
   '(("\\`#![^\n]*" 0 font-lock-comment-face))
   "Font-lock rule for a leading Unix shebang line.")
 
+(defconst clef-font-lock-keywords--special-vars
+  '(("\\*\\([-A-Za-z0-9_+]+\\)\\*"
+     0 font-lock-variable-name-face))
+  "Font-lock rule for Common Lisp special variables (*foo*).")
+
 (defun clef-mode--disable-sly ()
-  "Turn off SLY in Clef buffers; clef-mode uses CIDER/nREPL."
+  "Turn off SLY in Clef buffers; `lisp-mode-hook' enables it for all Lisp modes."
   (when (fboundp 'sly-editing-mode)
     (sly-editing-mode -1))
   (when (fboundp 'sly-mode)
-    (sly-mode -1)))
+    (sly-mode -1))
+  (when (eq lisp-indent-function 'sly-common-lisp-indent-function)
+    (setq-local lisp-indent-function 'lisp-indent-function))
+  (remove-hook 'font-lock-extend-region-functions
+               'sly-extend-region-for-font-lock t)
+  (setq-local font-lock-keywords-case-fold-search nil))
 
 (defun clef-mode--disable-sly-on-lisp-hook ()
   "Run from `lisp-mode-hook' after SLY; keep SLY out of `clef-mode' buffers."
   (when (eq major-mode 'clef-mode)
     (clef-mode--disable-sly)))
 
+(defun clef-mode--ensure-cider ()
+  "Load CIDER for eval commands without enabling `cider-mode' in Clef buffers.
+
+`cider-mode' adds Clojure font-lock and keymap overrides that fight Common Lisp
+highlighting and `clef-mode-map'; eval only needs the loaded package."
+  (require 'cider nil t))
+
 (defun clef-mode--setup-font-lock ()
-  "Apply Common Lisp font-lock plus Clef shebang highlighting."
-  (unless font-lock-defaults
-    (lisp-mode-variables nil t nil))
-  (font-lock-add-keywords nil clef-font-lock-keywords--shebang)
+  "Set Common Lisp font-lock defaults for Clef."
+  (lisp-mode-variables nil t nil)
+  (setq-local font-lock-maximum-decoration 2))
+
+(defun clef-mode--refresh-font-lock ()
+  "Enable font-lock and fontify the buffer."
+  (clef-mode--disable-sly)
+  (when (and (fboundp 'rainbow-delimiters-mode) rainbow-delimiters-mode)
+    (rainbow-delimiters-mode -1))
+  (clef-mode--setup-font-lock)
+  (setq-local font-lock-fontified nil)
+  (setq-local font-lock-set-defaults nil)
+  (setq-local font-lock-major-mode nil)
   (when font-lock-mode
-    (if (fboundp 'font-lock-ensure)
-        (font-lock-ensure)
-      (font-lock-fontify-buffer))))
+    (font-lock-mode -1))
+  (font-lock-mode 1)
+  (if (fboundp 'font-lock-ensure)
+      (font-lock-ensure)
+    (font-lock-fontify-buffer)))
+
+(defun clef-mode--schedule-font-lock ()
+  "Fontify once the mode switch and all hooks have finished."
+  (run-at-time 0 nil
+               (lambda ()
+                 (when (derived-mode-p 'clef-mode)
+                   (clef-mode--refresh-font-lock)))))
+
+(defun clef-mode--activate-font-lock ()
+  "Turn on font-lock after all mode hooks (rainbow-delimiters, SLY, etc.)."
+  (clef-mode--refresh-font-lock)
+  (clef-mode--schedule-font-lock))
+
+(defun clef-eval-defun-at-point ()
+  "Evaluate the top-level form at point in the Clef nREPL."
+  (interactive)
+  (clef-mode--ensure-cider)
+  (call-interactively #'cider-eval-defun-at-point))
+
+(defun clef-eval-last-sexp (&optional eob-p)
+  "Evaluate the sexp before point in the Clef nREPL."
+  (interactive "P")
+  (clef-mode--ensure-cider)
+  (call-interactively #'cider-eval-last-sexp eob-p))
+
+(defun clef-eval-region (beg end)
+  "Evaluate the region in the Clef nREPL."
+  (interactive (list (region-beginning) (region-end)))
+  (clef-mode--ensure-cider)
+  (call-interactively #'cider-eval-region beg end))
+
+(defun clef-switch-to-repl-buffer (&optional show)
+  "Switch to the Clef nREPL buffer."
+  (interactive "P")
+  (clef-mode--ensure-cider)
+  (call-interactively #'cider-switch-to-repl-buffer show))
 
 (defun clef--strip-shebang (content)
   "Remove a leading Unix shebang line from CONTENT, if present."
@@ -83,18 +139,49 @@
       (widen)
       (clef--strip-shebang (substring-no-properties (buffer-string))))))
 
+(define-key clef-mode-map (kbd "C-c C-c") #'clef-eval-defun-at-point)
+(define-key clef-mode-map (kbd "C-x C-e") #'clef-eval-last-sexp)
+(define-key clef-mode-map (kbd "C-c C-e") #'clef-eval-last-sexp)
+(define-key clef-mode-map (kbd "C-c C-r") #'clef-eval-region)
+(define-key clef-mode-map (kbd "C-c C-k") #'clef-load-buffer)
+(define-key clef-mode-map (kbd "C-c C-z") #'clef-switch-to-repl-buffer)
+(define-key clef-mode-map (kbd "C-c C-v") #'clef-connect)
+
 ;;;###autoload
 (define-derived-mode clef-mode lisp-mode "Clef"
   "Major mode for editing Clef (.clef) programs.
 Live evaluation uses nREPL — connect with \\[clef-connect]."
   :group 'clef
+  :after-hook (clef-mode--activate-font-lock)
   (setq-local indent-tabs-mode nil)
   (clef-mode--disable-sly)
-  (clef-mode--setup-font-lock)
-  (when (fboundp 'cider-mode)
-    (cider-mode 1)))
+  (clef-mode--setup-font-lock))
 
-(add-hook 'lisp-mode-hook #'clef-mode--disable-sly-on-lisp-hook 100)
+(add-hook 'lisp-mode-hook #'clef-mode--disable-sly-on-lisp-hook 1000)
+
+(font-lock-add-keywords 'clef-mode
+  (append clef-font-lock-keywords--shebang
+          clef-font-lock-keywords--special-vars))
+
+(defun clef-mode--face-at-word (word)
+  "Return the `face' at WORD in the current buffer, or nil."
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward word nil t)
+      (get-text-property (- (point) (length word)) 'face))))
+
+;;;###autoload
+(defun clef-mode-debug ()
+  "Report font-lock state for the current Clef buffer."
+  (interactive)
+  (unless (derived-mode-p 'clef-mode)
+    (user-error "Not in clef-mode (major-mode=%s)" major-mode))
+  (let ((first (next-single-property-change (point-min) 'face)))
+    (message "clef: font-lock=%S jit-lock=%S keywords=%S | first-face=%S | defun=%S setq=%S"
+             font-lock-mode jit-lock-mode (length (or font-lock-keywords '()))
+             (and first (get-text-property first 'face))
+             (clef-mode--face-at-word "defun")
+             (clef-mode--face-at-word "setq"))))
 
 (defun clef--nrepl-port-file ()
   "Return path to `.nrepl-port' in a dominating directory, or nil."
@@ -114,10 +201,15 @@ Live evaluation uses nREPL — connect with \\[clef-connect]."
   "Return nREPL port from `.nrepl-port' in a dominating directory, else `clef-nrepl-port'."
   (or (clef--read-nrepl-port-from-file) clef-nrepl-port))
 
+(defun clef--clef-buffer-p ()
+  "Return non-nil when the current buffer is editing Clef source."
+  (or (derived-mode-p 'clef-mode)
+      (and buffer-file-name (string-match "\\.clef\\'" buffer-file-name))))
+
 (defun clef--suggested-nrepl-port ()
   "Return a port string for CIDER connect prompts, or nil."
   (when-let ((port (or (clef--read-nrepl-port-from-file)
-                       (and (derived-mode-p 'clef-mode) clef-nrepl-port))))
+                       (and (clef--clef-buffer-p) clef-nrepl-port))))
     (number-to-string port)))
 
 (defun clef--completing-read-port-advice (orig host ports)
@@ -139,14 +231,14 @@ Live evaluation uses nREPL — connect with \\[clef-connect]."
             (cons entry ports)))
       ports)))
 
-(defun clef--install-cider-port-advice ()
+(defun clef-install-cider-port-advice ()
   "Ensure CIDER connect prompts suggest Clef nREPL ports."
   (unless (get 'cider--completing-read-port 'clef-port-advice)
     (put 'cider--completing-read-port 'clef-port-advice t)
     (advice-add #'cider--completing-read-port :around #'clef--completing-read-port-advice)
     (advice-add #'cider--infer-ports :around #'clef--infer-ports-advice)))
 
-(with-eval-after-load 'cider #'clef--install-cider-port-advice)
+(defalias 'clef--install-cider-port-advice 'clef-install-cider-port-advice)
 
 ;;;###autoload
 (defun clef-connect (&optional _prompt)
@@ -155,7 +247,7 @@ Prompts for host and port; `.nrepl-port' in a dominating directory is suggested.
 With \\[universal-argument], connect immediately without prompting."
   (interactive "P")
   (require 'cider)
-  (clef--install-cider-port-advice)
+  (clef-install-cider-port-advice)
   (if current-prefix-arg
       (cider-connect-clj `(:host ,clef-nrepl-host
                            :port ,(clef--read-nrepl-port)
