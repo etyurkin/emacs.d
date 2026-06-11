@@ -163,26 +163,6 @@ Live evaluation uses nREPL — connect with \\[clef-connect]."
   (append clef-font-lock-keywords--shebang
           clef-font-lock-keywords--special-vars))
 
-(defun clef-mode--face-at-word (word)
-  "Return the `face' at WORD in the current buffer, or nil."
-  (save-excursion
-    (goto-char (point-min))
-    (when (search-forward word nil t)
-      (get-text-property (- (point) (length word)) 'face))))
-
-;;;###autoload
-(defun clef-mode-debug ()
-  "Report font-lock state for the current Clef buffer."
-  (interactive)
-  (unless (derived-mode-p 'clef-mode)
-    (user-error "Not in clef-mode (major-mode=%s)" major-mode))
-  (let ((first (next-single-property-change (point-min) 'face)))
-    (message "clef: font-lock=%S jit-lock=%S keywords=%S | first-face=%S | defun=%S setq=%S"
-             font-lock-mode jit-lock-mode (length (or font-lock-keywords '()))
-             (and first (get-text-property first 'face))
-             (clef-mode--face-at-word "defun")
-             (clef-mode--face-at-word "setq"))))
-
 (defun clef--nrepl-port-file ()
   "Return path to `.nrepl-port' in a dominating directory, or nil."
   (and default-directory
